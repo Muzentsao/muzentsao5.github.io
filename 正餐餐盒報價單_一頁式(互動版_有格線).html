@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>正餐餐盒報價單（互動版｜有格線）</title>
+<style>
+  :root { --ink:#111827; --muted:#6b7280; --line:#d1d5db; --bg:#f7f7f8; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif; margin: 0; background: var(--bg); }
+  .container { max-width: 1000px; margin: 24px auto; background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.06); overflow: hidden; border:1px solid var(--line);}
+  header { padding: 20px 24px; border-bottom: 1px solid var(--line); display:flex; gap:16px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  h1 { margin: 0; font-size: 22px; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .toolbar button { padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; }
+  main { padding: 20px 24px 28px; }
+  .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+  input[type="text"], input[type="date"], input[type="number"], textarea { width: 100%; padding: 10px 12px; border:1px solid var(--line); border-radius:12px; }
+  .block { border:1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .row { display:flex; gap:12px; align-items:center; }
+  table.table-grid { width: 100%; border-collapse: collapse; margin-top: 16px; border:1px solid var(--line); }
+  .table-grid th, .table-grid td { border: 1px solid var(--line); padding: 10px 8px; text-align: left; vertical-align: top; }
+  .table-grid thead th { background: #f3f4f6; color:#374151; font-weight:600; font-size:14px; }
+  .name-wrap .meta { color:#9ca3af; font-size:12px; margin-top:4px; }
+  .includes { margin:6px 0 0 18px; padding:0; list-style: disc; color:#4b5563; font-size: 13px; }
+  .totals { margin-top: 14px; display:grid; gap:6px; justify-content:end; }
+  .trow { display:grid; grid-template-columns: 140px 160px; gap:8px; }
+  .btns { display:flex; gap:8px; margin-top: 16px; }
+  .btn { padding: 10px 14px; border:1px solid var(--line); background:#fff; border-radius:12px; cursor:pointer; }
+  .primary { background:#111827; color:#fff; border-color:#111827; }
+  .note { margin-top: 12px; color:#6b7280; font-size:13px; }
+  @media print { body { background:#fff; } .container { box-shadow:none; border-radius:0; } .btns, .toolbar { display:none !important; } }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>正餐餐盒報價單（互動版｜有格線）</h1>
+        <div class="muted">來源：木人艸報價單(正餐餐盒建議).xlsx（工作表：雙格盒 $180-200）｜供應商：木人艸股份有限公司 / 台灣良農食材</div>
+      </div>
+      <div class="toolbar">
+        <button onclick="window.print()">列印 / 另存 PDF</button>
+        <button onclick="exportHTML()">匯出 HTML</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="grid">
+        <div class="block">
+          <label>客戶名稱</label>
+          <input id="client" type="text" placeholder="請輸入客戶名稱">
+        </div>
+        <div class="block">
+          <label>報價日期</label>
+          <input id="date" type="date">
+        </div>
+        <div class="block">
+          <label>報價單號</label>
+          <input id="quoteNo" type="text" placeholder="例如：BOX-20251022-001">
+        </div>
+        <div class="block">
+          <div class="row">
+            <div style="flex:1">
+              <label>稅率</label>
+              <input id="taxRate" type="number" min="0" step="1" value="0">
+            </div>
+            <div style="align-self:flex-end; margin-bottom:2px;">%</div>
+          </div>
+        </div>
+      </section>
+
+      <table class="table-grid">
+        <thead>
+          <tr>
+            <th style="width:160px">產品品號</th>
+            <th>項目名稱（主菜）與內容</th>
+            <th class="right" style="width:120px">單價</th>
+            <th class="right" style="width:120px">數量</th>
+            <th class="right" style="width:140px">小計</th>
+          </tr>
+        </thead>
+        <tbody id="items-body">
+          
+    <tr data-index="0">
+      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
+      <td>
+        <div class="name-wrap">
+          <input class="name" value="獨家香料鹹豬肉">
+          <div class="meta">產品類別：正餐餐盒 ｜ 每單位份數：10</div>
+          <ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul>
+        </div>
+      </td>
+      <td class="right"><input class="price" type="number" min="0" step="1" value="200"></td>
+      <td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td>
+      <td class="right line-subtotal">0</td>
+    </tr>
+    
+    <tr data-index="1">
+      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
+      <td>
+        <div class="name-wrap">
+          <input class="name" value="日式鹽麴豬五花">
+          <div class="meta">產品類別：正餐餐盒 ｜ 每單位份數：10</div>
+          <ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul>
+        </div>
+      </td>
+      <td class="right"><input class="price" type="number" min="0" step="1" value="200"></td>
+      <td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td>
+      <td class="right line-subtotal">0</td>
+    </tr>
+    
+    <tr data-index="2">
+      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
+      <td>
+        <div class="name-wrap">
+          <input class="name" value="日式鹽麴雞腿排">
+          <div class="meta">產品類別：正餐餐盒 ｜ 每單位份數：0</div>
+          <ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul>
+        </div>
+      </td>
+      <td class="right"><input class="price" type="number" min="0" step="1" value="200"></td>
+      <td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td>
+      <td class="right line-subtotal">0</td>
+    </tr>
+    
+    <tr data-index="3">
+      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
+      <td>
+        <div class="name-wrap">
+          <input class="name" value="蔥油雞胸肉">
+          <div class="meta">產品類別：正餐餐盒 ｜ 每單位份數：0</div>
+          <ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul>
+        </div>
+      </td>
+      <td class="right"><input class="price" type="number" min="0" step="1" value="180"></td>
+      <td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td>
+      <td class="right line-subtotal">0</td>
+    </tr>
+    
+    <tr data-index="4">
+      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
+      <td>
+        <div class="name-wrap">
+          <input class="name" value="法式油封杏鮑菇(全素)">
+          <div class="meta">產品類別：正餐餐盒 ｜ 每單位份數：0</div>
+          <ul class="includes"><li>配菜: 綜合溫什蔬佐油醋醬(全素)</li><li>配菜: 日式冷泡溏心蛋(蛋奶素)</li><li>主食: 紅藜秈米飯(全素)</li></ul>
+        </div>
+      </td>
+      <td class="right"><input class="price" type="number" min="0" step="1" value="180"></td>
+      <td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td>
+      <td class="right line-subtotal">0</td>
+    </tr>
+    
+        </tbody>
+      </table>
+
+      <div class="block" style="margin-top:16px">
+        <div class="totals">
+          <div class="trow"><div>小計</div><div class="right" id="subtotal">0</div></div>
+          <div class="trow"><div>稅率</div><div class="right"><span id="taxRateView">0</span>%</div></div>
+          <div class="trow"><div>稅額</div><div class="right" id="tax">0</div></div>
+          <div class="trow" style="font-weight:700"><div>總計</div><div class="right" id="grand">0</div></div>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="btn primary" onclick="window.print()">列印 / 另存 PDF</button>
+        <button class="btn" onclick="exportHTML()">匯出目前頁面 (HTML)</button>
+      </div>
+
+      <div class="block note">
+        若原始資料缺少「產品品號」「稅率」，本頁以最接近版本呈現；差異原因：來源試算表未提供相關欄位或為空白。<br/>
+        僅呈現來源檔中實際存在之餐盒選項，未添加或虛構任何菜色與組合。
+      </div>
+    </main>
+  </div>
+
+<script>
+  function money(n) { return new Intl.NumberFormat("zh-Hant", { maximumFractionDigits: 0 }).format(n||0); }
+  function recalc() {
+    let subtotal = 0;
+    document.querySelectorAll("#items-body tr").forEach(tr => {
+      const price = Number(tr.querySelector(".price")?.value || 0);
+      const qty = Number(tr.querySelector(".qty")?.value || 0);
+      const line = price * qty;
+      const cell = tr.querySelector(".line-subtotal");
+      if (cell) cell.textContent = money(line);
+      subtotal += line;
+    });
+    const taxRate = Number(document.getElementById("taxRate").value || 0);
+    const tax = subtotal * taxRate / 100;
+    const grand = subtotal + tax;
+    document.getElementById("subtotal").textContent = money(subtotal);
+    document.getElementById("taxRateView").textContent = (taxRate||0);
+    document.getElementById("tax").textContent = money(tax);
+    document.getElementById("grand").textContent = money(grand);
+  }
+  document.addEventListener("input", (e) => {
+    if (e.target.matches(".price, .qty, #taxRate")) recalc();
+  });
+  (function setToday() {
+    try {
+      const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+      const localISODate = (new Date(Date.now() - tzoffset)).toISOString().slice(0,10);
+      document.getElementById("date").value = localISODate;
+    } catch(e) { }
+  })();
+  function exportHTML() {
+    const html = document.documentElement.cloneNode(true);
+    const blob = new Blob(["<!doctype html>\n" + html.outerHTML], { type: "text/html;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "正餐餐盒報價單_互動版(有格線).html";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+  recalc();
+</script>
+</body>
+</html>
