@@ -42,8 +42,7 @@
       </div>
       <div class="toolbar">
         <button onclick="window.print()">列印 / 另存 PDF</button>
-        <button onclick="exportHTML()">匯出 HTML</button>
-      </div>
+        </div>
     </header>
 
     <main>
@@ -58,23 +57,13 @@
         </div>
         <div class="block">
           <label>報價單號</label>
-          <input id="quoteNo" type="text" placeholder="例如：BOX-20251022-001">
+          <input id="quoteNo" type="text" readonly style="background: var(--bg); color: var(--muted);">
         </div>
-        <div class="block">
-          <div class="row">
-            <div style="flex:1">
-              <label>稅率</label>
-              <input id="taxRate" type="number" min="0" step="1" value="0">
-            </div>
-            <div style="align-self:flex-end; margin-bottom:2px;">%</div>
-          </div>
-        </div>
-      </section>
+        </section>
 
       <table class="table-grid">
         <thead>
           <tr>
-            <th style="width:160px">產品品號</th>
             <th>項目名稱（主菜）與內容</th>
             <th class="right" style="width:120px">單價</th>
             <th class="right" style="width:120px">數量</th>
@@ -84,7 +73,6 @@
         <tbody id="items-body">
           
     <tr data-index="0">
-      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
       <td>
         <div class="name-wrap">
           <input class="name" value="獨家香料鹹豬肉">
@@ -98,7 +86,6 @@
     </tr>
     
     <tr data-index="1">
-      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
       <td>
         <div class="name-wrap">
           <input class="name" value="日式鹽麴豬五花">
@@ -112,7 +99,6 @@
     </tr>
     
     <tr data-index="2">
-      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
       <td>
         <div class="name-wrap">
           <input class="name" value="日式鹽麴雞腿排">
@@ -126,7 +112,6 @@
     </tr>
     
     <tr data-index="3">
-      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
       <td>
         <div class="name-wrap">
           <input class="name" value="蔥油雞胸肉">
@@ -140,7 +125,6 @@
     </tr>
     
     <tr data-index="4">
-      <td><input class="sku" placeholder="來源未提供，可自行填寫" value=""></td>
       <td>
         <div class="name-wrap">
           <input class="name" value="法式油封杏鮑菇(全素)">
@@ -159,19 +143,15 @@
       <div class="block" style="margin-top:16px">
         <div class="totals">
           <div class="trow"><div>小計</div><div class="right" id="subtotal">0</div></div>
-          <div class="trow"><div>稅率</div><div class="right"><span id="taxRateView">0</span>%</div></div>
-          <div class="trow"><div>稅額</div><div class="right" id="tax">0</div></div>
           <div class="trow" style="font-weight:700"><div>總計</div><div class="right" id="grand">0</div></div>
         </div>
       </div>
 
       <div class="btns">
         <button class="btn primary" onclick="window.print()">列印 / 另存 PDF</button>
-        <button class="btn" onclick="exportHTML()">匯出目前頁面 (HTML)</button>
-      </div>
+        </div>
 
       <div class="block note">
-        若原始資料缺少「產品品號」「稅率」，本頁以最接近版本呈現；差異原因：來源試算表未提供相關欄位或為空白。<br/>
         僅呈現來源檔中實際存在之餐盒選項，未添加或虛構任何菜色與組合。
       </div>
     </main>
@@ -179,6 +159,7 @@
 
 <script>
   function money(n) { return new Intl.NumberFormat("zh-Hant", { maximumFractionDigits: 0 }).format(n||0); }
+  
   function recalc() {
     let subtotal = 0;
     document.querySelectorAll("#items-body tr").forEach(tr => {
@@ -189,36 +170,42 @@
       if (cell) cell.textContent = money(line);
       subtotal += line;
     });
-    const taxRate = Number(document.getElementById("taxRate").value || 0);
-    const tax = subtotal * taxRate / 100;
-    const grand = subtotal + tax;
+    // 移除了稅率相關計算
+    const grand = subtotal; // 總計 = 小計
     document.getElementById("subtotal").textContent = money(subtotal);
-    document.getElementById("taxRateView").textContent = (taxRate||0);
-    document.getElementById("tax").textContent = money(tax);
+    // 移除了稅率和稅額的更新
     document.getElementById("grand").textContent = money(grand);
   }
+  
   document.addEventListener("input", (e) => {
-    if (e.target.matches(".price, .qty, #taxRate")) recalc();
+    // 移除了 #taxRate 的監聽
+    if (e.target.matches(".price, .qty")) recalc();
   });
+  
   (function setToday() {
     try {
+      // 設定今天日期
       const tzoffset = (new Date()).getTimezoneOffset() * 60000;
       const localISODate = (new Date(Date.now() - tzoffset)).toISOString().slice(0,10);
       document.getElementById("date").value = localISODate;
+      
+      // 自動生成報價單號
+      function pad(num) { return num.toString().padStart(2, '0'); }
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = pad(now.getMonth() + 1);
+      const d = pad(now.getDate());
+      const h = pad(now.getHours());
+      const i = pad(now.getMinutes());
+      const s = pad(now.getSeconds());
+      const quoteNumber = `BOX-${y}${m}${d}-${h}${i}${s}`;
+      document.getElementById("quoteNo").value = quoteNumber;
+      
     } catch(e) { }
   })();
-  function exportHTML() {
-    const html = document.documentElement.cloneNode(true);
-    const blob = new Blob(["<!doctype html>\n" + html.outerHTML], { type: "text/html;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "正餐餐盒報價單_互動版(有格線).html";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
+  
+  // 移除了 exportHTML() 函數
+  
   recalc();
 </script>
 </body>
