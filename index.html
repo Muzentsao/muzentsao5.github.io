@@ -4,6 +4,8 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>正餐餐盒報價單（互動版｜有格線）</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <style>
   :root { --ink:#111827; --muted:#6b7280; --line:#d1d5db; --bg:#f7f7f8; }
   * { box-sizing: border-box; }
@@ -30,7 +32,13 @@
   .btn { padding: 10px 14px; border:1px solid var(--line); background:#fff; border-radius:12px; cursor:pointer; }
   .primary { background:#111827; color:#fff; border-color:#111827; }
   .note { margin-top: 12px; color:#6b7280; font-size:13px; }
-  @media print { body { background:#fff; } .container { box-shadow:none; border-radius:0; } .btns, .toolbar { display:none !important; } }
+  
+  /* [修改] 列印時，html2pdf 會參考此樣式，自動隱藏按鈕 */
+  @media print { 
+    body { background:#fff; } 
+    .container { box-shadow:none; border-radius:0; margin: 0; border: none; } 
+    .btns, .toolbar { display:none !important; } 
+  }
 </style>
 </head>
 <body>
@@ -41,8 +49,8 @@
         <div class="muted">來源：木人艸報價單(正餐餐盒建議).xlsx（工作表：雙格盒 $180-200）｜供應商：木人艸股份有限公司 / 台灣良農食材</div>
       </div>
       <div class="toolbar">
-        <button onclick="window.print()">列印 / 另存 PDF</button>
-        </div>
+        <button onclick="generatePDF()">下載 PDF</button>
+      </div>
     </header>
 
     <main>
@@ -59,7 +67,7 @@
           <label>報價單號</label>
           <input id="quoteNo" type="text" readonly style="background: var(--bg); color: var(--muted);">
         </div>
-        </section>
+      </section>
 
       <table class="table-grid">
         <thead>
@@ -148,8 +156,8 @@
       </div>
 
       <div class="btns">
-        <button class="btn primary" onclick="window.print()">列印 / 另存 PDF</button>
-        </div>
+        <button class="btn primary" onclick="generatePDF()">下載 PDF</button>
+      </div>
 
       <div class="block note">
         僅呈現來源檔中實際存在之餐盒選項，未添加或虛構任何菜色與組合。
@@ -170,26 +178,21 @@
       if (cell) cell.textContent = money(line);
       subtotal += line;
     });
-    // 移除了稅率相關計算
-    const grand = subtotal; // 總計 = 小計
+    const grand = subtotal; 
     document.getElementById("subtotal").textContent = money(subtotal);
-    // 移除了稅率和稅額的更新
     document.getElementById("grand").textContent = money(grand);
   }
   
   document.addEventListener("input", (e) => {
-    // 移除了 #taxRate 的監聽
     if (e.target.matches(".price, .qty")) recalc();
   });
   
   (function setToday() {
     try {
-      // 設定今天日期
       const tzoffset = (new Date()).getTimezoneOffset() * 60000;
       const localISODate = (new Date(Date.now() - tzoffset)).toISOString().slice(0,10);
       document.getElementById("date").value = localISODate;
       
-      // 自動生成報價單號
       function pad(num) { return num.toString().padStart(2, '0'); }
       const now = new Date();
       const y = now.getFullYear();
@@ -204,7 +207,31 @@
     } catch(e) { }
   })();
   
-  // 移除了 exportHTML() 函數
+  /**
+   * [新增] 產生並下載 PDF 的函式
+   */
+  function generatePDF() {
+    // 1. 取得要轉換的 HTML 元素
+    const element = document.querySelector('.container');
+    
+    // 2. 產生動態檔案名稱
+    const clientName = document.getElementById('client').value || '客戶';
+    const quoteNo = document.getElementById('quoteNo').value;
+    const filename = `報價單_${quoteNo}_${clientName}.pdf`;
+
+    // 3. 設定 html2pdf 選項
+    const opt = {
+      margin:       0.5, // PDF 邊界，單位為英吋
+      filename:     filename,
+      image:        { type: 'jpeg', quality: 0.98 }, // 圖片品質
+      html2canvas:  { scale: 2 }, // 提高清晰度，用2倍大小渲染
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' } // A4 縱向
+    };
+
+    // 4. 執行轉換並儲存
+    //   先 .set(opt) 設定，再 .from(element) 指定來源，最後 .save() 儲存
+    html2pdf().set(opt).from(element).save();
+  }
   
   recalc();
 </script>
