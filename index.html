@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>正餐餐盒報價單（互動版｜有格線）</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBshcchFRlCgbYLqO+2ctIctfSGWGGFvePbcEZMhKPFZIHLSgI09gySgzKecmSgeVwS/M1N6ACYLg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <style>
   :root { --ink:#111827; --muted:#6b7280; --line:#d1d5db; --bg:#f7f7f8; }
@@ -33,7 +33,7 @@
   .primary { background:#111827; color:#fff; border-color:#111827; }
   .note { margin-top: 12px; color:#6b7280; font-size:13px; }
   
-  /* [修改] 列印時，html2pdf 會參考此樣式，自動隱藏按鈕 */
+  /* 移除 PDF 用的 @media print 樣式，Excel 不需要 */
   @media print { 
     body { background:#fff; } 
     .container { box-shadow:none; border-radius:0; margin: 0; border: none; } 
@@ -49,7 +49,7 @@
         <div class="muted">來源：木人艸報價單(正餐餐盒建議).xlsx（工作表：雙格盒 $180-200）｜供應商：木人艸股份有限公司 / 台灣良農食材</div>
       </div>
       <div class="toolbar">
-        <button onclick="generatePDF()">下載 PDF</button>
+        <button onclick="generateExcel()">下載 Excel (.xlsx)</button>
       </div>
     </header>
 
@@ -156,7 +156,7 @@
       </div>
 
       <div class="btns">
-        <button class="btn primary" onclick="generatePDF()">下載 PDF</button>
+        <button class="btn primary" onclick="generateExcel()">下載 Excel (.xlsx)</button>
       </div>
 
       <div class="block note">
@@ -208,29 +208,92 @@
   })();
   
   /**
-   * [新增] 產生並下載 PDF 的函式
+   * [修改] 產生並下載 Excel (.xlsx) 的函式
    */
-  function generatePDF() {
-    // 1. 取得要轉換的 HTML 元素
-    const element = document.querySelector('.container');
-    
-    // 2. 產生動態檔案名稱
-    const clientName = document.getElementById('client').value || '客戶';
+  function generateExcel() {
+    // 1. 取得表頭資料
+    const client = document.getElementById('client').value || '客戶';
+    const date = document.getElementById('date').value;
     const quoteNo = document.getElementById('quoteNo').value;
-    const filename = `報價單_${quoteNo}_${clientName}.pdf`;
+    const filename = `報價單_${quoteNo}_${client}.xlsx`;
 
-    // 3. 設定 html2pdf 選項
-    const opt = {
-      margin:       0.5, // PDF 邊界，單位為英吋
-      filename:     filename,
-      image:        { type: 'jpeg', quality: 0.98 }, // 圖片品質
-      html2canvas:  { scale: 2 }, // 提高清晰度，用2倍大小渲染
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' } // A4 縱向
-    };
+    // 2. 建立資料陣列 (Array of Arrays)，這會對應到 Excel 的儲存格
+    let data = [];
+    data.push(['正餐餐盒報價單']); // Row 1
+    data.push([null]); // Row 2 (空白行)
+    data.push(['客戶名稱', client]); // Row 3
+    data.push(['報價日期', date]); // Row 4
+    data.push(['報價單號', quoteNo]); // Row 5
+    data.push([null]); // Row 6 (空白行)
+    data.push(['項目名稱', '單價', '數量', '小計']); // Row 7 (表格標頭)
 
-    // 4. 執行轉換並儲存
-    //   先 .set(opt) 設定，再 .from(element) 指定來源，最後 .save() 儲存
-    html2pdf().set(opt).from(element).save();
+    // 3. 取得所有品項資料
+    const itemRowStartIndex = 7; // Excel 中的起始行號 (1-based)
+    const itemNodes = document.querySelectorAll("#items-body tr");
+    
+    itemNodes.forEach(tr => {
+      // 將 HTML 中的多行資料組合到一個儲存格，並用換行符 \n 隔開
+      const name = tr.querySelector(".name").value;
+      const meta = tr.querySelector(".meta").textContent;
+      const includes = Array.from(tr.querySelectorAll(".includes li"))
+                           .map(li => "  - " + li.textContent)
+                           .join("\n");
+      const fullItemDesc = `${name}\n${meta}\n${includes}`;
+      
+      const price = Number(tr.querySelector(".price").value || 0);
+      const qty = Number(tr.querySelector(".qty").value || 0);
+      const lineSubtotal = price * qty;
+      
+      data.push([fullItemDesc, price, qty, lineSubtotal]);
+    });
+
+    // 4. 取得總計資料
+    // (從 0 開始的數字，而非格式化後的 "1,000")
+    recalc(); // 確保計算是最新的
+    let subtotal = 0;
+    document.querySelectorAll("#items-body tr").forEach(tr => {
+      subtotal += (Number(tr.querySelector(".price")?.value || 0) * Number(tr.querySelector(".qty")?.value || 0));
+    });
+    
+    data.push([null]); // 空白行
+    data.push([null, null, '小計', subtotal]);
+    data.push([null, null, '總計', subtotal]); // 總計 = 小計
+
+    // 5. 使用 SheetJS 產生工作表 (Worksheet)
+    const ws = XLSX.utils.aoa_to_sheet(data);
+
+    // 6. [格式設定] 設定欄位寬度 (wch = "character width")
+    ws['!cols'] = [
+      { wch: 60 }, // A欄 (項目名稱)
+      { wch: 10 }, // B欄 (單價)
+      { wch: 10 }, // C欄 (數量)
+      { wch: 15 }  // D欄 (小計)
+    ];
+
+    // 7. [格式設定] 合併標題儲存格 (A1 ~ D1)
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } // s=start, e=end, r=row, c=col (0-based)
+    ];
+    
+    // 8. [格式設定] 設定項目名稱欄位 (A8, A9 ...) 自動換行與靠上
+    for (let i = 0; i < itemNodes.length; i++) {
+      // Excel 的儲存格是 1-based (A1, A2...)
+      // 我們的資料起始行是第 7 (標頭) + 1 = 8
+      const cellRef = `A${itemRowStartIndex + 1 + i}`; 
+      if (ws[cellRef]) {
+        ws[cellRef].s = { // s = style
+          alignment: { 
+            wrapText: true, // 自動換行
+            vertical: "top" // 垂直靠上
+          } 
+        };
+      }
+    }
+
+    // 9. 建立工作簿 (Workbook) 並匯出檔案
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '報價單'); // '報價單' 是 sheet 的名稱
+    XLSX.writeFile(wb, filename);
   }
   
   recalc();
