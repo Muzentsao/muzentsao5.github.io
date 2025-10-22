@@ -33,7 +33,6 @@
   .primary { background:#111827; color:#fff; border-color:#111827; }
   .note { margin-top: 12px; color:#6b7280; font-size:13px; }
   
-  /* 移除 PDF 用的 @media print 樣式，Excel 不需要 */
   @media print { 
     body { background:#fff; } 
     .container { box-shadow:none; border-radius:0; margin: 0; border: none; } 
@@ -208,7 +207,7 @@
   })();
   
   /**
-   * [修改] 產生並下載 Excel (.xlsx) 的函式
+   * [重要] 產生並下載 Excel (.xlsx) 的函式
    */
   function generateExcel() {
     // 1. 取得表頭資料
@@ -232,11 +231,11 @@
     const itemNodes = document.querySelectorAll("#items-body tr");
     
     itemNodes.forEach(tr => {
-      // 將 HTML 中的多行資料組合到一個儲存格，並用換行符 \n 隔開
+      // 將 HTML 中的多行資料組合到一個儲存格，並用換行符 \n Gk
       const name = tr.querySelector(".name").value;
       const meta = tr.querySelector(".meta").textContent;
       const includes = Array.from(tr.querySelectorAll(".includes li"))
-                           .map(li => "  - " + li.textContent)
+                           .map(li => "  - " + li.textContent) // 這裡使用標準的半形空白
                            .join("\n");
       const fullItemDesc = `${name}\n${meta}\n${includes}`;
       
