@@ -351,6 +351,7 @@ details[open] summary::after { transform: rotate(180deg); }
 
 <script>
   // 價格映射（由 Excel 解析得出；只對「完全相同品名」自動帶入）
+  const PRICE_MAP = { sheets: {}, flat: {} };
   PRICE_MAP.flat = {
   /* --- 二格盒 --- */
   "獨家香料鹹豬肉": 200,
