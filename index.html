@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>木人艸x正餐餐盒報價單</title>
+<title>正餐餐盒報價單（互動版｜層級下拉 + Excel 匯出）</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -273,8 +273,8 @@ details[open] summary::after { transform: rotate(180deg); }
   <div class="container">
     <header>
       <div>
-        <h1>木人艸x正餐餐盒報價單</h1>
-        <div class="muted">先選「<b>便當種類</b>（餐盒類別）」→ 再選「餐盒種類」。加入明細後可下載 Excel。</div>
+        <h1>正餐餐盒報價單（互動版｜層級下拉 + Excel 匯出）</h1>
+        <div class="muted">先選「<b>便當種類</b>（餐盒類別）」→ 再選「餐盒種類」。加入明細後可下載 Excel。※ 僅引用下方來源菜單的實際項目，不新增不存在菜色。</div>
       </div>
       <div class="toolbar">
         <button onclick="generateExcel()">下載 Excel (.xlsx)</button>
@@ -308,7 +308,7 @@ details[open] summary::after { transform: rotate(180deg); }
           </div>
           <div>
             <label>單價（自 Excel 自動帶入）</label>
-            <input id="sel-price" type="number" min="0" step="1" value="0">
+            <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
           </div>
           <div>
             <label>數量</label>
@@ -318,6 +318,7 @@ details[open] summary::after { transform: rotate(180deg); }
             <button id="btn-add" style="width:100%">加入明細</button>
           </div>
         </div>
+        <div class="note">價格會依 <b>木人艸報價單(正餐餐盒建議).xlsx</b> 自動填入；若 Excel 找不到完全相同的品名，會保留 0（避免誤報價）。</div>
       </section>
 
       <!-- 已選明細 -->
@@ -347,7 +348,7 @@ details[open] summary::after { transform: rotate(180deg); }
       </section>
 
       <!-- 來源菜單（作為資料來源；可收合） -->
-      <details style="margin-top:12px; display:none">
+      <details style="margin-top:12px">
         <summary class="block" style="cursor:pointer; list-style:none">來源菜單（點我展開/收合）</summary>
         <div class="block" style="border-top:0; border-top-left-radius:0; border-top-right-radius:0">
           <table class="table-grid">
@@ -396,72 +397,68 @@ details[open] summary::after { transform: rotate(180deg); }
   </div>
 
 <script>
- // --- ⬇️ 貼上這個新的價格區塊 ⬇️ ---
+  // 價格映射（由 Excel 解析得出；只對「完全相同品名」自動帶入）
+  const PRICE_MAP = {"sheets":{"雙格盒 $180-200":{"獨家香料鹹豬肉":200,"日式鹽麴豬五花":200,"日式鹽麴雞腿排":200,"蔥油雞胸肉":180,"法式油封杏鮑菇(全素)":180},"植纖4格 $300":{"鯖魚一夜干":320,"炭烤牛小排":420,"日式牛肉漢堡排":320,"法式油封杏鮑菇":320},"植纖4格 $300 (西式)":{"鯖魚一夜干":320,"炭烤牛小排":420,"日式牛肉漢堡排":320,"法式油封杏鮑菇":320},"植纖海陸 $599":{"法式油封杏鮑菇":599}},"flat":{
+    /* --- 二格盒 --- */
+    "獨家香料鹹豬肉":200,
+    "日式鹽麴豬五花":200,
+    "日式鹽麴雞腿排":200,
+    "蔥油雞胸肉":180,
+    "法式油封杏鮑菇(全素)":180,
 
-// 價格映射（品項名稱 對應 價格）
-const ITEM_PRICES = {
-  /* --- 二格盒 --- */
-  "獨家香料鹹豬肉": 200,
-  "日式鹽麴豬五花": 200,
-  "日式鹽麴雞腿排": 200,
-  "蔥油雞胸肉": 180,
-  "法式油封杏鮑菇(全素)": 180,
+    /* --- 植纖四格盒 --- */
+    "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300,
+    "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 300,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 300,
+    "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
+    "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420,
+    "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
 
-  /* --- 植纖四格盒 --- */
-  "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300,
-  "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,
-  "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 320,
-  "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
-  "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420,
-  "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
-  "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
+    /* --- 韓式八格盒 --- */
+    "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 350,
+    "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 350,
+    "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380,
+    "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 350,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 350,
+    "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 350,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 350
+}};
 
-  /* --- 韓式八格盒 --- */
-  "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 280,
-  "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 280,
-  "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380,
-  "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 280,
-  "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280,
-  "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,
-  "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
-};
+  const $ = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+  const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
 
-// 查詢價格函式
-function getAutoPriceByName(name){
-  console.log("👉 查詢價格：", name);  // 輸出查詢的品項名稱
-
-  // 如果 ITEM_PRICES 中有對應的品項名稱，則返回對應的價格
-  if (ITEM_PRICES[name] !== undefined) {
-    console.log("✅ 找到價格：", ITEM_PRICES[name]);
-    return ITEM_PRICES[name];  // 返回對應價格
+  // 將 group header 標題整理成「便當種類」（去掉 emoji與括號說明）
+  function normalizeCategory(raw) {
+    const t = String(raw).replace('🍱','').trim();
+    if (/海陸/.test(t)) return '植纖四格盒海陸餐';
+    if (/韓式八格盒/.test(t)) return '韓式八格盒';
+    if (/二格盒/.test(t)) return '二格盒';
+    if (/植纖四格盒/.test(t)) return '植纖四格盒';
+    return t.split('(')[0].trim() || t;
   }
-
-  // 如果沒有找到對應品項，輸出警告並返回 null
-  console.warn("⚠️ 找不到對應品項，將回傳 null：", name);
-  return null;
-}
-
 
   // 1) 由「來源菜單」動態建構 Catalog
   const catalog = []; // {id, groupRaw, category, name, meta, includes[]}
   (function buildCatalog(){
-  const rows = $$('#items-body tr');
-  let curGroupRaw = '';
-  let curCategory = '';
-  rows.forEach(tr => {
-    if (tr.classList.contains('group-header')) {
-      const title = tr.textContent;
-      curGroupRaw = title;
-      curCategory = normalizeCategory(title);
-    } else {
-      const id = tr.getAttribute('data-index');
-      const name = tr.querySelector('.name').value.trim();
-      const meta = tr.querySelector('.meta')?.textContent.trim() || '';
-      const includes = $$('.includes li', tr).map(li => li.textContent.trim());
-      catalog.push({ id, groupRaw: curGroupRaw, category: curCategory, name, meta, includes });
-    }
-  });
-})();
+    const rows = $$('#items-body tr');
+    let curGroupRaw = '';
+    let curCategory = '';
+    rows.forEach(tr => {
+      if (tr.classList.contains('group-header')) {
+        const title = tr.textContent;
+        curGroupRaw = title;
+        curCategory = normalizeCategory(title);
+      } else {
+        const id = tr.getAttribute('data-index');
+        const name = tr.querySelector('.name').value.trim();
+        const meta = tr.querySelector('.meta')?.textContent.trim() || '';
+        const includes = $$('.includes li', tr).map(li => li.textContent.trim());
+        catalog.push({ id, groupRaw: curGroupRaw, category: curCategory, name, meta, includes });
+      }
+    });
+  })();
 
   // 2) 初始化層級下拉（便當種類 → 餐盒種類）
   const selCategory = $('#sel-category');
@@ -472,45 +469,37 @@ function getAutoPriceByName(name){
 
   const preferredOrder = ['二格盒', '植纖四格盒', '植纖四格盒海陸餐', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
-categories.forEach(c => {
-  const opt = document.createElement('option');
-  opt.value = c;
-  opt.textContent = c;
-  selCategory.appendChild(opt);
-});
+  categories.sort((a,b)=>{
+    const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b,'zh-Hant');
+  });
   categories.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; selCategory.appendChild(opt); });
 
   // 优化下拉选择体验：选择类别后自动聚焦到餐盒选择
- selCategory.addEventListener('change', () => {
-  selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
-  selItem.disabled = !selCategory.value;
-  if (selCategory.value) {
-    catalog.filter(x => x.category === selCategory.value).forEach(item => {
-      const opt = document.createElement('option');
-      opt.value = item.id; 
-      opt.textContent = item.name; 
-      selItem.appendChild(opt);
-    });
-    selItem.focus();
+  selCategory.addEventListener('change', () => {
+    selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
+    selItem.disabled = !selCategory.value;
+    if (selCategory.value) {
+      catalog.filter(x => x.category === selCategory.value).forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id; 
+        opt.textContent = item.name; 
+        selItem.appendChild(opt);
+      });
+      // 自动聚焦到餐盒选择框
+      selItem.focus();
+    }
+  });
+
+  function getAutoPriceByName(name){
+    if (PRICE_MAP && PRICE_MAP.flat && Object.prototype.hasOwnProperty.call(PRICE_MAP.flat, name)) {
+      return PRICE_MAP.flat[name];
+    }
+    return null;
   }
-});
-
-// --- ⬇️ 查詢單價（含除錯訊息版本） ⬇️ ---
-function getAutoPriceByName(name){
-  console.log(catalog);
-
-  if (Object.prototype.hasOwnProperty.call(ITEM_PRICES, name)) {
-    console.log("✅ 在 ITEM_PRICES 找到價格：", ITEM_PRICES[name]);
-    return ITEM_PRICES[name];
-  }
-
-  console.warn("⚠️ 在 ITEM_PRICES 找不到這個品項，將回傳 null：", name);
-  return null;
-}
-// --- ⬆️ 查詢單價（含除錯訊息版本） ⬆️ ---
-
-
-// --- ⬆️ 貼上這個新的查詢函式 ⬆️ ---
 
   // 安全的描述組裝
   function buildDesc(item){
@@ -522,21 +511,12 @@ function getAutoPriceByName(name){
     return parts.join('\n');
   }
 
- selItem.addEventListener('change', () => {
-  const item = catalog.find(x => x.id === selItem.value);  // 根據選擇的餐盒查找對應項目
-  if (!item) return;  // 如果未找到，則退出
-
-  // 透過 getAutoPriceByName 查詢價格
-  const p = getAutoPriceByName(item.name);
-
-  // 如果找到了價格，則更新價格框；如果沒有找到，則顯示 0
-  if (p != null) {
-    selPrice.value = p;  // 直接使用 ITEM_PRICES 中的價格
-  } else {
-    selPrice.value = 0;  // 如果找不到對應價格，顯示 0
-  }
-});
-
+  selItem.addEventListener('change', () => {
+    const item = catalog.find(x => x.id === selItem.value);
+    if (!item) return;
+    const p = getAutoPriceByName(item.name);
+    if (p != null) selPrice.value = p; else selPrice.value = 0;
+  });
 
   // 3) 加入明細 + 計算
   function recalc(){
