@@ -308,7 +308,7 @@ details[open] summary::after { transform: rotate(180deg); }
           </div>
           <div>
             <label>單價（自 Excel 自動帶入）</label>
-            <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
+            <input id="sel-price" type="number" min="0" step="1" value="0">
           </div>
           <div>
             <label>數量</label>
@@ -426,21 +426,21 @@ const ITEM_PRICES = {
   "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
 };
 
-// --- ⬆️ 貼上這個新的價格區塊 ⬆️ ---
+// 查詢價格函式
+function getAutoPriceByName(name){
+  console.log("👉 查詢價格：", name);  // 輸出查詢的品項名稱
 
-  const $ = (s, el=document) => el.querySelector(s);
-  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-  const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
-
-  // 將 group header 標題整理成「便當種類」（去掉 emoji與括號說明）
-  function normalizeCategory(raw) {
-    const t = String(raw).replace('🍱','').trim();
-    if (/海陸/.test(t)) return '植纖四格盒海陸餐';
-    if (/韓式八格盒/.test(t)) return '韓式八格盒';
-    if (/二格盒/.test(t)) return '二格盒';
-    if (/植纖四格盒/.test(t)) return '植纖四格盒';
-    return t.split('(')[0].trim() || t;
+  // 如果 ITEM_PRICES 中有對應的品項名稱，則返回對應的價格
+  if (ITEM_PRICES[name] !== undefined) {
+    console.log("✅ 找到價格：", ITEM_PRICES[name]);
+    return ITEM_PRICES[name];  // 返回對應價格
   }
+
+  // 如果沒有找到對應品項，輸出警告並返回 null
+  console.warn("⚠️ 找不到對應品項，將回傳 null：", name);
+  return null;
+}
+
 
   // 1) 由「來源菜單」動態建構 Catalog
   const catalog = []; // {id, groupRaw, category, name, meta, includes[]}
@@ -524,12 +524,21 @@ function getAutoPriceByName(name){
     return parts.join('\n');
   }
 
-  selItem.addEventListener('change', () => {
-    const item = catalog.find(x => x.id === selItem.value);
-    if (!item) return;
-    const p = getAutoPriceByName(item.name);
-    if (p != null) selPrice.value = p; else selPrice.value = 0;
-  });
+ selItem.addEventListener('change', () => {
+  const item = catalog.find(x => x.id === selItem.value);  // 根據選擇的餐盒查找對應項目
+  if (!item) return;  // 如果未找到，則退出
+
+  // 透過 getAutoPriceByName 查詢價格
+  const p = getAutoPriceByName(item.name);
+
+  // 如果找到了價格，則更新價格框；如果沒有找到，則顯示 0
+  if (p != null) {
+    selPrice.value = p;  // 直接使用 ITEM_PRICES 中的價格
+  } else {
+    selPrice.value = 0;  // 如果找不到對應價格，顯示 0
+  }
+});
+
 
   // 3) 加入明細 + 計算
   function recalc(){
