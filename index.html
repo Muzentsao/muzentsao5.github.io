@@ -623,10 +623,10 @@ details[open] summary::after { transform: rotate(180deg); }
       const cats = [...new Set(catalog.map(x=>x.category))];
       console.assert(cats.includes('二格盒') && cats.includes('植纖四格盒') && cats.includes('韓式八格盒'), '應包含三大類別');
 
-      console.assert(PRICE_MAP.flat['蔥油雞胸肉'] === 180, '單價檢查：蔥油雞胸肉 應為 180');
-      console.assert(PRICE_MAP.flat['炭烤牛小排 + 日式鹽麴豬五花肉(50G)'] === 420, '單價檢查：炭烤牛小排 + 50G 應為 420');
-      console.assert(PRICE_MAP.flat['韓式炸雞 + 日式鹽麴豬五花肉(40g)'] === 350, '單價檢查：韓式炸雞 + 40g 應為 350');
-
+      console.assert(PRICE_MAP.flat['日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)'] === 320, '應為 320');
+console.assert(PRICE_MAP.flat['蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)'] === 320, '應為 320');
+console.assert(PRICE_MAP.flat['韓式炸雞 + 日式鹽麴豬五花肉(40g)'] === 280, '應為 280');
+      
       const d = buildDesc({ name:'測試主菜', meta:'二格盒', includes:['配菜: A','配菜: B'] });
       console.assert(/\n  - 配菜: A/.test(d) && /\n  - 配菜: B/.test(d), 'buildDesc 應正確組裝配菜');
 
