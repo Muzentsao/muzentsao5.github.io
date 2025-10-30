@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>正餐餐盒報價單（互動版｜層級下拉 + Excel 匯出）</title>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" integrity="sha512-r22gChDnGvBshcchFRlCgbYLqO+2ctIctfSGWGGFvePbcEZMhKPFZIHLSgI09gySgzKecmSgeVwS/M1N6ACYLg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+:root { 
+  --primary: #FF8C42; /* 主色：温暖橙（适配餐饮） */
+  --primary-light: #FFF0E6; /* 主色浅版（背景用） */
+  --secondary: #4CAF50; /* 辅助色：清新绿（金额/确认用） */
+  --tertiary: #E3F2FD; /* 辅助色：浅蓝（表单焦点用） */
+  --ink: #2D3748; /* 正文色：深灰（更易读） */
+  --muted: #718096; /* 辅助文字：中灰 */
+  --light-gray: #F7FAFC; /* 背景色：极浅灰 */
+  --line: #E2E8F0; /* 边框色：浅灰 */
+  --danger: #E53E3E; /* 危险色：红色（删除用） */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 16px; /* 统一圆角（更现代） */
+  --radius-sm: 12px; /* 小元素圆角 */
+  --transition: all 0.2s ease; /* 统一过渡动画 */
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif; 
+  background: var(--light-gray); 
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+.container { 
+  max-width: 1200px; 
+  margin: 32px auto; 
+  background: #fff; 
+  border-radius: var(--radius); 
+  box-shadow: var(--shadow); 
+  overflow: hidden; 
+  border: 1px solid var(--line);
+}  
+
+header { 
+  padding: 24px 32px; 
+  border-bottom: 1px solid var(--line); 
+  display: flex; 
+  gap: 24px; 
+  align-items: center; 
+  justify-content: space-between; 
+  flex-wrap: wrap; 
+  background-color: var(--primary-light);
+}
+
+h1 { 
+  font-size: 24px; 
+  color: var(--primary); 
+  font-weight: 700;
+}
+
+.muted { 
+  color: var(--muted); 
+  font-size: 14px; 
+  margin-top: 4px;
+}
+
+/* 按钮样式优化 */
+.toolbar button, #btn-add { 
+  padding: 12px 20px; 
+  border: none; 
+  border-radius: var(--radius-sm); 
+  background: var(--primary); 
+  color: #fff; 
+  cursor: pointer; 
+  font-weight: 600;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar button::before { content: "📥"; }
+#btn-add::before { content: "➕"; }
+
+.toolbar button:hover, #btn-add:hover { 
+  background: #E07B39; /* 主色加深 */
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.toolbar button:active, #btn-add:active { transform: translateY(0); }
+
+main { padding: 28px 32px; }
+
+/* 表单区块样式 */
+.block { 
+  border: 1px solid var(--line); 
+  border-radius: var(--radius); 
+  padding: 20px; 
+  background-color: #fff;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+/* 网格布局优化 */
+.grid { 
+  display: grid; 
+  gap: 20px; 
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+}
+
+.row { 
+  display: grid; 
+  gap: 20px; 
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+  align-items: end; 
+  margin-top: 12px;
+}
+
+label { 
+  display: block; 
+  font-size: 14px; 
+  color: var(--muted); 
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* 输入框/下拉框样式优化 */
+input[type="text"], input[type="date"], input[type="number"], textarea, select { 
+  width: 100%; 
+  padding: 12px 16px; 
+  border: 1px solid var(--line); 
+  border-radius: var(--radius-sm); 
+  font-size: 16px; 
+  height: 48px; 
+  transition: var(--transition);
+  color: var(--ink);
+}
+
+input:focus, select:focus, textarea:focus { 
+  outline: none; 
+  border-color: var(--primary); 
+  box-shadow: 0 0 0 3px var(--tertiary); 
+}
+
+/* 表格样式优化 */
+table { 
+  width: 100%; 
+  border-collapse: separate; 
+  border-spacing: 0; 
+  margin-top: 16px; 
+  border: 1px solid var(--line); 
+  border-radius: var(--radius-sm); 
+  overflow: hidden;
+}
+
+th, td { 
+  border-bottom: 1px solid var(--line); 
+  border-right: 1px solid var(--line); 
+  padding: 12px 16px; 
+  text-align: left; 
+  vertical-align: middle;
+}
+
+th:last-child, td:last-child { border-right: none; }
+tr:last-child td { border-bottom: none; }
+
+thead th { 
+  background: var(--light-gray); 
+  color: var(--ink); 
+  font-weight: 600; 
+  font-size: 14px; 
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* 表格行交互 */
+tbody tr:hover { background-color: var(--primary-light); transition: var(--transition); }
+
+.right { text-align: right; color: var(--secondary); font-weight: 500; }
+
+.note { 
+  margin-top: 12px; 
+  color: var(--muted); 
+  font-size: 13px; 
+  line-height: 1.4;
+  padding-left: 20px;
+  position: relative;
+}
+
+.note::before { 
+  content: "ℹ️"; 
+  position: absolute; 
+  left: 0; 
+  top: 0;
+}
+
+/* 分组标题样式（来源菜单） */
+.group-header td { 
+  background: var(--primary-light); 
+  font-weight: 700; 
+  font-size: 15px; 
+  padding: 12px 16px; 
+  color: var(--primary); 
+  border-width: 1px 0; 
+  border-color: var(--line); 
+}
+
+/* 细节优化：删除按钮 */
+.btn-del { 
+  padding: 6px 12px; 
+  border: 1px solid var(--danger); 
+  border-radius: var(--radius-sm); 
+  background: #fff; 
+  color: var(--danger); 
+  cursor: pointer; 
+  transition: var(--transition);
+  font-size: 14px;
+}
+
+.btn-del:hover { 
+  background: var(--danger); 
+  color: #fff; 
+}
+
+/* 总价区域样式 */
+#subtotal, #grand { font-size: 18px; font-weight: 700; }
+#grand { color: var(--primary); font-size: 20px; }
+
+/* 来源菜单折叠面板 */
+details { 
+  margin-top: 20px; 
+  border-radius: var(--radius); 
+  border: 1px solid var(--line); 
+  overflow: hidden;
+}
+
+summary { 
+  padding: 16px 20px; 
+  background: var(--light-gray); 
+  cursor: pointer; 
+  list-style: none; 
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+summary::after { content: "▼"; font-size: 14px; transition: var(--transition); }
+details[open] summary::after { transform: rotate(180deg); }
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  header { padding: 16px 20px; gap: 16px; }
+  h1 { font-size: 20px; }
+  main { padding: 20px 16px; }
+  .grid, .row { gap: 16px; }
+  .block { padding: 16px; }
+  th, td { padding: 10px 12px; }
+  .toolbar button, #btn-add { padding: 10px 16px; font-size: 14px; }
+}
+
+@media print { 
+  .toolbar, .btn-row, details { display: none !important; } 
+  .container { margin: 0; border: none; border-radius: 0; box-shadow: none; } 
+  header { background: #fff; border-bottom: none; }
+  h1 { color: var(--ink); }
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>正餐餐盒報價單（互動版｜層級下拉 + Excel 匯出）</h1>
+        <div class="muted">先選「<b>便當種類</b>（餐盒類別）」→ 再選「餐盒種類」。加入明細後可下載 Excel。※ 僅引用下方來源菜單的實際項目，不新增不存在菜色。</div>
+      </div>
+      <div class="toolbar">
+        <button onclick="generateExcel()">下載 Excel (.xlsx)</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- 基本資訊 -->
+      <section class="grid">
+        <div class="block">
+          <label>客戶名稱</label>
+          <input id="client" type="text" placeholder="請輸入客戶名稱">
+        </div>
+        <div class="block">
+          <label>報價日期</label>
+          <input id="date" type="date">
+        </div>
+      </section>
+
+      <!-- 層級下拉（選品） -->
+      <section class="block" style="margin-top:12px">
+        <label style="font-weight:600;color:#374151">快速選品（層級下拉）</label>
+        <div class="row">
+          <div>
+            <label>便當種類（餐盒類別）</label>
+            <select id="sel-category"><option value="" disabled selected>請選擇便當種類</option></select>
+          </div>
+          <div>
+            <label>餐盒種類</label>
+            <select id="sel-item" disabled><option value="" disabled selected>請先選便當種類</option></select>
+          </div>
+          <div>
+            <label>單價（自 Excel 自動帶入）</label>
+            <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
+          </div>
+          <div>
+            <label>數量</label>
+            <input id="sel-qty" type="number" min="1" step="1" value="1">
+          </div>
+          <div>
+            <button id="btn-add" style="width:100%">加入明細</button>
+          </div>
+        </div>
+        <div class="note">價格會依 <b>木人艸報價單(正餐餐盒建議).xlsx</b> 自動填入；若 Excel 找不到完全相同的品名，會保留 0（避免誤報價）。</div>
+      </section>
+
+      <!-- 已選明細 -->
+      <section class="block" style="margin-top:12px">
+        <label style="font-weight:600;color:#374151">訂單明細</label>
+        <table id="order-table">
+          <thead>
+            <tr>
+              <th>項目名稱（主菜）與內容</th>
+              <th class="right" style="width:120px">單價</th>
+              <th class="right" style="width:100px">數量</th>
+              <th class="right" style="width:140px">小計</th>
+              <th style="width:60px"></th>
+            </tr>
+          </thead>
+          <tbody id="order-tbody"></tbody>
+        </table>
+        <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
+          <div class="note">金額僅供試算，實際以合約或最終報價為準。</div>
+          <div>
+            <div style="display:grid; gap:6px; justify-content:end">
+              <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
+              <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計</div><div class="right" id="grand">0</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 來源菜單（作為資料來源；可收合） -->
+      <details style="margin-top:12px">
+        <summary class="block" style="cursor:pointer; list-style:none">來源菜單（點我展開/收合）</summary>
+        <div class="block" style="border-top:0; border-top-left-radius:0; border-top-right-radius:0">
+          <table class="table-grid">
+            <thead>
+              <tr>
+                <th>項目名稱（主菜）與內容</th>
+                <th class="right" style="width:120px">單價</th>
+                <th class="right" style="width:120px">數量</th>
+                <th class="right" style="width:140px">小計</th>
+              </tr>
+            </thead>
+            <tbody id="items-body">
+              <!-- 來源表格開始 -->
+              <tr class="group-header"><td colspan="4">🍱 二格盒 (雙格盒 $180-200)</td></tr>
+              <tr data-index="0"><td><div class="name-wrap"><input class="name" value="獨家香料鹹豬肉"><div class="meta">二格盒  </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="1"><td><div class="name-wrap"><input class="name" value="日式鹽麴豬五花"><div class="meta">二格盒  </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="2"><td><div class="name-wrap"><input class="name" value="日式鹽麴雞腿排"><div class="meta">二格盒  </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="3"><td><div class="name-wrap"><input class="name" value="蔥油雞胸肉"><div class="meta">二格盒  </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="4"><td><div class="name-wrap"><input class="name" value="法式油封杏鮑菇(全素)"><div class="meta">二格盒  </div><ul class="includes"><li>配菜: 綜合溫什蔬佐油醋醬(全素)</li><li>配菜: 日式冷泡溏心蛋(蛋奶素)</li><li>主食: 紅藜秈米飯(全素)</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+
+              <tr class="group-header"><td colspan="4">🍱 植纖四格盒 (紅藜秈米飯組合)</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒  </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒 </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒 </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="鯖魚一夜干 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒 </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="炭烤牛小排 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒 </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒 </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="7"><td><div class="name-wrap"><input class="name" value="法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)"><div class="meta">植纖四格盒 </div><ul class="includes"><li>配菜: 綜合溫什蔬佐胡麻醬</li><li>配菜: 日式冷泡溏心蛋</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+
+              <tr class="group-header"><td colspan="4">🍱 韓式八格盒</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="韓式炸雞 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="炭烤牛小排 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="鯖魚一夜干 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <tr data-index="23"><td><div class="name-wrap"><input class="name" value="法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)"><div class="meta">韓式八格盒 </div><ul class="includes"><li>配菜: 日式冷泡溏心蛋</li><li>配菜: 韓式泡菜</li><li>主食: 紅藜秈米飯</li></ul></div></td><td class="right"><input class="price" type="number" min="0" step="1" value="0"></td><td class="right"><input class="qty" type="number" min="0" step="1" value="0"></td><td class="right line-subtotal">0</td></tr>
+              <!-- 來源表格結束 -->
+            </tbody>
+          </table>
+          <div class="note">此區為「來源菜單」，提供下拉的資料來源與細節描述；可照實際供應更新。價格來源：/mnt/data/木人艸報價單(正餐餐盒建議).xlsx。</div>
+        </div>
+      </details>
+
+    </main>
+  </div>
+
+<script>
+  // 價格映射（由 Excel 解析得出；只對「完全相同品名」自動帶入）
+  const PRICE_MAP = {"sheets":{"雙格盒 $180-200":{"獨家香料鹹豬肉":200,"日式鹽麴豬五花":200,"日式鹽麴雞腿排":200,"蔥油雞胸肉":180,"法式油封杏鮑菇(全素)":180},"植纖4格 $300":{"鯖魚一夜干":320,"炭烤牛小排":420,"日式牛肉漢堡排":320,"法式油封杏鮑菇":320},"植纖4格 $300 (西式)":{"鯖魚一夜干":320,"炭烤牛小排":420,"日式牛肉漢堡排":320,"法式油封杏鮑菇":320},"植纖海陸 $599":{"法式油封杏鮑菇":599}},"flat":{
+    /* --- 二格盒 --- */
+    "獨家香料鹹豬肉":200,
+    "日式鹽麴豬五花":200,
+    "日式鹽麴雞腿排":200,
+    "蔥油雞胸肉":180,
+    "法式油封杏鮑菇(全素)":180,
+
+    /* --- 植纖四格盒 --- */
+    "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300,
+    "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 300,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 300,
+    "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
+    "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420,
+    "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
+
+    /* --- 韓式八格盒 --- */
+    "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 350,
+    "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 350,
+    "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380,
+    "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 350,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 350,
+    "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 350,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 350
+}};
+
+  const $ = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+  const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
+
+  // 將 group header 標題整理成「便當種類」（去掉 emoji與括號說明）
+  function normalizeCategory(raw) {
+    const t = String(raw).replace('🍱','').trim();
+    if (/海陸/.test(t)) return '植纖四格盒海陸餐';
+    if (/韓式八格盒/.test(t)) return '韓式八格盒';
+    if (/二格盒/.test(t)) return '二格盒';
+    if (/植纖四格盒/.test(t)) return '植纖四格盒';
+    return t.split('(')[0].trim() || t;
+  }
+
+  // 1) 由「來源菜單」動態建構 Catalog
+  const catalog = []; // {id, groupRaw, category, name, meta, includes[]}
+  (function buildCatalog(){
+    const rows = $$('#items-body tr');
+    let curGroupRaw = '';
+    let curCategory = '';
+    rows.forEach(tr => {
+      if (tr.classList.contains('group-header')) {
+        const title = tr.textContent;
+        curGroupRaw = title;
+        curCategory = normalizeCategory(title);
+      } else {
+        const id = tr.getAttribute('data-index');
+        const name = tr.querySelector('.name').value.trim();
+        const meta = tr.querySelector('.meta')?.textContent.trim() || '';
+        const includes = $$('.includes li', tr).map(li => li.textContent.trim());
+        catalog.push({ id, groupRaw: curGroupRaw, category: curCategory, name, meta, includes });
+      }
+    });
+  })();
+
+  // 2) 初始化層級下拉（便當種類 → 餐盒種類）
+  const selCategory = $('#sel-category');
+  const selItem = $('#sel-item');
+  const selPrice = $('#sel-price');
+  const selQty = $('#sel-qty');
+  const orderTbody = $('#order-tbody');
+
+  const preferredOrder = ['二格盒', '植纖四格盒', '植纖四格盒海陸餐', '韓式八格盒'];
+  const categories = [...new Set(catalog.map(x => x.category))];
+  categories.sort((a,b)=>{
+    const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b,'zh-Hant');
+  });
+  categories.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; selCategory.appendChild(opt); });
+
+  // 优化下拉选择体验：选择类别后自动聚焦到餐盒选择
+  selCategory.addEventListener('change', () => {
+    selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
+    selItem.disabled = !selCategory.value;
+    if (selCategory.value) {
+      catalog.filter(x => x.category === selCategory.value).forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id; 
+        opt.textContent = item.name; 
+        selItem.appendChild(opt);
+      });
+      // 自动聚焦到餐盒选择框
+      selItem.focus();
+    }
+  });
+
+  function getAutoPriceByName(name){
+    if (PRICE_MAP && PRICE_MAP.flat && Object.prototype.hasOwnProperty.call(PRICE_MAP.flat, name)) {
+      return PRICE_MAP.flat[name];
+    }
+    return null;
+  }
+
+  // 安全的描述組裝
+  function buildDesc(item){
+    const parts = [item.name];
+    if (item.meta) parts.push(item.meta);
+    if (item.includes && item.includes.length) {
+      parts.push(...item.includes.map(v => `  - ${v}`));
+    }
+    return parts.join('\n');
+  }
+
+  selItem.addEventListener('change', () => {
+    const item = catalog.find(x => x.id === selItem.value);
+    if (!item) return;
+    const p = getAutoPriceByName(item.name);
+    if (p != null) selPrice.value = p; else selPrice.value = 0;
+  });
+
+  // 3) 加入明細 + 計算
+  function recalc(){
+    let subtotal = 0;
+    $$('#order-tbody tr').forEach(tr => {
+      const price = Number(tr.dataset.price||0);
+      const qty = Number(tr.dataset.qty||0);
+      const line = price * qty;
+      subtotal += line;
+      tr.querySelector('.line-subtotal').textContent = money(line);
+    });
+    $('#subtotal').textContent = money(subtotal);
+    $('#grand').textContent = money(subtotal);
+  }
+
+  function addRow({ itemId, price, qty }){
+    const item = catalog.find(x => x.id === itemId);
+    if (!item) return;
+    const desc = buildDesc(item);
+    const tr = document.createElement('tr');
+    tr.dataset.price = String(price);
+    tr.dataset.qty = String(qty);
+    tr.dataset.group = item.category;
+    tr.dataset.itemId = item.id;
+    tr.innerHTML = `
+      <td style="white-space:pre-wrap">${desc}</td>
+      <td class="right">${money(price)}</td>
+      <td class="right">${money(qty)}</td>
+      <td class="right line-subtotal">0</td>
+      <td class="right"><button type="button" class="btn-del" style="padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff">刪除</button></td>
+    `;
+    // 修改删除按钮逻辑：增加确认提示
+    tr.querySelector('.btn-del').addEventListener('click', () => {
+      if (confirm(`確定要刪除「${item.name}」這項嗎？`)) {
+        tr.remove(); 
+        recalc(); 
+      }
+    });
+    // 添加行时的平滑动画
+    tr.style.opacity = '0';
+    tr.style.transform = 'translateY(10px)';
+    orderTbody.appendChild(tr);
+    setTimeout(() => {
+      tr.style.opacity = '1';
+      tr.style.transform = 'translateY(0)';
+      tr.style.transition = 'all 0.2s ease';
+    }, 10);
+    recalc();
+  }
+
+  $('#btn-add').addEventListener('click', () => {
+    const group = selCategory.value;
+    const itemId = selItem.value;
+    if (!group) { alert('請先選擇「便當種類」'); return; }
+    if (!itemId) { alert('請選擇「餐盒種類」'); return; }
+    const price = Number(selPrice.value||0);
+    const qty = Number(selQty.value||1);
+    addRow({ itemId, price, qty });
+    
+    // 添加后清空数量输入框（方便下次输入）
+    selQty.value = 1;
+  });
+
+  // 4) Excel 匯出
+  function generateExcel(){
+    const client = $('#client').value || '客戶';
+    const date = $('#date').value;
+    const filename = `報價單_${client}_${date||new Date().toISOString().slice(0,10)}.xlsx`;
+
+    const rows = [];
+    rows.push(['正餐餐盒報價單']);
+    rows.push([null]);
+    rows.push(['客戶名稱', client]);
+    rows.push(['報價日期', date]);
+    rows.push([null]);
+    rows.push(['項目名稱（主菜）與內容','單價','數量','小計']);
+
+    // 依「便當種類」分組輸出
+    const items = $$('#order-tbody tr').map(tr => ({
+      group: tr.dataset.group,
+      desc: tr.children[0].textContent,
+      price: Number(tr.dataset.price||0),
+      qty: Number(tr.dataset.qty||0),
+      subtotal: Number(tr.dataset.price||0) * Number(tr.dataset.qty||0)
+    }));
+
+    const byGroup = {};
+    items.forEach(it => { (byGroup[it.group] ||= []).push(it); });
+    Object.keys(byGroup).forEach(g => {
+      rows.push([`--- ${g} ---`, null, null, null]);
+      byGroup[g].forEach(it => rows.push([it.desc, it.price, it.qty, it.subtotal]));
+    });
+
+    // 小計/總計
+    const total = items.reduce((a,b)=>a+b.subtotal,0);
+    rows.push([null]);
+    rows.push([null,null,'小計', total]);
+    rows.push([null,null,'總計', total]);
+
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = [{wch:64},{wch:10},{wch:10},{wch:14}];
+    ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} } ];
+
+    const headerRows = 6;
+    rows.forEach((r, i) => {
+      if (i >= headerRows && i < rows.length - 3) {
+        const cellA = `A${i+1}`;
+        if (r[1] !== null) {
+          if (ws[cellA]) ws[cellA].s = { alignment:{ wrapText:true, vertical:'top' } };
+        } else {
+          // group 標題
+          ws['!merges'].push({ s:{r:i,c:0}, e:{r:i,c:3} });
+          if (ws[cellA]) ws[cellA].s = { font:{bold:true}, alignment:{ horizontal:'center' } };
+        }
+      }
+    });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, '報價單');
+    XLSX.writeFile(wb, filename);
+  }
+  window.generateExcel = generateExcel;
+
+  // 5) 初始化：日期
+  (function initMeta(){
+    const today = new Date();
+    $('#date').value = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  })();
+
+  // 6) 优化金额输入：禁止输入负数
+  selPrice.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, ''); // 只允许数字
+  });
+
+  // 7) 页面加载完成后的欢迎提示
+  window.addEventListener('load', () => {
+    console.log('📋 報價單頁面已準備就緒！請先輸入客戶資訊，再選擇餐盒種類');
+    // 自动聚焦到客户名称输入框
+    $('#client').focus();
+  });
+
+  // 8) 自動化測試（Console）
+  (function runTests(){
+    try {
+      console.assert(Array.isArray(catalog) && catalog.length > 0, 'catalog 應該建立成功');
+      const cats = [...new Set(catalog.map(x=>x.category))];
+      console.assert(cats.includes('二格盒'), '應包含「二格盒」');
+      console.assert(cats.includes('韓式八格盒'), '應包含「韓式八格盒」');
+      console.assert(PRICE_MAP.flat['蔥油雞胸肉'] === 180, 'Excel 單價應為 180');
+      const item = catalog.find(x => x.name === '蔥油雞胸肉');
+      if (item) {
+        const autoPrice = PRICE_MAP.flat[item.name] ?? null;
+        console.assert(autoPrice === 180, '下拉應帶入 180');
+      }
+      const combo = catalog.find(x => x.name.includes(' + '));
+      if (combo) {
+        const p = PRICE_MAP.flat[combo.name] ?? null;
+        console.assert(p == null, 'Excel 未定義的組合餐不應自動定價');
+      }
+      const d = buildDesc({ name:'測試主菜', meta:'二格盒', includes:['配菜: A','配菜: B'] });
+      console.assert(/\n  - 配菜: A/.test(d) && /\n  - 配菜: B/.test(d), 'buildDesc 應正確組裝配菜');
+      console.assert(getAutoPriceByName('不存在的品名') == null, '未知品名不可自動定價');
+
+      console.log('%cAll tests passed','color:green');
+    } catch (e) {
+      console.error('Tests failed', e);
+    }
+  })();
+</script>
+</body>
+</html>
