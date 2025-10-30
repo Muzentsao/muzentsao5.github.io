@@ -497,15 +497,20 @@ const ITEM_PRICES = {
     }
   });
 
-  // --- ⬇️ 貼上這個新的查詢函式 ⬇️ ---
-
+// --- ⬇️ 查詢單價（含除錯訊息版本） ⬇️ ---
 function getAutoPriceByName(name){
-  // 直接從新的 ITEM_PRICES 物件查詢價格
+  console.log("👉 現在下拉選到的品項名稱：", name);
+
   if (Object.prototype.hasOwnProperty.call(ITEM_PRICES, name)) {
+    console.log("✅ 在 ITEM_PRICES 找到價格：", ITEM_PRICES[name]);
     return ITEM_PRICES[name];
   }
-  return null; // 找不到品名就回傳 null
+
+  console.warn("⚠️ 在 ITEM_PRICES 找不到這個品項，將回傳 null：", name);
+  return null;
 }
+// --- ⬆️ 查詢單價（含除錯訊息版本） ⬆️ ---
+
 
 // --- ⬆️ 貼上這個新的查詢函式 ⬆️ ---
 
