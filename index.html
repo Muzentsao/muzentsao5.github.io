@@ -445,23 +445,23 @@ function getAutoPriceByName(name){
   // 1) 由「來源菜單」動態建構 Catalog
   const catalog = []; // {id, groupRaw, category, name, meta, includes[]}
   (function buildCatalog(){
-    const rows = $$('#items-body tr');
-    let curGroupRaw = '';
-    let curCategory = '';
-    rows.forEach(tr => {
-      if (tr.classList.contains('group-header')) {
-        const title = tr.textContent;
-        curGroupRaw = title;
-        curCategory = normalizeCategory(title);
-      } else {
-        const id = tr.getAttribute('data-index');
-        const name = tr.querySelector('.name').value.trim();
-        const meta = tr.querySelector('.meta')?.textContent.trim() || '';
-        const includes = $$('.includes li', tr).map(li => li.textContent.trim());
-        catalog.push({ id, groupRaw: curGroupRaw, category: curCategory, name, meta, includes });
-      }
-    });
-  })();
+  const rows = $$('#items-body tr');
+  let curGroupRaw = '';
+  let curCategory = '';
+  rows.forEach(tr => {
+    if (tr.classList.contains('group-header')) {
+      const title = tr.textContent;
+      curGroupRaw = title;
+      curCategory = normalizeCategory(title);
+    } else {
+      const id = tr.getAttribute('data-index');
+      const name = tr.querySelector('.name').value.trim();
+      const meta = tr.querySelector('.meta')?.textContent.trim() || '';
+      const includes = $$('.includes li', tr).map(li => li.textContent.trim());
+      catalog.push({ id, groupRaw: curGroupRaw, category: curCategory, name, meta, includes });
+    }
+  });
+})();
 
   // 2) 初始化層級下拉（便當種類 → 餐盒種類）
   const selCategory = $('#sel-category');
@@ -472,34 +472,32 @@ function getAutoPriceByName(name){
 
   const preferredOrder = ['二格盒', '植纖四格盒', '植纖四格盒海陸餐', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
-  categories.sort((a,b)=>{
-    const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
-    return a.localeCompare(b,'zh-Hant');
-  });
+categories.forEach(c => {
+  const opt = document.createElement('option');
+  opt.value = c;
+  opt.textContent = c;
+  selCategory.appendChild(opt);
+});
   categories.forEach(c => { const opt = document.createElement('option'); opt.value=c; opt.textContent=c; selCategory.appendChild(opt); });
 
   // 优化下拉选择体验：选择类别后自动聚焦到餐盒选择
-  selCategory.addEventListener('change', () => {
-    selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
-    selItem.disabled = !selCategory.value;
-    if (selCategory.value) {
-      catalog.filter(x => x.category === selCategory.value).forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.id; 
-        opt.textContent = item.name; 
-        selItem.appendChild(opt);
-      });
-      // 自动聚焦到餐盒选择框
-      selItem.focus();
-    }
-  });
+ selCategory.addEventListener('change', () => {
+  selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
+  selItem.disabled = !selCategory.value;
+  if (selCategory.value) {
+    catalog.filter(x => x.category === selCategory.value).forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item.id; 
+      opt.textContent = item.name; 
+      selItem.appendChild(opt);
+    });
+    selItem.focus();
+  }
+});
 
 // --- ⬇️ 查詢單價（含除錯訊息版本） ⬇️ ---
 function getAutoPriceByName(name){
-  console.log("👉 現在下拉選到的品項名稱：", name);
+  console.log(catalog);
 
   if (Object.prototype.hasOwnProperty.call(ITEM_PRICES, name)) {
     console.log("✅ 在 ITEM_PRICES 找到價格：", ITEM_PRICES[name]);
