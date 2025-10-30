@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>正餐餐盒報價單（互動版｜層級下拉 + Excel 匯出）</title>
+<title>木人艸x正餐餐盒報價單</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
@@ -274,7 +274,7 @@ details[open] summary::after { transform: rotate(180deg); }
     <header>
       <div>
         <h1>正餐餐盒報價單（互動版｜層級下拉 + Excel 匯出）</h1>
-        <div class="muted">先選「<b>便當種類</b>（餐盒類別）」→ 再選「餐盒種類」。加入明細後可下載 Excel。※ 僅引用下方來源菜單的實際項目，不新增不存在菜色。</div>
+        <div class="muted">先選「<b>便當種類</b>（餐盒類別）」→ 再選「餐盒種類」。加入明細後可下載 Excel。</div>
       </div>
       <div class="toolbar">
         <button onclick="generateExcel()">下載 Excel (.xlsx)</button>
@@ -318,7 +318,6 @@ details[open] summary::after { transform: rotate(180deg); }
             <button id="btn-add" style="width:100%">加入明細</button>
           </div>
         </div>
-        <div class="note">價格會依 <b>木人艸報價單(正餐餐盒建議).xlsx</b> 自動填入；若 Excel 找不到完全相同的品名，會保留 0（避免誤報價）。</div>
       </section>
 
       <!-- 已選明細 -->
