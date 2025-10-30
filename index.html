@@ -495,10 +495,6 @@ details[open] summary::after { transform: rotate(180deg); }
   });
 
   function getAutoPriceByName(name){
-    // --- ↓↓↓↓ 加上這 2 行偵錯碼 ↓↓↓↓ ---
-    console.log(`[偵錯] 正在查詢的品名: ${name}`);
-    console.log(`[偵錯] PRICE_MAP.flat 的版本:`, PRICE_MAP.flat);
-    // --- ↑↑↑↑ 加上這 2 行偵錯碼 ↑↑↑↑ ---
 
     if (PRICE_MAP && PRICE_MAP.flat && Object.prototype.hasOwnProperty.call(PRICE_MAP.flat, name)) {
       return PRICE_MAP.flat[name]; 
