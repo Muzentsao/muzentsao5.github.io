@@ -25,6 +25,8 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; } /* 加入平滑捲動效果 */
+
 body { 
   font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif; 
   background: var(--light-gray); 
@@ -32,9 +34,10 @@ body {
   line-height: 1.5;
 }
 
+/* 原本的容器設定 (表單區域) */
 .container { 
   max-width: 1200px; 
-  margin: 32px auto; 
+  margin: 0 auto 32px auto; /* 上方 margin 改為 0，因為上面有 Hero */
   background: #fff; 
   border-radius: var(--radius); 
   box-shadow: var(--shadow); 
@@ -42,6 +45,7 @@ body {
   border: 1px solid var(--line);
 }  
 
+/* 舊的 Header 樣式保留但用不到，您可以選擇刪除或留著備用 */
 header { 
   padding: 24px 32px; 
   border-bottom: 1px solid var(--line); 
@@ -54,15 +58,6 @@ header {
 }
 
 h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0; }
-
-/* 新增：標題下方的聲明樣式 */
-.header-note {
-  margin-top: 8px;
-  color: var(--danger); /* 紅色強調 */
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.5;
-}
 
 .muted { color: var(--muted); font-size: 14px; margin-top: 4px; }
 
@@ -178,6 +173,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 #grand { color: var(--primary); font-size: 20px; }
 
 @media (max-width: 768px) {
+  /* Hero 區塊手機版優化 */
+  .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
+  .hero-text-area { text-align: center; margin-bottom: 2rem; }
+  .hero-btn { width: 100%; text-align: center; }
+
   header { padding: 16px 20px; gap: 16px; }
   h1 { font-size: 20px; }
   main { padding: 20px 16px; }
@@ -191,22 +191,53 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 }
 
 @media print { 
+  .hero-section { display: none !important; } /* 列印時隱藏 Hero */
   .toolbar, .btn-row, details, #btn-download { display: none !important; } 
   .container { margin: 0; border: none; border-radius: 0; box-shadow: none; } 
-  header { background: #fff; border-bottom: none; }
+  header { background: #fff; border-bottom: none; display: flex !important; } /* 列印時保留簡單標題 */
   h1 { color: var(--ink); }
 }
 </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div style="text-align: center;">
-        <h1>木人艸x正餐餐盒報價單</h1>
-        <p class="header-note">單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。</p>
-      </div>
-    </header>
 
+  <section class="hero-section" style="width:100%; background:#f9f7f4; padding:5rem 2rem; margin-bottom:2rem; position:relative; overflow:hidden;">
+    <div style="position:absolute; top:-20%; right:-10%; width:40%; height:40%; background:#e8f4ea; border-radius:50%; opacity:0.6;"></div>
+    <div style="position:absolute; bottom:-15%; left:-8%; width:30%; height:30%; background:#f0ebe2; border-radius:50%; opacity:0.6;"></div>
+    
+    <div style="max-width:1200px; margin:0 auto; position:relative; z-index:2;">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:3rem;">
+        
+        <div class="hero-text-area" style="flex:1 1 500px;">
+          <h1 style="font-size:2.8rem; color:#2d3748; margin:0 0 1rem 0; line-height:1.3; font-weight:700;">
+            木人艸x正餐餐盒<br>
+            <span style="color:#FF8C42;">健康飲食，便捷送到家</span>
+          </h1>
+          <p style="font-size:1.1rem; color:#4a5568; margin:0 0 1.5rem 0; line-height:1.6; max-width:600px;">
+            精選新鮮食材，多種套餐選擇（二格盒/植纤四格盒/韩式七格盒），適合企業團餐、活動供應、團體訂購。
+          </p>
+          
+          <div style="background: #fff; border-left: 4px solid #E53E3E; padding: 12px 16px; margin-bottom: 2rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <p style="margin:0; color:#E53E3E; font-weight:600; font-size: 1rem;">
+              ⚠️ 單筆訂單30盒以上，建議180元/人起跳<br>
+              <span style="font-size:0.9em; color:#718096; font-weight:400;">(以上報價未稅，且未含交通費)</span>
+            </p>
+          </div>
+
+          <a href="#order-form" class="hero-btn" style="display:inline-block; background:#FF8C42; color:white; padding:1rem 2.5rem; border-radius:50px; font-size:1.1rem; font-weight:600; text-decoration:none; transition:all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);">
+            立即選品報價 ▼
+          </a>
+        </div>
+        
+        <div style="flex:1 1 400px; text-align:center;">
+          <img src="日式鹽麴雞腿排_工作區域 1.jpg" alt="木人艸正餐餐盒展示" style="width:100%; max-width:500px; height:auto; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit: cover;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="container" id="order-form">
     <main>
       <section class="grid">
         <div class="block">
@@ -491,7 +522,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const rows = [];
     rows.push(['正餐餐盒報價單']);
-    // 👇 修改這裡：把聲明文字放在 Excel 的第二行 (標題正下方)
+    // 👇 確保 Excel 裡面這段文字還在
     rows.push(['單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。']); 
     
     rows.push([null]);
@@ -520,11 +551,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     rows.push([null,null,'小計', total]);
     rows.push([null,null,'總計', total]);
     
-    // (原本底部的聲明已移除，移到上面了)
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = [{wch:64},{wch:10},{wch:10},{wch:14}];
-    ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} } ]; // 增加第二行的合併儲存格
+    ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} } ]; 
 
     const headerRows = 6;
     rows.forEach((r, i) => {
