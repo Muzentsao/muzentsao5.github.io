@@ -48,7 +48,7 @@ header {
   display: flex; 
   gap: 24px; 
   align-items: center; 
-  justify-content: space-between; 
+  justify-content: center; /* 改為置中，因為右邊按鈕拿掉了 */
   flex-wrap: wrap; 
   background-color: var(--primary-light);
 }
@@ -65,8 +65,8 @@ h1 {
   margin-top: 4px;
 }
 
-/* 按钮样式优化 */
-.toolbar button, #btn-add { 
+/* 按钮样式优化：修改選擇器，加入 #btn-download */
+#btn-download, #btn-add { 
   padding: 12px 20px; 
   border: none; 
   border-radius: var(--radius-sm); 
@@ -77,19 +77,20 @@ h1 {
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
+  justify-content: center; /* 讓文字置中 */
   gap: 8px;
 }
 
-.toolbar button::before { content: "📥"; }
+#btn-download::before { content: "📥"; }
 #btn-add::before { content: "➕"; }
 
-.toolbar button:hover, #btn-add:hover { 
+#btn-download:hover, #btn-add:hover { 
   background: #E07B39; /* 主色加深 */
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
 
-.toolbar button:active, #btn-add:active { transform: translateY(0); }
+#btn-download:active, #btn-add:active { transform: translateY(0); }
 
 main { padding: 28px 32px; }
 
@@ -122,7 +123,7 @@ label {
   display: block; 
   font-size: 14px; 
   color: var(--muted); 
-  margin-bottom: 6px;
+  margin-bottom: 6px; 
   font-weight: 500;
 }
 
@@ -196,17 +197,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   top: 0;
 }
 
-/* 分组标题样式（来源菜单） */
-.group-header td { 
-  background: var(--primary-light); 
-  font-weight: 700; 
-  font-size: 15px; 
-  padding: 12px 16px; 
-  color: var(--primary); 
-  border-width: 1px 0; 
-  border-color: var(--line); 
-}
-
 /* 细节优化：删除按钮 */
 .btn-del { 
   padding: 6px 12px; 
@@ -228,28 +218,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 #subtotal, #grand { font-size: 18px; font-weight: 700; }
 #grand { color: var(--primary); font-size: 20px; }
 
-/* 来源菜单折叠面板 */
-details { 
-  margin-top: 20px; 
-  border-radius: var(--radius); 
-  border: 1px solid var(--line); 
-  overflow: hidden;
-}
-
-summary { 
-  padding: 16px 20px; 
-  background: var(--light-gray); 
-  cursor: pointer; 
-  list-style: none; 
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-summary::after { content: "▼"; font-size: 14px; transition: var(--transition); }
-details[open] summary::after { transform: rotate(180deg); }
-
 /* 响应式优化 */
 @media (max-width: 768px) {
   header { padding: 16px 20px; gap: 16px; }
@@ -258,11 +226,12 @@ details[open] summary::after { transform: rotate(180deg); }
   .grid, .row { gap: 16px; }
   .block { padding: 16px; }
   th, td { padding: 10px 12px; }
-  .toolbar button, #btn-add { padding: 10px 16px; font-size: 14px; }
+  #btn-download, #btn-add { padding: 10px 16px; font-size: 14px; }
 }
 
 @media print { 
-  .toolbar, .btn-row, details { display: none !important; } 
+  /* 這裡加入 #btn-download 確保列印時按鈕會消失 */
+  .toolbar, .btn-row, details, #btn-download { display: none !important; } 
   .container { margin: 0; border: none; border-radius: 0; box-shadow: none; } 
   header { background: #fff; border-bottom: none; }
   h1 { color: var(--ink); }
@@ -275,13 +244,9 @@ details[open] summary::after { transform: rotate(180deg); }
       <div>
         <h1>木人艸x正餐餐盒報價單</h1>
       </div>
-      <div class="toolbar">
-        <button onclick="generateExcel()">下載 Excel (.xlsx)</button>
-      </div>
-    </header>
+      </header>
 
     <main>
-      <!-- 基本資訊 -->
       <section class="grid">
         <div class="block">
           <label>客戶名稱</label>
@@ -293,7 +258,6 @@ details[open] summary::after { transform: rotate(180deg); }
         </div>
       </section>
 
-      <!-- 層級下拉（選品） -->
       <section class="block" style="margin-top:12px">
         <label style="font-weight:600;color:#374151">快速選品（層級下拉）</label>
         <div class="row">
@@ -319,7 +283,6 @@ details[open] summary::after { transform: rotate(180deg); }
         </div>
       </section>
 
-      <!-- 已選明細 -->
       <section class="block" style="margin-top:12px">
         <label style="font-weight:600;color:#374151">訂單明細</label>
         <table id="order-table">
@@ -334,12 +297,17 @@ details[open] summary::after { transform: rotate(180deg); }
           </thead>
           <tbody id="order-tbody"></tbody>
         </table>
+        
         <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
           <div class="note">金額僅供試算，實際以合約或最終報價為準。</div>
           <div>
             <div style="display:grid; gap:6px; justify-content:end">
               <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
               <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計</div><div class="right" id="grand">0</div></div>
+            </div>
+            
+            <div style="margin-top: 16px;">
+               <button id="btn-download" onclick="generateExcel()" style="width:100%">下載 Excel (.xlsx)</button>
             </div>
           </div>
         </div>
@@ -350,42 +318,37 @@ details[open] summary::after { transform: rotate(180deg); }
   </div>
 
 <script>
-  // 價格映射（由 Excel 解析得出；只對「完全相同品名」自動帶入）
+  // 價格映射
   const PRICE_MAP = { sheets: {}, flat: {} };
   PRICE_MAP.flat = {
-  /* --- 二格盒 --- */
-  "獨家香料鹹豬肉": 200,
-  "日式鹽麴豬五花": 200,
-  "日式鹽麴雞腿排": 200,
-  "蔥油雞胸肉": 180,
-  "法式油封杏鮑菇(全素)": 180,
-
-  /* --- 植纖四格盒 --- */
-  "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300,
-  "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,   // ← 調整
-  "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 320,       // ← 調整
-  "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
-  "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420,
-  "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
-  "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
-
-  /* --- 韓式八格盒 --- */
-  "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 280,           // ← 調整
-  "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 280,       // ← 調整
-  "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380,
-  "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 280,       // ← 調整
-  "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280,         // ← 調整
-  "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,           // ← 調整
-  "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280        // ← 調整
-};
+    /* --- 二格盒 --- */
+    "獨家香料鹹豬肉": 200,
+    "日式鹽麴豬五花": 200,
+    "日式鹽麴雞腿排": 200,
+    "蔥油雞胸肉": 180,
+    "法式油封杏鮑菇(全素)": 180,
+    /* --- 植纖四格盒 --- */
+    "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300,
+    "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 320,
+    "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
+    "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420,
+    "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
+    /* --- 韓式八格盒 --- */
+    "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 280,
+    "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 280,
+    "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380,
+    "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 280,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280,
+    "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
+  };
 
   const $ = (s, el=document) => el.querySelector(s);
   const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
   const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
 
-  /* =========================================================
-     1) 直接用常數定義 Catalog（已移除來源菜單 UI）
-     ========================================================= */
   const catalog = [
     // 🍱 二格盒
     { id:'b2-1', groupRaw:'🍱 二格盒 (雙格盒 $180-200)', category:'二格盒', name:'獨家香料鹹豬肉', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -413,9 +376,6 @@ details[open] summary::after { transform: rotate(180deg); }
     { id:'k8-7', groupRaw:'🍱 韓式八格盒', category:'韓式八格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
   ];
 
-  /* =========================================================
-     2) 初始化層級下拉（便當種類 → 餐盒種類）
-     ========================================================= */
   const selCategory = $('#sel-category');
   const selItem = $('#sel-item');
   const selPrice = $('#sel-price');
@@ -438,7 +398,6 @@ details[open] summary::after { transform: rotate(180deg); }
     selCategory.appendChild(opt);
   });
 
-  // 選擇便當種類 → 載入對應餐盒選項
   selCategory.addEventListener('change', () => {
     selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
     selItem.disabled = !selCategory.value;
@@ -460,7 +419,6 @@ details[open] summary::after { transform: rotate(180deg); }
     return null;
   }
 
-  // 描述組裝（多行含配菜）
   function buildDesc(item){
     const parts = [item.name];
     if (item.meta) parts.push(item.meta);
@@ -470,7 +428,6 @@ details[open] summary::after { transform: rotate(180deg); }
     return parts.join('\n');
   }
 
-  // 選擇餐盒 → 自動帶入價格（若有）
   selItem.addEventListener('change', () => {
     const item = catalog.find(x => x.id === selItem.value);
     if (!item) return;
@@ -478,9 +435,6 @@ details[open] summary::after { transform: rotate(180deg); }
     selPrice.value = (p != null) ? p : 0;
   });
 
-  /* =========================================================
-     3) 加入明細 + 計算
-     ========================================================= */
   function recalc(){
     let subtotal = 0;
     $$('#order-tbody tr').forEach(tr => {
@@ -535,12 +489,9 @@ details[open] summary::after { transform: rotate(180deg); }
     const price = Number(selPrice.value||0);
     const qty = Number(selQty.value||1);
     addRow({ itemId, price, qty });
-    selQty.value = 1; // 重置數量
+    selQty.value = 1; 
   });
 
-  /* =========================================================
-     4) Excel 匯出
-     ========================================================= */
   function generateExcel(){
     const client = $('#client').value || '客戶';
     const date = $('#date').value;
@@ -597,15 +548,11 @@ details[open] summary::after { transform: rotate(180deg); }
   }
   window.generateExcel = generateExcel;
 
-  /* =========================================================
-     5) 其他初始化
-     ========================================================= */
   (function initMeta(){
     const today = new Date();
     $('#date').value = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
   })();
 
-  // 金額輸入防呆：僅數字
   selPrice.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   });
@@ -614,30 +561,6 @@ details[open] summary::after { transform: rotate(180deg); }
     console.log('📋 報價單頁面已準備就緒！請先輸入客戶資訊，再選擇餐盒種類');
     $('#client').focus();
   });
-
-  /* =========================================================
-     6) 簡易自動化測試（Console）
-     ========================================================= */
-  (function runTests(){
-    try {
-      console.assert(Array.isArray(catalog) && catalog.length > 0, 'catalog 應該建立成功');
-      const cats = [...new Set(catalog.map(x=>x.category))];
-      console.assert(cats.includes('二格盒') && cats.includes('植纖四格盒') && cats.includes('韓式八格盒'), '應包含三大類別');
-
-      console.assert(PRICE_MAP.flat['日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)'] === 320, '應為 320');
-console.assert(PRICE_MAP.flat['蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)'] === 320, '應為 320');
-console.assert(PRICE_MAP.flat['韓式炸雞 + 日式鹽麴豬五花肉(40g)'] === 280, '應為 280');
-      
-      const d = buildDesc({ name:'測試主菜', meta:'二格盒', includes:['配菜: A','配菜: B'] });
-      console.assert(/\n  - 配菜: A/.test(d) && /\n  - 配菜: B/.test(d), 'buildDesc 應正確組裝配菜');
-
-      console.assert(getAutoPriceByName('不存在的品名') == null, '未知品名不可自動定價');
-
-      console.log('%cAll tests passed','color:green');
-    } catch (e) {
-      console.error('Tests failed', e);
-    }
-  })();
 </script>
 </body>
 </html>
