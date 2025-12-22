@@ -103,13 +103,13 @@ input[type="text"], input[type="date"], input[type="number"], textarea, select {
 }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--tertiary); }
 
-/* --- 新增 UI：預覽卡片佈局 --- */
+/* --- 預覽卡片佈局 --- */
 .selection-wrapper {
   display: flex;
   gap: 24px;
   align-items: start;
 }
-.selection-left { flex: 2; } /* 表單區 */
+.selection-left { flex: 2; } 
 .selection-right { 
   flex: 1; 
   min-width: 250px;
@@ -125,19 +125,19 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
   flex-grow: 1;
   background: #eee;
   position: relative;
-  height: 240px;      /* 💡 設定固定高度！這樣就一定會是這個大小 */
-  width: 100%;        /* 寬度填滿 */
+  height: 240px;      
+  width: 100%;        
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-bottom: 1px solid var(--line); /* 加個底線區隔文字 */
+  border-bottom: 1px solid var(--line); 
 }
 .preview-box img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: none; /* 預設隱藏 */
+  display: none; 
 }
 .preview-placeholder {
   color: var(--muted);
@@ -153,7 +153,17 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--p
 .preview-title { font-weight: 700; color: var(--primary); margin-bottom: 4px; font-size: 16px; }
 .preview-desc { font-size: 13px; color: var(--muted); line-height: 1.4; }
 
-/* --- End 新增 UI --- */
+/* --- 底部聲明樣式 (新增) --- */
+.footer-policy {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--line);
+  text-align: right;
+  color: var(--danger); /* 設為紅色較醒目，若要灰色可改 var(--muted) */
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
 
 table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
 th, td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 12px 16px; text-align: left; vertical-align: middle; }
@@ -178,9 +188,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   th, td { padding: 10px 12px; }
   #btn-download, #btn-add { padding: 10px 16px; font-size: 14px; }
   
-  /* 手機版：圖片改到下方顯示 */
   .selection-wrapper { flex-direction: column; }
   .selection-right { min-height: 250px; }
+  
+  .footer-policy { text-align: left; } /* 手機版改左對齊 */
 }
 
 @media print { 
@@ -279,6 +290,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
             </div>
           </div>
         </div>
+        
+        <div class="footer-policy">
+          單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。
+        </div>
+
       </section>
     </main>
   </div>
@@ -301,8 +317,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
   const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
 
-  // ⚠️ 這裡加入了 image 欄位，我使用 Unsplash 的隨機美食圖當作範例
-  // 您之後請將這些網址換成您實際的圖片連結 (例如: './img/pork.jpg')
   const catalog = [
     // 🍱 二格盒
     { id:'b2-2', category:'二格盒', name:'日式鹽麴豬五花', image:'日式鹽麴豬五花_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -369,7 +383,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       });
       selItem.focus();
     }
-    // 切換分類時，重置圖片預覽
     resetPreview();
   });
 
@@ -397,7 +410,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     previewDesc.textContent = '選擇餐點後將顯示詳細配菜內容';
   }
 
-  // --- 關鍵修改：選擇餐點時，同步更新右側卡片 ---
   selItem.addEventListener('change', () => {
     const item = catalog.find(x => x.id === selItem.value);
     if (!item) {
@@ -405,15 +417,12 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return;
     }
     
-    // 1. 帶入價格
     const p = getAutoPriceByName(item.name);
     selPrice.value = (p != null) ? p : 0;
 
-    // 2. 更新預覽文字
     previewTitle.textContent = item.name;
     previewDesc.innerHTML = item.includes ? item.includes.join('<br>') : item.meta;
 
-    // 3. 更新預覽圖片
     if (item.image) {
       previewImg.src = item.image;
       previewImg.style.display = 'block';
@@ -514,6 +523,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     rows.push([null]);
     rows.push([null,null,'小計', total]);
     rows.push([null,null,'總計', total]);
+    
+    // 👇 新增的 Excel 底部說明
+    rows.push([null]);
+    rows.push(['單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。']);
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = [{wch:64},{wch:10},{wch:10},{wch:14}];
@@ -521,7 +534,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const headerRows = 6;
     rows.forEach((r, i) => {
-      if (i >= headerRows && i < rows.length - 3) {
+      if (i >= headerRows && i < rows.length - 5) { // 調整迴圈範圍以免影響底部
         const cellA = `A${i+1}`;
         if (r[1] !== null) {
           if (ws[cellA]) ws[cellA].s = { alignment:{ wrapText:true, vertical:'top' } };
