@@ -6,9 +6,9 @@
 <title>木人艸x正餐餐盒報價單</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <style>
+/* ... (保留原本 CSS) ... */
 :root { 
   --primary: #FF8C42; 
   --primary-light: #FFF0E6; 
@@ -81,7 +81,6 @@ h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0;
 #btn-download:hover, #btn-add:hover { background: #E07B39; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 #btn-download:active, #btn-add:active { transform: translateY(0); }
 
-/* 按鈕停用狀態 (發送中) */
 #btn-download:disabled {
   background-color: #ccc;
   cursor: not-allowed;
@@ -180,10 +179,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 #subtotal, #grand { font-size: 18px; font-weight: 700; }
 #grand { color: var(--primary); font-size: 20px; }
 
-/* 輔助文字樣式 */
 .input-hint { font-size: 12px; color: var(--danger); margin-top: 4px; display: block; }
 
-/* 免責聲明樣式 */
 .disclaimer {
   margin-top: 12px;
   font-size: 13px;
@@ -195,7 +192,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   border: 1px solid #E2E8F0;
 }
 
-/* 彈跳視窗 Modal 樣式 */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -208,10 +204,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   pointer-events: none;
   transition: opacity 0.3s ease;
 }
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
 .modal-content {
   background: #fff;
   width: 90%;
@@ -223,26 +216,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   transform: translateY(20px);
   transition: transform 0.3s ease;
 }
-.modal-overlay.active .modal-content {
-  transform: translateY(0);
-}
-.modal-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  display: block;
-}
-.modal-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 12px;
-}
-.modal-text {
-  font-size: 15px;
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
+.modal-overlay.active .modal-content { transform: translateY(0); }
+.modal-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+.modal-title { font-size: 20px; font-weight: 700; color: var(--ink); margin-bottom: 12px; }
+.modal-text { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
 .modal-btn {
   background: var(--primary);
   color: #fff;
@@ -255,9 +232,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   width: 100%;
   transition: background 0.2s;
 }
-.modal-btn:hover {
-  background: #e07b39;
-}
+.modal-btn:hover { background: #e07b39; }
 
 @media (max-width: 768px) {
   .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
@@ -325,7 +300,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         </div>
         
         <div style="flex:1 1 400px; text-align:center;">
-          <img src="iStock-1167505855.jpg" alt="木人艸正餐餐盒展示" style="width:100%; max-width:500px; height:auto; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit: cover;">
+          <img src="日式鹽麴雞腿排_工作區域 1.jpg" alt="木人艸正餐餐盒展示" style="width:100%; max-width:500px; height:auto; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit: cover;">
         </div>
       </div>
     </div>
@@ -379,8 +354,20 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
       <section class="grid" style="margin-top: 20px;">
         <div class="block">
-          <label>客戶名稱</label>
-          <input id="client" type="text" placeholder="請輸入客戶名稱">
+          <label>客戶名稱 / 公司抬頭</label>
+          <input id="client" type="text" placeholder="請輸入客戶或公司名稱">
+        </div>
+        <div class="block">
+          <label>統一編號 (選填)</label>
+          <input id="tax-id" type="text" placeholder="若需開立統編請輸入">
+        </div>
+        <div class="block">
+          <label>聯絡電話</label>
+          <input id="phone" type="text" placeholder="請輸入聯絡電話">
+        </div>
+        <div class="block">
+          <label>外送地址 (請包含縣市)</label>
+          <input id="address" type="text" placeholder="請輸入完整地址">
         </div>
         <div class="block">
           <label>報價日期</label>
@@ -437,19 +424,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     </div>
   </div>
 
-
 <script>
-  // 👇👇👇 請將這裡換成您剛剛部署後的 GAS 網址 👇👇👇
+  // 👇👇👇 請確認您的 GAS 網址是否正確 👇👇👇
   const GAS_URL = "https://script.google.com/macros/s/AKfycbzfzXfvVAaHSHu6Z78jwPtvPtLVy2mk6jF4tg7W5SkHJ88tTGW5ew_oEhJFYFWVuUYL/exec"; 
 
   const PRICE_MAP = { sheets: {}, flat: {} };
-  // ... (PRICE_MAP 與 catalog 資料保持不變，為了節省篇幅我這裡省略，請保留您原有的資料) ...
-  // 請保留您原本完整的 PRICE_MAP 和 catalog 陣列內容
-  
-  // (為了讓程式碼完整，這裡請確認您沒有刪掉 catalog 和 PRICE_MAP 的定義)
-  // ...
-  
-  // ------------ 以下是需要保留的完整資料結構 (範例) ------------
   PRICE_MAP.flat = {
     "日式鹽麴豬五花": 200, "日式鹽麴雞腿排": 200, "蔥油雞胸肉": 180, "法式油封杏鮑菇(全素)": 180,
     "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,
@@ -461,6 +440,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280, "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,
     "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
   };
+
+  const $ = (s, el=document) => el.querySelector(s);
+  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
+  const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
+
   const catalog = [
     { id:'b2-2', category:'二格盒', name:'日式鹽麴豬五花', image:'日式鹽麴豬五花_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-3', category:'二格盒', name:'日式鹽麴雞腿排', image:'日式鹽麴雞腿排_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -481,11 +465,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'k8-6', category:'韓式七格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-7', category:'韓式七格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
   ];
-  // -------------------------------------------------------------
-
-  const $ = (s, el=document) => el.querySelector(s);
-  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-  const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
 
   const selCategory = $('#sel-category');
   const selItem = $('#sel-item');
@@ -498,8 +477,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
-  // 初始化類別選單
-  const preferredOrder = ['二格盒', '植纖四格盒', '韓式七格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
   categories.sort((a,b)=>{
     const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
@@ -623,9 +600,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-  // --- 👇👇👇 核心修改：使用 fetch 呼叫 GAS 並同時下載 Excel 👇👇👇 ---
   async function handleOrderSubmit() {
-    // 1. 檢查 MOQ
     const MIN_QTY = 10;
     const counts = {};
     const rows = $$('#order-tbody tr');
@@ -654,16 +629,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return; 
     }
 
+    // 👇 取值更新
     const client = $('#client').value || '未填寫';
+    const taxId = $('#tax-id').value || '未填寫';
+    const phone = $('#phone').value || '未填寫';
+    const address = $('#address').value || '未填寫';
     const date = $('#date').value || '未填寫';
 
-    // 2. 鎖定按鈕，避免重複點擊
     const btn = $('#btn-download');
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = '處理中，請稍候...';
 
-    // 3. 準備資料
     const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
@@ -676,10 +653,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const tax = Math.round((subtotal + shipping) * 0.05);
     const total = subtotal + shipping + tax;
 
+    let orderDetailsText = itemsData.map(item => `- ${item.name} x ${item.qty} = $${item.subtotal}`).join('\n');
+    orderDetailsText += `\n\n----------------\n小計: $${subtotal}\n運費: $${shipping}\n稅金: $${tax}\n總計: $${total}`;
+
+    // 👇 傳送給 GAS 的 Payload 更新
     const payload = {
         client_name: client,
+        tax_id: taxId,
+        phone: phone,
+        address: address,
         order_date: date,
         items: itemsData,
+        order_details: orderDetailsText,
         totals: {
             subtotal: money(subtotal),
             shipping: money(shipping),
@@ -688,44 +673,45 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         }
     };
 
-    // 4. 發送資料給 Google Apps Script (使用 fetch)
-    // 注意：使用 no-cors 模式，因為從 GitHub Pages 發到 Google 通常會有 CORS 問題
-    // no-cors 代表我們「發送後不等待回應內容」，直接假設成功
-    fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避免 CORS preflight
-        mode: "no-cors"
-    }).then(() => {
-        console.log("Request sent to GAS");
-    }).catch(err => {
-        console.error("Error sending to GAS:", err);
-    });
+    try {
+        fetch(GAS_URL, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+            mode: "no-cors"
+        }).catch(err => console.error("Email send failed:", err));
 
-    // 5. 下載 Excel (不管 Email 是否發送成功，都讓客戶下載)
-    // 稍微延遲一下，讓使用者感覺有在處理
-    setTimeout(() => {
-        generateExcelFile(client, date, rows, subtotal, shipping, tax, total);
-        showModal();
+        setTimeout(() => {
+            // 👇 傳入新參數給 Excel 函式
+            generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
+            showModal();
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }, 1000);
+    } catch (error) {
+        console.error("Error:", error);
         btn.disabled = false;
         btn.textContent = originalText;
-    }, 1000);
+    }
   }
 
-  // 純 Excel 產生邏輯
-  function generateExcelFile(client, date, rows, subtotal, shipping, tax, total) {
+  // 👇 Excel 生成函式更新：接收更多參數
+  function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total) {
     const filename = `報價單_${client}_${date}.xlsx`;
     const excelRows = [];
     excelRows.push(['正餐餐盒報價單']);
     excelRows.push(['單筆訂單30盒以上，建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。']);
     excelRows.push(['注意：此為模擬報價，非正式訂單，需由業務人員確認後才算成立。']); 
+    
     excelRows.push([null]);
     excelRows.push(['客戶名稱', client]);
+    excelRows.push(['統一編號', taxId]); // 新增
+    excelRows.push(['聯絡電話', phone]); // 新增
+    excelRows.push(['外送地址', address]); // 新增
     excelRows.push(['報價日期', date]);
     excelRows.push([null]);
     excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
 
-    // 重新整理資料給 Excel
     const items = rows.map(tr => ({
       group: tr.dataset.group,
       desc: tr.children[0].textContent,
@@ -749,9 +735,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const ws = XLSX.utils.aoa_to_sheet(excelRows);
     ws['!cols'] = [{wch:64},{wch:12},{wch:10},{wch:16}];
+    // 調整檔頭合併範圍 (因為多了幾行資料)
     ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} }, { s:{r:2,c:0}, e:{r:2,c:3} } ]; 
 
-    const headerRows = 7; 
+    // 自動換行設定
+    const headerRows = 10; // 資料開始的列數往下移了
     excelRows.forEach((r, i) => {
       if (i >= headerRows) {
         const cellA = `A${i+1}`;
@@ -787,7 +775,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
-  // 綁定按鈕事件
   window.handleOrderSubmit = handleOrderSubmit;
   window.closeModal = closeModal;
 
@@ -821,7 +808,5 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     console.log('📋 報價單頁面已準備就緒！');
   });
 </script>
-</body>
-</html>
 </body>
 </html>
