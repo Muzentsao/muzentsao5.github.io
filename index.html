@@ -17,6 +17,8 @@
   --light-gray: #F7FAFC; 
   --line: #E2E8F0; 
   --danger: #E53E3E; 
+  --warning-bg: #FFF4E5; /* 警告背景色 */
+  --warning-text: #663C00; /* 警告文字色 */
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
   --shadow: 0 4px 12px rgba(0,0,0,0.08);
   --radius: 16px; 
@@ -169,6 +171,9 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 #subtotal, #grand { font-size: 18px; font-weight: 700; }
 #grand { color: var(--primary); font-size: 20px; }
 
+/* 輔助文字樣式 */
+.input-hint { font-size: 12px; color: var(--danger); margin-top: 4px; display: block; }
+
 @media (max-width: 768px) {
   .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
   .hero-text-area { text-align: center; margin-bottom: 2rem; }
@@ -213,11 +218,19 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
             精選新鮮食材，多種套餐選擇（二格盒/植纖四格盒/韓式七格盒），適合企業團餐、活動供應、團體訂購。
           </p>
           
-          <div style="background: #fff; border-left: 4px solid #E53E3E; padding: 12px 16px; margin-bottom: 2rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-            <p style="margin:0; color:#E53E3E; font-weight:600; font-size: 1rem;">
-              ⚠️ 單筆訂單30盒以上，建議180元/人起跳<br>
-              <span style="font-size:0.9em; color:#718096; font-weight:400;">(以上報價未稅，且未含交通費)</span>
-            </p>
+          <div style="background: #fff; border-left: 4px solid #E53E3E; padding: 16px; margin-bottom: 2rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <p style="margin:0; color:#E53E3E; font-weight:600; font-size: 1rem;">
+                  ⚠️ 單筆訂單30盒以上，建議180元/人起跳
+                  <span style="font-size:0.9em; color:#718096; font-weight:400;">(未稅未含交通費)</span>
+                </p>
+                <p style="margin:0; color:#2D3748; font-weight:500; font-size: 0.95rem;">
+                  🚛 服務範圍僅限雙北地區 <span style="font-size:0.9em; color:#718096; font-weight:400;">(山區及偏遠地區除外)</span>
+                </p>
+                <p style="margin:0; color:#2D3748; font-weight:500; font-size: 0.95rem;">
+                  ⏳ 需提前 5 個工作天預訂 <span style="font-size:0.9em; color:#718096; font-weight:400;">(不含例假日，確保食材新鮮準備)</span>
+                </p>
+            </div>
           </div>
 
           <a href="#order-form" class="hero-btn" style="display:inline-block; background:#FF8C42; color:white; padding:1rem 2.5rem; border-radius:50px; font-size:1.1rem; font-weight:600; text-decoration:none; transition:all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);">
@@ -286,6 +299,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         <div class="block">
           <label>報價日期</label>
           <input id="date" type="date">
+          <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
         </div>
       </section>
 
@@ -345,7 +359,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'b2-4', category:'二格盒', name:'蔥油雞胸肉', image:'蔥油雞胸肉_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-5', category:'二格盒', name:'法式油封杏鮑菇(全素)', image:'法式油封杏鮑菇(全素)_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐油醋醬(全素)','配菜: 日式冷泡溏心蛋(蛋奶素)','主食: 紅藜秈米飯(全素)'] },
 
-    // 🍱 植纖四格盒 (部分範例圖)
+    // 🍱 植纖四格盒
     { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)', image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -354,7 +368,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
 
-    // 🍱 韓式七格盒 (部分範例圖)
+    // 🍱 韓式七格盒
     { id:'k8-1', category:'韓式七格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉(40g)', image:'韓式炸雞 + 日式鹽麴豬五花肉(40g).jpg', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-2', category:'韓式七格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)', image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g).jpg', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-3', category:'韓式七格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
@@ -398,11 +412,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       catalog.filter(x => x.category === selCategory.value).forEach(item => {
         const opt = document.createElement('option');
         opt.value = item.id;
-        
-        // 選單顯示價格
         const price = getAutoPriceByName(item.name);
         opt.textContent = `${item.name} (${price ? `$${price}` : '洽詢'} 未稅)`;
-        
         selItem.appendChild(opt);
       });
       selItem.focus();
@@ -515,8 +526,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-function generateExcel(){
-    // --- 👇👇👇 修改：MOQ (分開檢核每種盒型) 👇👇👇 ---
+  function generateExcel(){
+    // --- MOQ (分開檢核每種盒型) ---
     const MIN_QTY = 10;
     
     // 1. 統計各類別的數量
@@ -529,9 +540,8 @@ function generateExcel(){
     }
 
     rows.forEach(tr => {
-      const category = tr.dataset.group; // 取得該行的類別 (如: 二格盒)
+      const category = tr.dataset.group;
       const qty = Number(tr.dataset.qty || 0);
-      
       if (!counts[category]) {
         counts[category] = 0;
       }
@@ -546,20 +556,19 @@ function generateExcel(){
       }
     }
 
-    // 3. 若有不合格的項目，跳出警示並阻擋
     if (invalidCategories.length > 0) {
       alert(`⚠️ 訂購量不足！\n\n根據規則，每種盒型需至少滿 ${MIN_QTY} 盒。\n\n以下盒型未達標：\n- ${invalidCategories.join('\n- ')}\n\n請調整數量後再試。`);
       return; 
     }
-    // ----------------------------------------------------
     
     const client = $('#client').value || '客戶';
     const date = $('#date').value;
     const filename = `報價單_${client}_${date||new Date().toISOString().slice(0,10)}.xlsx`;
 
-    const excelRows = []; // 變數名稱改為 excelRows 避免混淆
+    const excelRows = [];
     excelRows.push(['正餐餐盒報價單']);
-    excelRows.push(['單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。']); 
+    // 👇👇👇 備註欄加入服務範圍 👇👇👇
+    excelRows.push(['單筆訂單30盒以上，建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。']); 
     
     excelRows.push([null]);
     excelRows.push(['客戶名稱', client]);
@@ -618,9 +627,34 @@ function generateExcel(){
   }
   window.generateExcel = generateExcel;
 
+  // --- 👇👇👇 新增：自動計算最小日期 (5個工作天) 👇👇👇 ---
+  function calculateMinDate() {
+    let count = 0;
+    let d = new Date();
+    d.setDate(d.getDate() + 1); // 從明天開始算
+
+    while (count < 5) {
+      const day = d.getDay();
+      // 0=週日, 6=週六。如果不是週末，則計數+1
+      if (day !== 0 && day !== 6) {
+        count++;
+      }
+      if (count < 5) { // 如果還沒滿5天，繼續往後找
+        d.setDate(d.getDate() + 1);
+      }
+    }
+    // 轉成 YYYY-MM-DD 格式
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   (function initMeta(){
-    const today = new Date();
-    $('#date').value = new Date(today.getTime() - today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    const minDateStr = calculateMinDate();
+    const dateInput = $('#date');
+    dateInput.value = minDateStr; // 預設填入最早可選日期
+    dateInput.min = minDateStr;   // 設定最小值限制 UI
   })();
 
   selPrice.addEventListener('input', (e) => {
