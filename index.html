@@ -321,111 +321,163 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         </div>
       </div>
     </div>
+    /* --- 新增：表單整合區塊樣式 --- */
+.form-header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+.form-header h2 {
+  font-size: 20px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.form-grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 預設兩欄 */
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 讓地址欄位跨滿整行 */
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+/* 必填星號樣式 */
+.required-mark {
+  color: var(--danger);
+  margin-left: 4px;
+}
+
+/* 手機版改為單欄 */
+@media (max-width: 768px) {
+  .form-grid-container {
+    grid-template-columns: 1fr;
+  }
+}
   </section>
 
 
   <div class="container" id="order-form">
     <main>
-      <section class="block">
-        <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">快速選品（層級下拉）</label>
-        
-        <div class="selection-wrapper">
-          <div class="selection-left">
-            <div class="row" style="margin-top:0">
-              <div style="grid-column: 1 / -1">
-                <label>便當種類（餐盒類別）</label>
-                <select id="sel-category"><option value="" disabled selected>請選擇便當種類</option></select>
-              </div>
-              <div style="grid-column: 1 / -1">
-                <label>餐盒種類</label>
-                <select id="sel-item" disabled><option value="" disabled selected>請先選便當種類</option></select>
-              </div>
-              <div>
-                <label>單價 <span style="font-size:13px; color:#E53E3E;">(未稅)</span></label>
-                <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
-              </div>
-              <div>
-                <label>數量</label>
-                <input id="sel-qty" type="number" min="1" step="1" value="1">
-              </div>
-              <div style="display:flex; align-items:end;">
-                <button id="btn-add" style="width:100%; height:48px;">加入明細</button>
-              </div>
-            </div>
+  <section class="block">
+    <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">快速選品（層級下拉）</label>
+    
+    <div class="selection-wrapper">
+      <div class="selection-left">
+        <div class="row" style="margin-top:0">
+          <div style="grid-column: 1 / -1">
+            <label>便當種類（餐盒類別）</label>
+            <select id="sel-category"><option value="" disabled selected>請選擇便當種類</option></select>
           </div>
-
-          <div class="selection-right">
-            <div class="preview-box">
-              <div class="preview-placeholder" id="preview-placeholder">
-                請選擇左側餐點<br>以檢視圖片與內容
-              </div>
-              <img id="preview-img" src="" alt="餐點預覽">
-            </div>
-            <div class="preview-info">
-              <div class="preview-title" id="preview-title">--</div>
-              <div class="preview-desc" id="preview-desc">選擇餐點後將顯示詳細配菜內容</div>
-            </div>
+          <div style="grid-column: 1 / -1">
+            <label>餐盒種類</label>
+            <select id="sel-item" disabled><option value="" disabled selected>請先選便當種類</option></select>
           </div>
-        </div>
-      </section>
-
-      <section class="grid" style="margin-top: 20px;">
-        <div class="block">
-          <label>客戶名稱</label>
-          <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
-        </div>
-        <div class="block">
-          <label>統一編號 (選填)</label>
-          <input id="tax-id" type="text" placeholder="需打統編請輸入">
-        </div>
-
-        <div class="block">
-          <label>聯絡電話</label>
-          <input id="phone" type="tel" placeholder="手機或市話">
-        </div>
-        <div class="block">
-          <label>配送地址</label>
-          <input id="address" type="text" placeholder="請輸入完整配送地址">
-        </div>
-
-        <div class="block">
-          <label>報價/預計送達日期</label>
-          <input id="date" type="date">
-          <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
-        </div>
-      </section>
-      <section class="block" style="margin-top:12px">
-        <label style="font-weight:600;color:#374151">訂單明細</label>
-        <table id="order-table">
-          <thead>
-            <tr>
-              <th>項目名稱（主菜）與內容</th>
-              <th class="right" style="width:120px">單價 (未稅)</th>
-              <th class="right" style="width:100px">數量</th>
-              <th class="right" style="width:140px">小計</th>
-              <th style="width:60px"></th>
-            </tr>
-          </thead>
-          <tbody id="order-tbody"></tbody>
-        </table>
-        
-        <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
-          <div class="note">金額僅供試算，實際以合約或最終報價為準。</div>
           <div>
-            <div style="display:grid; gap:6px; justify-content:end">
-              <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
-              <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
-            </div>
-            <div style="margin-top: 16px;">
-               <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
-               <div class="disclaimer">
-                 此為模擬報價，非正式訂單<br>需由業務人員確認後才算成立
-               </div>
-            </div>
+            <label>單價 <span style="font-size:13px; color:#E53E3E;">(未稅)</span></label>
+            <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
+          </div>
+          <div>
+            <label>數量</label>
+            <input id="sel-qty" type="number" min="1" step="1" value="1">
+          </div>
+          <div style="display:flex; align-items:end;">
+            <button id="btn-add" style="width:100%; height:48px;">加入明細</button>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+
+      <div class="selection-right">
+        <div class="preview-box">
+          <div class="preview-placeholder" id="preview-placeholder">
+            請選擇左側餐點<br>以檢視圖片與內容
+          </div>
+          <img id="preview-img" src="" alt="餐點預覽">
+        </div>
+        <div class="preview-info">
+          <div class="preview-title" id="preview-title">--</div>
+          <div class="preview-desc" id="preview-desc">選擇餐點後將顯示詳細配菜內容</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" style="margin-top: 20px;">
+    
+    <div class="form-header">
+      <h2>填寫訂購資訊 & 確認明細</h2>
+      <div class="muted">請完整填寫以下資訊以建立報價單</div>
+    </div>
+
+    <div class="form-grid-container">
+      <div class="form-group">
+        <label>客戶名稱 <span class="required-mark">*</span></label>
+        <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
+      </div>
+      
+      <div class="form-group">
+        <label>統一編號 <span class="required-mark">*</span></label>
+        <input id="tax-id" type="text" placeholder="請輸入統一編號">
+      </div>
+
+      <div class="form-group">
+        <label>聯絡電話 <span class="required-mark">*</span></label>
+        <input id="phone" type="tel" placeholder="手機或市話">
+      </div>
+
+      <div class="form-group">
+        <label>報價/預計送達日期 <span class="required-mark">*</span></label>
+        <input id="date" type="date">
+        <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
+      </div>
+
+      <div class="form-group full">
+        <label>配送地址 <span class="required-mark">*</span></label>
+        <input id="address" type="text" placeholder="請輸入完整配送地址">
+      </div>
+    </div>
+
+    <div style="border-top: 2px dashed var(--line); margin: 24px 0;"></div>
+
+    <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">訂單內容確認</label>
+    <table id="order-table">
+      <thead>
+        <tr>
+          <th>項目名稱（主菜）與內容</th>
+          <th class="right" style="width:120px">單價 (未稅)</th>
+          <th class="right" style="width:100px">數量</th>
+          <th class="right" style="width:140px">小計</th>
+          <th style="width:60px"></th>
+        </tr>
+      </thead>
+      <tbody id="order-tbody"></tbody>
+    </table>
+    
+    <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
+      <div class="note">金額僅供試算，實際以合約或最終報價為準。</div>
+      <div>
+        <div style="display:grid; gap:6px; justify-content:end">
+          <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
+          <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
+        </div>
+        <div style="margin-top: 16px;">
+           <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
+           <div class="disclaimer">
+             此為模擬報價，非正式訂單<br>需由業務人員確認後才算成立
+           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
   </div>
 
   <div class="modal-overlay" id="successModal">
@@ -619,13 +671,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-  // --- 送單與下載流程 (安全改良版) ---
+// --- 送單與下載流程 (最終完整版) ---
   async function handleOrderSubmit() {
     const MIN_QTY = 10;
     const counts = {};
     const rows = $$('#order-tbody tr');
     
-    // --- 1. 檢查數量 (邏輯不變) ---
+    // --- 1. 檢查數量 ---
     if (rows.length === 0) { alert('⚠️ 目前沒有任何餐點，請先加入明細。'); return; }
     rows.forEach(tr => {
       const category = tr.dataset.group;
@@ -642,12 +694,27 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return; 
     }
 
-    // --- 2. 準備資料 ---
-    const client = $('#client').value || '未填寫';
-    const taxId = $('#tax-id').value || '';
-    const phone = $('#phone').value || '';
-    const address = $('#address').value || '';
-    const date = $('#date').value || '未填寫';
+    // --- 2. 準備資料 & 嚴格驗證 ---
+    // 使用 trim() 去除空白
+    const client = ($('#client').value || '').trim();
+    const taxId = ($('#tax-id').value || '').trim();
+    const phone = ($('#phone').value || '').trim();
+    const address = ($('#address').value || '').trim();
+    const date = ($('#date').value || '').trim();
+
+    // 檢查是否有空值 (包含 Tax ID)
+    if (!client || !taxId || !phone || !address || !date) {
+        alert('⚠️ 資料不完整！\n\n為了確保報價單正確，請填寫所有欄位：\n\n- 客戶名稱\n- 統一編號 (必填)\n- 聯絡電話\n- 配送地址\n- 預計日期');
+        
+        // UX 優化：游標自動跳到第一個沒填的格子
+        if(!client) $('#client').focus();
+        else if(!taxId) $('#tax-id').focus();
+        else if(!phone) $('#phone').focus();
+        else if(!date) $('#date').focus(); // 日期通常比較重要，往前排一點
+        else if(!address) $('#address').focus();
+        
+        return; // 阻擋執行
+    }
 
     // 鎖定按鈕，避免重複點擊
     const btn = $('#btn-download');
@@ -655,6 +722,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     btn.disabled = true;
     btn.textContent = '處理中...';
 
+    // --- (這段是你剛才漏掉的) 計算金額與準備 Payload ---
     const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
@@ -681,26 +749,24 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         }
     };
 
-    // --- 3. 關鍵修改：使用 await 等待發送完成 ---
+    // --- 3. 發送資料給 GAS ---
     try {
         console.log("正在傳送資料給 GAS...");
         
-        // 這裡加了 await，程式會暫停在這行，直到資料真的送出去了才會往下走
         await fetch(GAS_URL, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            mode: "no-cors" // 重要：GAS 必須用 no-cors
+            mode: "no-cors"
         });
 
         console.log("GAS 發送完成 (或已送出請求)");
 
     } catch (err) {
         console.error("發送失敗，但仍繼續下載 Excel:", err);
-        // 就算網路爛掉，我們還是讓客人下載 Excel，不要卡住
     }
 
-    // --- 4. 只有資料送完後，才開始下載 Excel ---
+    // --- 4. 下載 Excel ---
     generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
     
     // 顯示成功視窗
