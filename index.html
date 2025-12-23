@@ -95,7 +95,7 @@ main { padding: 28px 32px; }
 
 label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
 
-input[type="text"], input[type="date"], input[type="number"], textarea, select { 
+input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select { 
   width: 100%; 
   padding: 12px 16px; 
   border: 1px solid var(--line); 
@@ -186,7 +186,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   border: 1px solid #E2E8F0;
 }
 
-/* 👇👇👇 新增：彈跳視窗 Modal 樣式 👇👇👇 */
+/* 彈跳視窗 Modal 樣式 */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -273,7 +273,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   .container { margin: 0; border: none; border-radius: 0; box-shadow: none; } 
   header { background: #fff; border-bottom: none; display: flex !important; } 
   h1 { color: var(--ink); }
-  /* 列印時隱藏彈窗 */
   .modal-overlay { display: none !important; }
 }
 </style>
@@ -372,15 +371,28 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       <section class="grid" style="margin-top: 20px;">
         <div class="block">
           <label>客戶名稱</label>
-          <input id="client" type="text" placeholder="請輸入客戶名稱">
+          <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
         </div>
         <div class="block">
-          <label>報價日期</label>
+          <label>統一編號 (選填)</label>
+          <input id="tax-id" type="text" placeholder="需打統編請輸入">
+        </div>
+
+        <div class="block">
+          <label>聯絡電話</label>
+          <input id="phone" type="tel" placeholder="手機或市話">
+        </div>
+        <div class="block">
+          <label>配送地址</label>
+          <input id="address" type="text" placeholder="請輸入完整配送地址">
+        </div>
+
+        <div class="block">
+          <label>報價/預計送達日期</label>
           <input id="date" type="date">
           <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
         </div>
       </section>
-
       <section class="block" style="margin-top:12px">
         <label style="font-weight:600;color:#374151">訂單明細</label>
         <table id="order-table">
@@ -429,368 +441,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   </div>
 
 <script>
-  const PRICE_MAP = { sheets: {}, flat: {} };
-  PRICE_MAP.flat = {
-    "日式鹽麴豬五花": 200, "日式鹽麴雞腿排": 200, "蔥油雞胸肉": 180, "法式油封杏鮑菇(全素)": 180,
-    "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,
-    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 320, "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
-    "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420, "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
-    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
-    "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 280, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 280,
-    "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380, "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 280,
-    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280, "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,
-    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
-  };
-
-  const $ = (s, el=document) => el.querySelector(s);
-  const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
-  const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
-
-  const catalog = [
-    // 🍱 二格盒
-    { id:'b2-2', category:'二格盒', name:'日式鹽麴豬五花', image:'日式鹽麴豬五花_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'b2-3', category:'二格盒', name:'日式鹽麴雞腿排', image:'日式鹽麴雞腿排_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'b2-4', category:'二格盒', name:'蔥油雞胸肉', image:'蔥油雞胸肉_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'b2-5', category:'二格盒', name:'法式油封杏鮑菇(全素)', image:'法式油封杏鮑菇(全素)_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐油醋醬(全素)','配菜: 日式冷泡溏心蛋(蛋奶素)','主食: 紅藜秈米飯(全素)'] },
-
-    // 🍱 植纖四格盒
-    { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)', image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-4', category:'植纖四格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-
-    // 🍱 韓式七格盒
-    { id:'k8-1', category:'韓式七格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉(40g)', image:'韓式炸雞 + 日式鹽麴豬五花肉(40g).jpg', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-2', category:'韓式七格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)', image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g).jpg', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-3', category:'韓式七格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-4', category:'韓式七格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-5', category:'韓式七格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-6', category:'韓式七格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-7', category:'韓式七格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-  ];
-
-  const selCategory = $('#sel-category');
-  const selItem = $('#sel-item');
-  const selPrice = $('#sel-price');
-  const selQty = $('#sel-qty');
-  const orderTbody = $('#order-tbody');
-  
-  const previewImg = $('#preview-img');
-  const previewPlaceholder = $('#preview-placeholder');
-  const previewTitle = $('#preview-title');
-  const previewDesc = $('#preview-desc');
-
-  const preferredOrder = ['二格盒', '植纖四格盒', '韓式七格盒'];
-  const categories = [...new Set(catalog.map(x => x.category))];
-  categories.sort((a,b)=>{
-    const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
-    return a.localeCompare(b,'zh-Hant');
-  });
-  categories.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = c;
-    selCategory.appendChild(opt);
-  });
-
-  selCategory.addEventListener('change', () => {
-    selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
-    selItem.disabled = !selCategory.value;
-    if (selCategory.value) {
-      catalog.filter(x => x.category === selCategory.value).forEach(item => {
-        const opt = document.createElement('option');
-        opt.value = item.id;
-        const price = getAutoPriceByName(item.name);
-        opt.textContent = `${item.name} (${price ? `$${price}` : '洽詢'} 未稅)`;
-        selItem.appendChild(opt);
-      });
-      selItem.focus();
-    }
-    resetPreview();
-  });
-
-  function getAutoPriceByName(name){
-    if (PRICE_MAP && PRICE_MAP.flat && Object.prototype.hasOwnProperty.call(PRICE_MAP.flat, name)) {
-      return PRICE_MAP.flat[name];
-    }
-    return null;
-  }
-
-  function buildDesc(item){
-    const parts = [item.name];
-    if (item.meta) parts.push(item.meta);
-    if (item.includes && item.includes.length) {
-      parts.push(...item.includes.map(v => `  - ${v}`));
-    }
-    return parts.join('\n');
-  }
-
-  function resetPreview() {
-    previewImg.style.display = 'none';
-    previewPlaceholder.style.display = 'block';
-    previewPlaceholder.innerHTML = '請選擇左側餐點<br>以檢視圖片與內容';
-    previewTitle.textContent = '--';
-    previewDesc.textContent = '選擇餐點後將顯示詳細配菜內容';
-  }
-
-  selItem.addEventListener('change', () => {
-    const item = catalog.find(x => x.id === selItem.value);
-    if (!item) {
-      resetPreview();
-      return;
-    }
-    
-    const p = getAutoPriceByName(item.name);
-    selPrice.value = (p != null) ? p : 0;
-
-    previewTitle.textContent = item.name;
-    previewDesc.innerHTML = item.includes ? item.includes.join('<br>') : item.meta;
-
-    if (item.image) {
-      previewImg.src = item.image;
-      previewImg.style.display = 'block';
-      previewPlaceholder.style.display = 'none';
-    } else {
-      previewImg.style.display = 'none';
-      previewPlaceholder.style.display = 'block';
-      previewPlaceholder.innerHTML = '此餐點<br>暫無圖片';
-    }
-  });
-
-  function recalc(){
-    let subtotal = 0;
-    $$('#order-tbody tr').forEach(tr => {
-      const price = Number(tr.dataset.price||0);
-      const qty = Number(tr.dataset.qty||0);
-      const line = price * qty;
-      subtotal += line;
-      tr.querySelector('.line-subtotal').textContent = money(line);
-    });
-    $('#subtotal').textContent = money(subtotal);
-    $('#grand').textContent = money(subtotal);
-  }
-
-  function addRow({ itemId, price, qty }){
-    const item = catalog.find(x => x.id === itemId);
-    if (!item) return;
-    const desc = buildDesc(item);
-    const tr = document.createElement('tr');
-    tr.dataset.price = String(price);
-    tr.dataset.qty = String(qty);
-    tr.dataset.group = item.category;
-    tr.dataset.itemId = item.id;
-    tr.innerHTML = `
-      <td style="white-space:pre-wrap">${desc}</td>
-      <td class="right">${money(price)}</td>
-      <td class="right">${money(qty)}</td>
-      <td class="right line-subtotal">0</td>
-      <td class="right"><button type="button" class="btn-del" style="padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff">刪除</button></td>
-    `;
-    tr.querySelector('.btn-del').addEventListener('click', () => {
-      if (confirm(`確定要刪除「${item.name}」這項嗎？`)) {
-        tr.remove();
-        recalc();
-      }
-    });
-    tr.style.opacity = '0';
-    tr.style.transform = 'translateY(10px)';
-    orderTbody.appendChild(tr);
-    setTimeout(() => {
-      tr.style.opacity = '1';
-      tr.style.transform = 'translateY(0)';
-      tr.style.transition = 'all 0.2s ease';
-    }, 10);
-    recalc();
-  }
-
-  $('#btn-add').addEventListener('click', () => {
-    const group = selCategory.value;
-    const itemId = selItem.value;
-    if (!group) { alert('請先選擇「便當種類」'); return; }
-    if (!itemId) { alert('請選擇「餐盒種類」'); return; }
-    const price = Number(selPrice.value||0);
-    const qty = Number(selQty.value||1);
-    addRow({ itemId, price, qty });
-    selQty.value = 1; 
-  });
-
-  function generateExcel(){
-    // --- MOQ (分開檢核每種盒型) ---
-    const MIN_QTY = 10;
-    const counts = {};
-    const rows = $$('#order-tbody tr');
-    
-    if (rows.length === 0) {
-      alert('⚠️ 目前沒有任何餐點，請先加入明細。');
-      return;
-    }
-
-    rows.forEach(tr => {
-      const category = tr.dataset.group;
-      const qty = Number(tr.dataset.qty || 0);
-      if (!counts[category]) {
-        counts[category] = 0;
-      }
-      counts[category] += qty;
-    });
-
-    const invalidCategories = [];
-    for (const [cat, count] of Object.entries(counts)) {
-      if (count < MIN_QTY) {
-        invalidCategories.push(`${cat} (目前 ${count} 盒)`);
-      }
-    }
-
-    if (invalidCategories.length > 0) {
-      alert(`⚠️ 訂購量不足！\n\n根據規則，每種盒型需至少滿 ${MIN_QTY} 盒。\n\n以下盒型未達標：\n- ${invalidCategories.join('\n- ')}\n\n請調整數量後再試。`);
-      return; 
-    }
-    
-    const client = $('#client').value || '客戶';
-    const date = $('#date').value;
-    const filename = `報價單_${client}_${date||new Date().toISOString().slice(0,10)}.xlsx`;
-
-    const excelRows = [];
-    excelRows.push(['正餐餐盒報價單']);
-    excelRows.push(['單筆訂單30盒以上，建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。']);
-    excelRows.push(['注意：此為模擬報價，非正式訂單，需由業務人員確認後才算成立。']); 
-    
-    excelRows.push([null]);
-    excelRows.push(['客戶名稱', client]);
-    excelRows.push(['報價日期', date]);
-    excelRows.push([null]);
-    excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
-
-    const items = rows.map(tr => ({
-      group: tr.dataset.group,
-      desc: tr.children[0].textContent,
-      price: Number(tr.dataset.price||0),
-      qty: Number(tr.dataset.qty||0),
-      subtotal: Number(tr.dataset.price||0) * Number(tr.dataset.qty||0)
-    }));
-
-    const byGroup = {};
-    items.forEach(it => { (byGroup[it.group] ||= []).push(it); });
-    Object.keys(byGroup).forEach(g => {
-      excelRows.push([`--- ${g} ---`, null, null, null]);
-      byGroup[g].forEach(it => excelRows.push([it.desc, it.price, it.qty, it.subtotal]));
-    });
-
-    const subtotal = items.reduce((a,b)=>a+b.subtotal,0);
-    const shipping = 500; 
-    const taxRate = 0.05;
-    const tax = Math.round((subtotal + shipping) * taxRate);
-    const total = subtotal + shipping + tax;
-
-    excelRows.push([null]);
-    excelRows.push([null,null,'餐點小計 (未稅)', subtotal]);
-    excelRows.push([null,null,'交通運費', shipping]);
-    excelRows.push([null,null,'營業稅 (5%)', tax]);
-    excelRows.push([null,null,'總計 (含稅)', total]);
-
-    const ws = XLSX.utils.aoa_to_sheet(excelRows);
-    ws['!cols'] = [{wch:64},{wch:12},{wch:10},{wch:16}];
-    ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} }, { s:{r:2,c:0}, e:{r:2,c:3} } ]; 
-
-    const headerRows = 7; 
-    excelRows.forEach((r, i) => {
-      if (i >= headerRows) {
-        const cellA = `A${i+1}`;
-        if (r[1] !== null && r[0] !== null) { 
-           if (ws[cellA]) ws[cellA].s = { alignment:{ wrapText:true, vertical:'top' } };
-        } else if (r[2] !== null) { 
-           const cellLabel = `C${i+1}`;
-           if (ws[cellLabel]) ws[cellLabel].s = { font:{bold:true}, alignment:{ horizontal:'right' } };
-        }
-      }
-    });
-
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, '報價單');
-    XLSX.writeFile(wb, filename);
-
-    // --- 👇👇👇 新增：觸發彈跳視窗 👇👇👇 ---
-    showModal();
-  }
-  
-  // --- 彈跳視窗控制函式 ---
-  function showModal() {
-    const modal = document.getElementById('successModal');
-    modal.style.display = 'flex'; // 先設定 display flex
-    // 稍微延遲加 class 以觸發 fade-in 動畫
-    setTimeout(() => { modal.classList.add('active'); }, 10);
-  }
-
-  function closeModal() {
-    const modal = document.getElementById('successModal');
-    modal.classList.remove('active');
-    // 等動畫結束再隱藏
-    setTimeout(() => { modal.style.display = 'none'; }, 300);
-  }
-
-  // 點擊遮罩空白處也可以關閉
-  document.getElementById('successModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
-    }
-  });
-
-  window.generateExcel = generateExcel;
-  window.closeModal = closeModal; // 確保全域可呼叫
-
-  function calculateMinDate() {
-    let count = 0;
-    let d = new Date();
-    d.setDate(d.getDate() + 1); 
-
-    while (count < 5) {
-      const day = d.getDay();
-      if (day !== 0 && day !== 6) {
-        count++;
-      }
-      if (count < 5) { 
-        d.setDate(d.getDate() + 1);
-      }
-    }
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  (function initMeta(){
-    const minDateStr = calculateMinDate();
-    const dateInput = $('#date');
-    dateInput.value = minDateStr; 
-    dateInput.min = minDateStr;   
-  })();
-
-  selPrice.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/[^0-9]/g, '');
-  });
-
-  window.addEventListener('load', () => {
-    console.log('📋 報價單頁面已準備就緒！請先輸入客戶資訊，再選擇餐盒種類');
-  });
-</script>
-  <script>
-  // 👇👇👇 請將這裡換成您剛剛部署後的 GAS 網址 👇👇👇
+  // 👇👇👇 GAS 網址 (維持您原本提供的) 👇👇👇
   const GAS_URL = "https://script.google.com/macros/s/AKfycbzfzXfvVAaHSHu6Z78jwPtvPtLVy2mk6jF4tg7W5SkHJ88tTGW5ew_oEhJFYFWVuUYL/exec"; 
 
   const PRICE_MAP = { sheets: {}, flat: {} };
-  // ... (PRICE_MAP 與 catalog 資料保持不變，為了節省篇幅我這裡省略，請保留您原有的資料) ...
-  // 請保留您原本完整的 PRICE_MAP 和 catalog 陣列內容
-  
-  // (為了讓程式碼完整，這裡請確認您沒有刪掉 catalog 和 PRICE_MAP 的定義)
-  // ...
-  
-  // ------------ 以下是需要保留的完整資料結構 (範例) ------------
   PRICE_MAP.flat = {
     "日式鹽麴豬五花": 200, "日式鹽麴雞腿排": 200, "蔥油雞胸肉": 180, "法式油封杏鮑菇(全素)": 180,
     "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,
@@ -802,6 +456,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280, "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,
     "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
   };
+
   const catalog = [
     { id:'b2-2', category:'二格盒', name:'日式鹽麴豬五花', image:'日式鹽麴豬五花_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-3', category:'二格盒', name:'日式鹽麴雞腿排', image:'日式鹽麴雞腿排_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -822,7 +477,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'k8-6', category:'韓式七格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-7', category:'韓式七格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
   ];
-  // -------------------------------------------------------------
 
   const $ = (s, el=document) => el.querySelector(s);
   const $$ = (s, el=document) => Array.from(el.querySelectorAll(s));
@@ -964,9 +618,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-  // --- 👇👇👇 核心修改：使用 fetch 呼叫 GAS 並同時下載 Excel 👇👇👇 ---
+  // --- 送單與下載流程 ---
   async function handleOrderSubmit() {
-    // 1. 檢查 MOQ
     const MIN_QTY = 10;
     const counts = {};
     const rows = $$('#order-tbody tr');
@@ -995,16 +648,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return; 
     }
 
+    // 擷取所有欄位
     const client = $('#client').value || '未填寫';
+    const taxId = $('#tax-id').value || '';
+    const phone = $('#phone').value || '';
+    const address = $('#address').value || '';
     const date = $('#date').value || '未填寫';
 
-    // 2. 鎖定按鈕
     const btn = $('#btn-download');
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = '處理中...';
 
-    // 3. 準備資料
     const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
@@ -1017,8 +672,12 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const tax = Math.round((subtotal + shipping) * 0.05);
     const total = subtotal + shipping + tax;
 
+    // Payload 加入新欄位
     const payload = {
         client_name: client,
+        tax_id: taxId,
+        contact_phone: phone,
+        delivery_address: address,
         order_date: date,
         items: itemsData,
         totals: {
@@ -1029,13 +688,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         }
     };
 
-    // 4. 發送資料給 Google Apps Script (使用 fetch)
-    // 注意：使用 no-cors 模式，因為從 GitHub Pages 發到 Google 通常會有 CORS 問題
-    // no-cors 代表我們「發送後不等待回應內容」，直接假設成功
     fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify(payload),
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避免 CORS preflight
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         mode: "no-cors"
     }).then(() => {
         console.log("Request sent to GAS");
@@ -1043,30 +699,76 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         console.error("Error sending to GAS:", err);
     });
 
-    // 5. 下載 Excel (不管 Email 是否發送成功，都讓客戶下載)
-    // 稍微延遲一下，讓使用者感覺有在處理
     setTimeout(() => {
-        generateExcelFile(client, date, rows, subtotal, shipping, tax, total);
+        // 下載 Excel 時也傳入新欄位
+        generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
         showModal();
         btn.disabled = false;
         btn.textContent = originalText;
     }, 1000);
   }
 
-  // 純 Excel 產生邏輯
-  function generateExcelFile(client, date, rows, subtotal, shipping, tax, total) {
+  // 純 Excel 下載 (按鈕觸發的舊入口，也需要更新)
+  function generateExcel(){
+     const rows = $$('#order-tbody tr');
+     if (rows.length === 0) { alert('請先加入餐點'); return; }
+     
+     // 這裡也要做 MOQ 檢查 (簡化版)
+     const MIN_QTY = 10;
+     const counts = {};
+     rows.forEach(tr => {
+       const category = tr.dataset.group;
+       const qty = Number(tr.dataset.qty || 0);
+       if (!counts[category]) counts[category] = 0;
+       counts[category] += qty;
+     });
+     for (const [cat, count] of Object.entries(counts)) {
+       if (count < MIN_QTY) {
+         alert(`訂購量不足：${cat} 需滿 ${MIN_QTY} 盒`);
+         return; 
+       }
+     }
+     
+     // 呼叫統一的生成函式
+     const client = $('#client').value || '客戶';
+     const taxId = $('#tax-id').value || '';
+     const phone = $('#phone').value || '';
+     const address = $('#address').value || '';
+     const date = $('#date').value || new Date().toISOString().slice(0,10);
+     
+     const itemsData = rows.map(tr => ({
+         name: tr.children[0].textContent,
+         qty: Number(tr.dataset.qty),
+         price: Number(tr.dataset.price),
+         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
+     }));
+     const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
+     const shipping = 500;
+     const tax = Math.round((subtotal + shipping) * 0.05);
+     const total = subtotal + shipping + tax;
+     
+     // 直接呼叫 generateExcelFile 即可
+     generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
+     // 這裡如果是單純下載，不一定要顯示 modal，但為了體驗一致，我們還是可以顯示
+     showModal();
+  }
+
+  // 核心 Excel 生成邏輯
+  function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total) {
     const filename = `報價單_${client}_${date}.xlsx`;
     const excelRows = [];
     excelRows.push(['正餐餐盒報價單']);
     excelRows.push(['單筆訂單30盒以上，建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。']);
     excelRows.push(['注意：此為模擬報價，非正式訂單，需由業務人員確認後才算成立。']); 
     excelRows.push([null]);
-    excelRows.push(['客戶名稱', client]);
+    
+    // --- 新增欄位寫入 ---
+    excelRows.push(['客戶名稱', client, '統一編號', taxId]);
+    excelRows.push(['聯絡電話', phone, '配送地址', address]);
     excelRows.push(['報價日期', date]);
     excelRows.push([null]);
     excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
 
-    // 重新整理資料給 Excel
     const items = rows.map(tr => ({
       group: tr.dataset.group,
       desc: tr.children[0].textContent,
@@ -1090,9 +792,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const ws = XLSX.utils.aoa_to_sheet(excelRows);
     ws['!cols'] = [{wch:64},{wch:12},{wch:10},{wch:16}];
+    // 合併標題列
     ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} }, { s:{r:2,c:0}, e:{r:2,c:3} } ]; 
 
-    const headerRows = 7; 
+    const headerRows = 8; // 因為 header 變多了，這裡稍微調整起始檢查行
     excelRows.forEach((r, i) => {
       if (i >= headerRows) {
         const cellA = `A${i+1}`;
@@ -1128,8 +831,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
-  // 綁定按鈕事件
-  window.handleOrderSubmit = handleOrderSubmit;
+  // 綁定按鈕事件 (這裡改為呼叫 handleOrderSubmit 才是正確的送單流程)
+  // 原本您的按鈕 onclick 是 generateExcel，但我建議改為 handleOrderSubmit 才能同時送 GAS
+  $('#btn-download').onclick = handleOrderSubmit;
+  
   window.closeModal = closeModal;
 
   function calculateMinDate() {
@@ -1162,7 +867,5 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     console.log('📋 報價單頁面已準備就緒！');
   });
 </script>
-</body>
-</html>
 </body>
 </html>
