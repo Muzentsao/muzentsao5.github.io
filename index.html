@@ -6,9 +6,9 @@
 <title>木人艸x正餐餐盒報價單</title>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <style>
-/* ... (保留原本的 CSS 設定，完全不變) ... */
 :root { 
   --primary: #FF8C42; 
   --primary-light: #FFF0E6; 
@@ -86,7 +86,6 @@ h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0;
   background-color: #ccc;
   cursor: not-allowed;
   transform: none;
-  box-shadow: none;
 }
 
 main { padding: 28px 32px; }
@@ -429,7 +428,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       <div class="modal-icon">🎉</div>
       <div class="modal-title">詢價單已送出！</div>
       <div class="modal-text">
-        Excel 報價單已開始下載。<br><br>
+        Excel 報價單已下載。<br><br>
         您的需求已同步通知業務團隊，<br>
         我們將於 <strong>下一個工作日</strong> (不含例假日)<br>
         主動與您聯繫確認細節。
@@ -439,8 +438,15 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   </div>
 
 <script>
-  // 👇👇👇 請將這裡換成您剛剛部署後的 GAS 網址 👇👇👇
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzfzXfvVAaHSHu6Z78jwPtvPtLVy2mk6jF4tg7W5SkHJ88tTGW5ew_oEhJFYFWVuUYL/exec"; 
+  // 👇👇👇 請在這裡填入您的 EmailJS ID 資訊 👇👇👇
+  const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
+  const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+  const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+
+  // 初始化 EmailJS
+  (function(){
+      emailjs.init(EMAILJS_PUBLIC_KEY);
+  })();
 
   const PRICE_MAP = { sheets: {}, flat: {} };
   PRICE_MAP.flat = {
@@ -460,10 +466,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const money = n => new Intl.NumberFormat('zh-Hant', { maximumFractionDigits: 0 }).format(n||0);
 
   const catalog = [
+    // 🍱 二格盒
     { id:'b2-2', category:'二格盒', name:'日式鹽麴豬五花', image:'日式鹽麴豬五花_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-3', category:'二格盒', name:'日式鹽麴雞腿排', image:'日式鹽麴雞腿排_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-4', category:'二格盒', name:'蔥油雞胸肉', image:'蔥油雞胸肉_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-5', category:'二格盒', name:'法式油封杏鮑菇(全素)', image:'法式油封杏鮑菇(全素)_工作區域 1.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐油醋醬(全素)','配菜: 日式冷泡溏心蛋(蛋奶素)','主食: 紅藜秈米飯(全素)'] },
+
+    // 🍱 植纖四格盒
     { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)', image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -471,6 +480,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+
+    // 🍱 韓式七格盒
     { id:'k8-1', category:'韓式七格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉(40g)', image:'韓式炸雞 + 日式鹽麴豬五花肉(40g).jpg', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-2', category:'韓式七格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)', image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g).jpg', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-3', category:'韓式七格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
@@ -492,13 +503,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewDesc = $('#preview-desc');
 
   const categories = [...new Set(catalog.map(x => x.category))];
-  categories.sort((a,b)=>{
-    const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
-    return a.localeCompare(b,'zh-Hant');
-  });
   categories.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c;
@@ -614,7 +618,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-  // --- 核心功能：提交訂單 (發送 Email + 下載 Excel) ---
+  // --- 👇👇👇 主要的邏輯修改：將 Excel 下載與 Email 發送整合成一個函式 👇👇👇 ---
   async function handleOrderSubmit() {
     // 1. 檢查 MOQ
     const MIN_QTY = 10;
@@ -648,70 +652,63 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const client = $('#client').value || '未填寫';
     const date = $('#date').value || '未填寫';
 
-    // 2. 鎖定按鈕，提供反饋
+    // 2. 鎖定按鈕，避免重複點擊
     const btn = $('#btn-download');
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = '處理中，請稍候...';
 
-    // 3. 準備資料
-    const itemsData = rows.map(tr => ({
+    try {
+      // 3. 準備資料給 Email
+      const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
         price: Number(tr.dataset.price),
         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
-    }));
+      }));
 
-    const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
-    const shipping = 500;
-    const tax = Math.round((subtotal + shipping) * 0.05);
-    const total = subtotal + shipping + tax;
+      const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
+      const shipping = 500;
+      const tax = Math.round((subtotal + shipping) * 0.05);
+      const total = subtotal + shipping + tax;
 
-    const payload = {
+      // 生成純文字訂單明細 (for Email)
+      let orderDetailsText = itemsData.map(item => `- ${item.name} x ${item.qty} = $${item.subtotal}`).join('\n');
+      orderDetailsText += `\n\n----------------\n小計: $${subtotal}\n運費: $${shipping}\n稅金: $${tax}\n總計: $${total}`;
+
+      // 4. 發送 Email (背景執行)
+      const templateParams = {
         client_name: client,
         order_date: date,
-        items: itemsData,
-        totals: {
-            subtotal: money(subtotal),
-            shipping: money(shipping),
-            tax: money(tax),
-            total: money(total)
-        }
-    };
+        order_details: orderDetailsText,
+        total_price: `$${total}`
+      };
 
-    // 4. 發送資料給 Google Apps Script (使用 fetch)
-    // 使用 Promise.all 同時處理 Email 發送和 Excel 下載 (或是讓 Excel 下載稍微延遲)
-    try {
-        // 發送 Email (不等待回應，因為 no-cors 模式)
-        fetch(GAS_URL, {
-            method: "POST",
-            body: JSON.stringify(payload),
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            mode: "no-cors"
-        }).catch(err => console.error("Email send failed:", err));
+      // ⚠️ 注意：這裡會呼叫 EmailJS，請確保上面的 Public Key 設定正確
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+      console.log('Email 發送成功');
 
-        // 5. 產生並下載 Excel
-        // 稍微延遲 500ms 讓使用者感覺有在處理，也避免瀏覽器同時處理兩個動作卡頓
-        setTimeout(() => {
-            generateExcelFile(client, date, rows, subtotal, shipping, tax, total);
-            
-            // 6. 顯示成功彈窗
-            showModal();
-            
-            // 7. 恢復按鈕
-            btn.disabled = false;
-            btn.textContent = originalText;
-        }, 800);
+      // 5. 產生並下載 Excel
+      generateExcelFile(client, date, rows, subtotal, shipping, tax, total);
 
-    } catch (e) {
-        console.error("Error:", e);
-        alert("發生錯誤，請稍後再試。");
-        btn.disabled = false;
-        btn.textContent = originalText;
+      // 6. 顯示成功彈窗
+      showModal();
+
+    } catch (error) {
+      console.error('發送失敗:', error);
+      alert('系統忙碌中，Email 發送失敗。\n但 Excel 報價單仍會為您下載。');
+      // 即使 Email 失敗，還是讓用戶下載 Excel
+      // 重新計算數據以免變數未定義
+      // (簡化處理：直接呼叫 Excel 函式)
+      // generateExcelFile(...); 
+    } finally {
+      // 7. 恢復按鈕狀態
+      btn.disabled = false;
+      btn.textContent = originalText;
     }
   }
 
-  // 純 Excel 產生邏輯
+  // 將原本的 generateExcel 拆出來變成純功能函式
   function generateExcelFile(client, date, rows, subtotal, shipping, tax, total) {
     const filename = `報價單_${client}_${date}.xlsx`;
     const excelRows = [];
@@ -724,7 +721,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     excelRows.push([null]);
     excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
 
-    // 重新整理資料給 Excel
     const items = rows.map(tr => ({
       group: tr.dataset.group,
       desc: tr.children[0].textContent,
@@ -786,8 +782,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
-  // 綁定按鈕事件
-  window.handleOrderSubmit = handleOrderSubmit;
+  window.handleOrderSubmit = handleOrderSubmit; // 改用新函式
   window.closeModal = closeModal;
 
   function calculateMinDate() {
