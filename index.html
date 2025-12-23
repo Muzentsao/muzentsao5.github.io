@@ -515,35 +515,59 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-  function generateExcel(){
-    // --- 新增：MOQ (最低訂購量) 卡控邏輯 ---
-    const MIN_QTY = 10; 
+function generateExcel(){
+    // --- 👇👇👇 修改：MOQ (分開檢核每種盒型) 👇👇👇 ---
+    const MIN_QTY = 10;
     
-    // 計算目前訂單中所有餐盒的總數量
-    const currentTotalQty = $$('#order-tbody tr').reduce((acc, tr) => {
-      return acc + Number(tr.dataset.qty || 0);
-    }, 0);
+    // 1. 統計各類別的數量
+    const counts = {};
+    const rows = $$('#order-tbody tr');
+    
+    if (rows.length === 0) {
+      alert('⚠️ 目前沒有任何餐點，請先加入明細。');
+      return;
+    }
 
-    if (currentTotalQty < MIN_QTY) {
-      alert(`⚠️ 訂購量不足！\n\n目前總數量為 ${currentTotalQty} 盒。\n最低訂購量需滿 ${MIN_QTY} 盒才能產出報價單。\n\n請再增加訂購數量。`);
+    rows.forEach(tr => {
+      const category = tr.dataset.group; // 取得該行的類別 (如: 二格盒)
+      const qty = Number(tr.dataset.qty || 0);
+      
+      if (!counts[category]) {
+        counts[category] = 0;
+      }
+      counts[category] += qty;
+    });
+
+    // 2. 檢查是否有類別未達標
+    const invalidCategories = [];
+    for (const [cat, count] of Object.entries(counts)) {
+      if (count < MIN_QTY) {
+        invalidCategories.push(`${cat} (目前 ${count} 盒)`);
+      }
+    }
+
+    // 3. 若有不合格的項目，跳出警示並阻擋
+    if (invalidCategories.length > 0) {
+      alert(`⚠️ 訂購量不足！\n\n根據規則，每種盒型需至少滿 ${MIN_QTY} 盒。\n\n以下盒型未達標：\n- ${invalidCategories.join('\n- ')}\n\n請調整數量後再試。`);
       return; 
     }
+    // ----------------------------------------------------
     
     const client = $('#client').value || '客戶';
     const date = $('#date').value;
     const filename = `報價單_${client}_${date||new Date().toISOString().slice(0,10)}.xlsx`;
 
-    const rows = [];
-    rows.push(['正餐餐盒報價單']);
-    rows.push(['單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。']); 
+    const excelRows = []; // 變數名稱改為 excelRows 避免混淆
+    excelRows.push(['正餐餐盒報價單']);
+    excelRows.push(['單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。']); 
     
-    rows.push([null]);
-    rows.push(['客戶名稱', client]);
-    rows.push(['報價日期', date]);
-    rows.push([null]);
-    rows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
+    excelRows.push([null]);
+    excelRows.push(['客戶名稱', client]);
+    excelRows.push(['報價日期', date]);
+    excelRows.push([null]);
+    excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
 
-    const items = $$('#order-tbody tr').map(tr => ({
+    const items = rows.map(tr => ({
       group: tr.dataset.group,
       desc: tr.children[0].textContent,
       price: Number(tr.dataset.price||0),
@@ -554,8 +578,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const byGroup = {};
     items.forEach(it => { (byGroup[it.group] ||= []).push(it); });
     Object.keys(byGroup).forEach(g => {
-      rows.push([`--- ${g} ---`, null, null, null]);
-      byGroup[g].forEach(it => rows.push([it.desc, it.price, it.qty, it.subtotal]));
+      excelRows.push([`--- ${g} ---`, null, null, null]);
+      byGroup[g].forEach(it => excelRows.push([it.desc, it.price, it.qty, it.subtotal]));
     });
 
     // 計算含稅總額
@@ -565,18 +589,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const tax = Math.round((subtotal + shipping) * taxRate);
     const total = subtotal + shipping + tax;
 
-    rows.push([null]);
-    rows.push([null,null,'餐點小計 (未稅)', subtotal]);
-    rows.push([null,null,'交通運費', shipping]);
-    rows.push([null,null,'營業稅 (5%)', tax]);
-    rows.push([null,null,'總計 (含稅)', total]);
+    excelRows.push([null]);
+    excelRows.push([null,null,'餐點小計 (未稅)', subtotal]);
+    excelRows.push([null,null,'交通運費', shipping]);
+    excelRows.push([null,null,'營業稅 (5%)', tax]);
+    excelRows.push([null,null,'總計 (含稅)', total]);
 
-    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const ws = XLSX.utils.aoa_to_sheet(excelRows);
     ws['!cols'] = [{wch:64},{wch:12},{wch:10},{wch:16}];
     ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} } ]; 
 
     const headerRows = 6;
-    rows.forEach((r, i) => {
+    excelRows.forEach((r, i) => {
       if (i >= headerRows) {
         const cellA = `A${i+1}`;
         if (r[1] !== null && r[0] !== null) { 
