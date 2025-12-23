@@ -25,7 +25,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; } /* 加入平滑捲動效果 */
+html { scroll-behavior: smooth; }
 
 body { 
   font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "Segoe UI", Roboto, Arial, "PingFang TC", "Microsoft JhengHei", sans-serif; 
@@ -34,10 +34,9 @@ body {
   line-height: 1.5;
 }
 
-/* 原本的容器設定 (表單區域) */
 .container { 
   max-width: 1200px; 
-  margin: 0 auto 32px auto; /* 上方 margin 改為 0，因為上面有 Hero */
+  margin: 0 auto 32px auto; 
   background: #fff; 
   border-radius: var(--radius); 
   box-shadow: var(--shadow); 
@@ -45,7 +44,6 @@ body {
   border: 1px solid var(--line);
 }  
 
-/* 舊的 Header 樣式保留但用不到，您可以選擇刪除或留著備用 */
 header { 
   padding: 24px 32px; 
   border-bottom: 1px solid var(--line); 
@@ -58,7 +56,6 @@ header {
 }
 
 h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0; }
-
 .muted { color: var(--muted); font-size: 14px; margin-top: 4px; }
 
 #btn-download, #btn-add { 
@@ -173,7 +170,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 #grand { color: var(--primary); font-size: 20px; }
 
 @media (max-width: 768px) {
-  /* Hero 區塊手機版優化 */
   .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
   .hero-text-area { text-align: center; margin-bottom: 2rem; }
   .hero-btn { width: 100%; text-align: center; }
@@ -191,10 +187,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 }
 
 @media print { 
-  .hero-section { display: none !important; } /* 列印時隱藏 Hero */
+  .hero-section { display: none !important; }
   .toolbar, .btn-row, details, #btn-download { display: none !important; } 
   .container { margin: 0; border: none; border-radius: 0; box-shadow: none; } 
-  header { background: #fff; border-bottom: none; display: flex !important; } /* 列印時保留簡單標題 */
+  header { background: #fff; border-bottom: none; display: flex !important; } 
   h1 { color: var(--ink); }
 }
 </style>
@@ -230,7 +226,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         </div>
         
         <div style="flex:1 1 400px; text-align:center;">
-          <img src="iStock-1167505855.jpg" alt="木人艸正餐餐盒展示" style="width:100%; max-width:500px; height:auto; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit: cover;">
+          <img src="日式鹽麴雞腿排_工作區域 1.jpg" alt="木人艸正餐餐盒展示" style="width:100%; max-width:500px; height:auto; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit: cover;">
         </div>
       </div>
     </div>
@@ -239,18 +235,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   <div class="container" id="order-form">
     <main>
-      <section class="grid">
-        <div class="block">
-          <label>客戶名稱</label>
-          <input id="client" type="text" placeholder="請輸入客戶名稱">
-        </div>
-        <div class="block">
-          <label>報價日期</label>
-          <input id="date" type="date">
-        </div>
-      </section>
-
-      <section class="block" style="margin-top:12px">
+      <section class="block">
         <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">快速選品（層級下拉）</label>
         
         <div class="selection-wrapper">
@@ -290,6 +275,17 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
               <div class="preview-desc" id="preview-desc">選擇餐點後將顯示詳細配菜內容</div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="grid" style="margin-top: 20px;">
+        <div class="block">
+          <label>客戶名稱</label>
+          <input id="client" type="text" placeholder="請輸入客戶名稱">
+        </div>
+        <div class="block">
+          <label>報價日期</label>
+          <input id="date" type="date">
         </div>
       </section>
 
@@ -522,7 +518,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const rows = [];
     rows.push(['正餐餐盒報價單']);
-    // 👇 確保 Excel 裡面這段文字還在
     rows.push(['單筆訂單30盒以上，建議180元/人起跳，以上未稅未含交通費。']); 
     
     rows.push([null]);
@@ -586,7 +581,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   window.addEventListener('load', () => {
     console.log('📋 報價單頁面已準備就緒！請先輸入客戶資訊，再選擇餐盒種類');
-    $('#client').focus();
+    // 取消了 $('#client').focus(); 避免畫面跳動
   });
 </script>
 </body>
