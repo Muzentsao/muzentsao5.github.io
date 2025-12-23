@@ -65,11 +65,11 @@ h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0;
   background: var(--primary); 
   color: #fff; 
   cursor: pointer; 
-  font-weight: 600;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  font-weight: 600; 
+  transition: var(--transition); 
+  display: inline-flex; 
+  align-items: center; 
+  justify-content: center; 
   gap: 8px;
 }
 #btn-download::before { content: "📥"; }
@@ -83,8 +83,8 @@ main { padding: 28px 32px; }
   border: 1px solid var(--line); 
   border-radius: var(--radius); 
   padding: 20px; 
-  background-color: #fff;
-  box-shadow: var(--shadow-sm);
+  background-color: #fff; 
+  box-shadow: var(--shadow-sm); 
   margin-bottom: 20px;
 }
 
@@ -100,7 +100,7 @@ input[type="text"], input[type="date"], input[type="number"], textarea, select {
   border-radius: var(--radius-sm); 
   font-size: 16px; 
   height: 48px; 
-  transition: var(--transition);
+  transition: var(--transition); 
   color: var(--ink);
 }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--tertiary); }
@@ -295,7 +295,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           <thead>
             <tr>
               <th>項目名稱（主菜）與內容</th>
-              <th class="right" style="width:120px">單價 (未稅)</th> <th class="right" style="width:100px">數量</th>
+              <th class="right" style="width:120px">單價 (未稅)</th>
+              <th class="right" style="width:100px">數量</th>
               <th class="right" style="width:140px">小計</th>
               <th style="width:60px"></th>
             </tr>
@@ -308,7 +309,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           <div>
             <div style="display:grid; gap:6px; justify-content:end">
               <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
-              <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計</div><div class="right" id="grand">0</div></div>
+              <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
             </div>
             <div style="margin-top: 16px;">
                <button id="btn-download" onclick="generateExcel()" style="width:100%">下載 Excel (.xlsx)</button>
@@ -398,7 +399,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         const opt = document.createElement('option');
         opt.value = item.id;
         
-        // 👇👇👇 修改這裡：在選項中顯示價格與未稅 👇👇👇
+        // 選單顯示價格
         const price = getAutoPriceByName(item.name);
         opt.textContent = `${item.name} (${price ? `$${price}` : '洽詢'} 未稅)`;
         
@@ -527,7 +528,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     rows.push(['客戶名稱', client]);
     rows.push(['報價日期', date]);
     rows.push([null]);
-    rows.push(['項目名稱（主菜）與內容','單價','數量','小計']);
+    rows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
 
     const items = $$('#order-tbody tr').map(tr => ({
       group: tr.dataset.group,
@@ -544,25 +545,32 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       byGroup[g].forEach(it => rows.push([it.desc, it.price, it.qty, it.subtotal]));
     });
 
-    const total = items.reduce((a,b)=>a+b.subtotal,0);
+    // 計算含稅總額
+    const subtotal = items.reduce((a,b)=>a+b.subtotal,0);
+    const shipping = 500; 
+    const taxRate = 0.05;
+    const tax = Math.round((subtotal + shipping) * taxRate);
+    const total = subtotal + shipping + tax;
+
     rows.push([null]);
-    rows.push([null,null,'小計', total]);
-    rows.push([null,null,'總計', total]);
-    
+    rows.push([null,null,'餐點小計 (未稅)', subtotal]);
+    rows.push([null,null,'交通運費', shipping]);
+    rows.push([null,null,'營業稅 (5%)', tax]);
+    rows.push([null,null,'總計 (含稅)', total]);
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
-    ws['!cols'] = [{wch:64},{wch:10},{wch:10},{wch:14}];
+    ws['!cols'] = [{wch:64},{wch:12},{wch:10},{wch:16}];
     ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} } ]; 
 
     const headerRows = 6;
     rows.forEach((r, i) => {
-      if (i >= headerRows && i < rows.length - 3) {
+      if (i >= headerRows) {
         const cellA = `A${i+1}`;
-        if (r[1] !== null) {
-          if (ws[cellA]) ws[cellA].s = { alignment:{ wrapText:true, vertical:'top' } };
-        } else {
-          ws['!merges'].push({ s:{r:i,c:0}, e:{r:i,c:3} });
-          if (ws[cellA]) ws[cellA].s = { font:{bold:true}, alignment:{ horizontal:'center' } };
+        if (r[1] !== null && r[0] !== null) { 
+           if (ws[cellA]) ws[cellA].s = { alignment:{ wrapText:true, vertical:'top' } };
+        } else if (r[2] !== null) { 
+           const cellLabel = `C${i+1}`;
+           if (ws[cellLabel]) ws[cellLabel].s = { font:{bold:true}, alignment:{ horizontal:'right' } };
         }
       }
     });
@@ -584,7 +592,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   window.addEventListener('load', () => {
     console.log('📋 報價單頁面已準備就緒！請先輸入客戶資訊，再選擇餐盒種類');
-    // 取消了 $('#client').focus(); 避免畫面跳動
   });
 </script>
 </body>
