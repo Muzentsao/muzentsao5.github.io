@@ -250,7 +250,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
                 <select id="sel-item" disabled><option value="" disabled selected>請先選便當種類</option></select>
               </div>
               <div>
-                <label>單價</label>
+                <label>單價 <span style="font-size:13px; color:#E53E3E;">(未稅)</span></label>
                 <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
               </div>
               <div>
@@ -295,8 +295,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           <thead>
             <tr>
               <th>項目名稱（主菜）與內容</th>
-              <th class="right" style="width:120px">單價</th>
-              <th class="right" style="width:100px">數量</th>
+              <th class="right" style="width:120px">單價 (未稅)</th> <th class="right" style="width:100px">數量</th>
               <th class="right" style="width:140px">小計</th>
               <th style="width:60px"></th>
             </tr>
@@ -398,7 +397,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       catalog.filter(x => x.category === selCategory.value).forEach(item => {
         const opt = document.createElement('option');
         opt.value = item.id;
-        opt.textContent = item.name;
+        
+        // 👇👇👇 修改這裡：在選項中顯示價格與未稅 👇👇👇
+        const price = getAutoPriceByName(item.name);
+        opt.textContent = `${item.name} (${price ? `$${price}` : '洽詢'} 未稅)`;
+        
         selItem.appendChild(opt);
       });
       selItem.focus();
