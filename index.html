@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://cdnjs.cloudflare.com"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
+/* CSS 樣式維持不變 */
 :root { 
   --primary: #FF8C42; 
   --primary-light: #FFF0E6; 
@@ -416,7 +417,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
               <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
             </div>
             <div style="margin-top: 16px;">
-               <button id="btn-download" onclick="generateExcel()" style="width:100%">下載 Excel (.xlsx)</button>
+               <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
                <div class="disclaimer">
                  此為模擬報價，非正式訂單<br>需由業務人員確認後才算成立
                </div>
@@ -441,8 +442,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   </div>
 
 <script>
-  // 👇👇👇 GAS 網址 (維持您原本提供的) 👇👇👇
-  const GAS_URL = "https://script.google.com/macros/s/AKfycby4HujH2AST6cMStEhf2UrdLtU6QARLW_iZnHoD5vmPytDcx1zhY_ilfW-OFWRmwwQ/exec"; 
+  // 👇👇👇 您的 GAS 網址 (請確認這是否為最新部署的網址) 👇👇👇
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzfzXfvVAaHSHu6Z78jwPtvPtLVy2mk6jF4tg7W5SkHJ88tTGW5ew_oEhJFYFWVuUYL/exec"; 
 
   const PRICE_MAP = { sheets: {}, flat: {} };
   PRICE_MAP.flat = {
@@ -465,7 +466,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)', image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)_工作區域 1.jpg', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-4', category:'植纖四格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-4', category:'植纖四格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -618,43 +619,37 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-  // --- 送單與下載流程 ---
+  // --- 送單與下載流程 (安全改良版) ---
   async function handleOrderSubmit() {
     const MIN_QTY = 10;
     const counts = {};
     const rows = $$('#order-tbody tr');
     
-    if (rows.length === 0) {
-      alert('⚠️ 目前沒有任何餐點，請先加入明細。');
-      return;
-    }
-
+    // --- 1. 檢查數量 (邏輯不變) ---
+    if (rows.length === 0) { alert('⚠️ 目前沒有任何餐點，請先加入明細。'); return; }
     rows.forEach(tr => {
       const category = tr.dataset.group;
       const qty = Number(tr.dataset.qty || 0);
       if (!counts[category]) counts[category] = 0;
       counts[category] += qty;
     });
-
     const invalidCategories = [];
     for (const [cat, count] of Object.entries(counts)) {
-      if (count < MIN_QTY) {
-        invalidCategories.push(`${cat} (目前 ${count} 盒)`);
-      }
+      if (count < MIN_QTY) invalidCategories.push(`${cat} (目前 ${count} 盒)`);
     }
-
     if (invalidCategories.length > 0) {
       alert(`⚠️ 訂購量不足！\n\n根據規則，每種盒型需至少滿 ${MIN_QTY} 盒。\n\n以下盒型未達標：\n- ${invalidCategories.join('\n- ')}\n\n請調整數量後再試。`);
       return; 
     }
 
-    // 擷取所有欄位
+    // --- 2. 準備資料 ---
     const client = $('#client').value || '未填寫';
     const taxId = $('#tax-id').value || '';
     const phone = $('#phone').value || '';
     const address = $('#address').value || '';
     const date = $('#date').value || '未填寫';
 
+    // 鎖定按鈕，避免重複點擊
     const btn = $('#btn-download');
     const originalText = btn.textContent;
     btn.disabled = true;
@@ -666,13 +661,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         price: Number(tr.dataset.price),
         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
     }));
-
     const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
     const shipping = 500;
     const tax = Math.round((subtotal + shipping) * 0.05);
     const total = subtotal + shipping + tax;
 
-    // Payload 加入新欄位
     const payload = {
         client_name: client,
         tax_id: taxId,
@@ -688,69 +681,34 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         }
     };
 
-    fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        mode: "no-cors"
-    }).then(() => {
-        console.log("Request sent to GAS");
-    }).catch(err => {
-        console.error("Error sending to GAS:", err);
-    });
+    // --- 3. 關鍵修改：使用 await 等待發送完成 ---
+    try {
+        console.log("正在傳送資料給 GAS...");
+        
+        // 這裡加了 await，程式會暫停在這行，直到資料真的送出去了才會往下走
+        await fetch(GAS_URL, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            mode: "no-cors" // 重要：GAS 必須用 no-cors
+        });
 
-    setTimeout(() => {
-        // 下載 Excel 時也傳入新欄位
-        generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
-        showModal();
-        btn.disabled = false;
-        btn.textContent = originalText;
-    }, 1000);
-  }
+        console.log("GAS 發送完成 (或已送出請求)");
 
-  // 純 Excel 下載 (按鈕觸發的舊入口，也需要更新)
-  function generateExcel(){
-     const rows = $$('#order-tbody tr');
-     if (rows.length === 0) { alert('請先加入餐點'); return; }
-     
-     // 這裡也要做 MOQ 檢查 (簡化版)
-     const MIN_QTY = 10;
-     const counts = {};
-     rows.forEach(tr => {
-       const category = tr.dataset.group;
-       const qty = Number(tr.dataset.qty || 0);
-       if (!counts[category]) counts[category] = 0;
-       counts[category] += qty;
-     });
-     for (const [cat, count] of Object.entries(counts)) {
-       if (count < MIN_QTY) {
-         alert(`訂購量不足：${cat} 需滿 ${MIN_QTY} 盒`);
-         return; 
-       }
-     }
-     
-     // 呼叫統一的生成函式
-     const client = $('#client').value || '客戶';
-     const taxId = $('#tax-id').value || '';
-     const phone = $('#phone').value || '';
-     const address = $('#address').value || '';
-     const date = $('#date').value || new Date().toISOString().slice(0,10);
-     
-     const itemsData = rows.map(tr => ({
-         name: tr.children[0].textContent,
-         qty: Number(tr.dataset.qty),
-         price: Number(tr.dataset.price),
-         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
-     }));
-     const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
-     const shipping = 500;
-     const tax = Math.round((subtotal + shipping) * 0.05);
-     const total = subtotal + shipping + tax;
-     
-     // 直接呼叫 generateExcelFile 即可
-     generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
-     // 這裡如果是單純下載，不一定要顯示 modal，但為了體驗一致，我們還是可以顯示
-     showModal();
+    } catch (err) {
+        console.error("發送失敗，但仍繼續下載 Excel:", err);
+        // 就算網路爛掉，我們還是讓客人下載 Excel，不要卡住
+    }
+
+    // --- 4. 只有資料送完後，才開始下載 Excel ---
+    generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
+    
+    // 顯示成功視窗
+    showModal();
+    
+    // 恢復按鈕
+    btn.disabled = false;
+    btn.textContent = originalText;
   }
 
   // 核心 Excel 生成邏輯
@@ -831,8 +789,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
-  // 綁定按鈕事件 (這裡改為呼叫 handleOrderSubmit 才是正確的送單流程)
-  // 原本您的按鈕 onclick 是 generateExcel，但我建議改為 handleOrderSubmit 才能同時送 GAS
+  // 綁定按鈕事件 (核心邏輯：點擊觸發 async 流程)
   $('#btn-download').onclick = handleOrderSubmit;
   
   window.closeModal = closeModal;
