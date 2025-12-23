@@ -516,6 +516,19 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   });
 
   function generateExcel(){
+    // --- 新增：MOQ (最低訂購量) 卡控邏輯 ---
+    const MIN_QTY = 10; 
+    
+    // 計算目前訂單中所有餐盒的總數量
+    const currentTotalQty = $$('#order-tbody tr').reduce((acc, tr) => {
+      return acc + Number(tr.dataset.qty || 0);
+    }, 0);
+
+    if (currentTotalQty < MIN_QTY) {
+      alert(`⚠️ 訂購量不足！\n\n目前總數量為 ${currentTotalQty} 盒。\n最低訂購量需滿 ${MIN_QTY} 盒才能產出報價單。\n\n請再增加訂購數量。`);
+      return; 
+    }
+    
     const client = $('#client').value || '客戶';
     const date = $('#date').value;
     const filename = `報價單_${client}_${date||new Date().toISOString().slice(0,10)}.xlsx`;
