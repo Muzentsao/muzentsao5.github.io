@@ -371,70 +371,94 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   <section class="block" style="margin-top: 20px;">
     
-    <div class="form-header">
-      <h2>填寫訂購資訊 & 確認明細</h2>
-      <div class="muted">請完整填寫以下資訊以建立報價單</div>
+    <div class="form-header" style="margin-bottom: 24px; border-bottom:1px solid var(--line); padding-bottom:16px;">
+      <h2 style="font-size: 20px; color: var(--ink); display:flex; align-items:center; gap:8px;">
+        📝 填寫訂購資訊 & 確認明細
+      </h2>
+      <div class="muted">請填寫完整資訊，系統將自動生成正式報價單格式。</div>
     </div>
 
-    <div class="form-grid-container">
+    <div class="form-grid-modern">
       <div class="form-group">
-        <label>客戶名稱 <span class="required-mark">*</span></label>
-        <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
+        <label>客戶名稱 / 公司抬頭 <span class="required-mark" style="color:var(--danger)">*</span></label>
+        <input id="client" type="text" placeholder="例：木人艸有限公司">
       </div>
       
       <div class="form-group">
-        <label>統一編號 <span class="required-mark">*</span></label>
-        <input id="tax-id" type="text" placeholder="請輸入統一編號">
+        <label>統一編號 <span class="required-mark" style="color:var(--danger)">*</span></label>
+        <input id="tax-id" type="text" placeholder="8碼統編">
       </div>
 
       <div class="form-group">
-        <label>聯絡電話 <span class="required-mark">*</span></label>
-        <input id="phone" type="tel" placeholder="手機或市話">
+        <label>聯絡電話 <span class="required-mark" style="color:var(--danger)">*</span></label>
+        <input id="phone" type="tel" placeholder="09xx-xxx-xxx">
       </div>
 
       <div class="form-group">
-        <label>報價/預計送達日期 <span class="required-mark">*</span></label>
+        <label>預計送達日期 <span class="required-mark" style="color:var(--danger)">*</span></label>
         <input id="date" type="date">
-        <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
+        <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂</small>
       </div>
 
-      <div class="form-group full">
-        <label>配送地址 <span class="required-mark">*</span></label>
-        <input id="address" type="text" placeholder="請輸入完整配送地址">
+      <div class="form-group full-width">
+        <label>配送地址 <span class="required-mark" style="color:var(--danger)">*</span></label>
+        <input id="address" type="text" placeholder="請輸入完整收件地址 (含樓層/室)">
       </div>
     </div>
 
-    <div style="border-top: 2px dashed var(--line); margin: 24px 0;"></div>
-
-    <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">訂單內容確認</label>
-    <table id="order-table">
-      <thead>
-        <tr>
-          <th>項目名稱（主菜）與內容</th>
-          <th class="right" style="width:120px">單價 (未稅)</th>
-          <th class="right" style="width:100px">數量</th>
-          <th class="right" style="width:140px">小計</th>
-          <th style="width:60px"></th>
-        </tr>
-      </thead>
-      <tbody id="order-tbody"></tbody>
-    </table>
+    <div style="margin-top: 32px;">
+      <label style="font-weight:600; color:#374151; margin-bottom:12px; display:block">📦 訂單內容確認</label>
+      <table id="order-table">
+        <thead>
+          <tr>
+            <th>項目名稱（主菜）與內容</th>
+            <th class="right" style="width:120px">單價 (未稅)</th>
+            <th class="right" style="width:100px">數量</th>
+            <th class="right" style="width:140px">小計</th>
+            <th style="width:60px"></th>
+          </tr>
+        </thead>
+        <tbody id="order-tbody"></tbody>
+      </table>
+    </div>
     
-    <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
-      <div class="note">金額僅供試算，實際以合約或最終報價為準。</div>
-      <div>
-        <div style="display:grid; gap:6px; justify-content:end">
-          <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
-          <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
+    <div class="checkout-summary">
+      <div class="note-area" style="max-width: 400px; color: var(--muted); font-size: 13px;">
+        <p style="margin-bottom:8px;">ℹ️ <strong>訂購須知：</strong></p>
+        <ul style="padding-left: 20px; line-height: 1.6;">
+          <li>金額僅供線上試算，實際運費與折扣以最終合約或業務報價為準。</li>
+          <li>雙北地區運費預設為 $500，達免運門檻可於後續洽談調整。</li>
+        </ul>
+      </div>
+
+      <div class="summary-card">
+        <div class="price-row">
+          <span>餐點小計</span>
+          <span id="subtotal">0</span>
         </div>
-        <div style="margin-top: 16px;">
-           <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
-           <div class="disclaimer">
-             此為模擬報價，非正式訂單<br>需由業務人員確認後才算成立
-           </div>
+        <div class="price-row">
+          <span>預估運費</span>
+          <span>500</span>
+        </div>
+        <div class="price-row">
+          <span>營業稅 (5%)</span>
+          <span style="color:var(--muted); font-size:13px;">系統自動計算</span>
+        </div>
+        
+        <div class="price-row total">
+          <span class="label">總計金額 <small style="font-weight:400; font-size:12px; color:var(--muted)">(未稅)</small></span>
+          <span class="amount" id="grand">0</span>
+        </div>
+
+        <div class="action-area">
+          <button id="btn-download" style="width:100%; height: 56px; font-size: 18px;">確認訂購並下載報價單</button>
+          <div class="disclaimer">
+            此為模擬報價單，點擊後將生成 Excel 檔案<br>並通知業務人員與您聯繫。
+          </div>
         </div>
       </div>
     </div>
+
   </section>
 </main>
   </div>
