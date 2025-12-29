@@ -96,7 +96,7 @@ main { padding: 28px 32px; }
 
 label { display: block; font-size: 14px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
 
-input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select { 
+input[type="text"], input[type="date"], input[type="number"], input[type="tel"], textarea, select, input[type="time"] { 
   width: 100%; 
   padding: 12px 16px; 
   border: 1px solid var(--line); 
@@ -105,6 +105,7 @@ input[type="text"], input[type="date"], input[type="number"], input[type="tel"],
   height: 48px; 
   transition: var(--transition); 
   color: var(--ink);
+  background: #fff; /* 確保背景色 */
 }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--tertiary); }
 
@@ -251,7 +252,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   background: #e07b39;
 }
 
-/* 🔥🔥🔥 新增：日期與時間的佈局樣式 🔥🔥🔥 */
+/* 🔥🔥🔥 日期與時間的佈局樣式 🔥🔥🔥 */
 .date-time-wrapper {
   display: grid;
   grid-template-columns: 2fr 1fr; /* 日期寬一點，時間窄一點 */
@@ -432,23 +433,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         <div class="date-time-wrapper">
           <input id="date" type="date">
           
-          <select id="time">
-            <option value="" disabled selected>選擇時間</option>
-            <optgroup label="午餐時段">
-              <option value="11:00">11:00</option>
-              <option value="11:30">11:30</option>
-              <option value="12:00">12:00</option>
-              <option value="12:30">12:30</option>
-              <option value="13:00">13:00</option>
-            </optgroup>
-            <optgroup label="下午茶/晚餐">
-              <option value="16:30">16:30</option>
-              <option value="17:00">17:00</option>
-              <option value="17:30">17:30</option>
-              <option value="18:00">18:00</option>
-              <option value="18:30">18:30</option>
-            </optgroup>
-          </select>
+          <input id="time" type="time" min="09:00" max="19:00" value="12:00">
         </div>
         <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
       </div>
@@ -699,18 +684,17 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const phone = ($('#phone').value || '').trim();
     const address = ($('#address').value || '').trim();
     const date = ($('#date').value || '').trim();
-    // 🔥 修改點 1: 取得時間值
     const time = ($('#time').value || '').trim();
 
     // 檢查是否有空值
     if (!client || !taxId || !phone || !address || !date || !time) {
-        alert('⚠️ 資料不完整！\n\n為了確保報價單正確，請填寫所有欄位：\n\n- 客戶名稱\n- 統一編號\n- 聯絡電話\n- 配送地址\n- 預計日期與時間'); // 🔥 提示文字修改
+        alert('⚠️ 資料不完整！\n\n為了確保報價單正確，請填寫所有欄位：\n\n- 客戶名稱\n- 統一編號\n- 聯絡電話\n- 配送地址\n- 預計日期與時間'); 
         
         if(!client) $('#client').focus();
         else if(!taxId) $('#tax-id').focus();
         else if(!phone) $('#phone').focus();
         else if(!date) $('#date').focus();
-        else if(!time) $('#time').focus(); // 🔥 自動跳到時間
+        else if(!time) $('#time').focus(); 
         else if(!address) $('#address').focus();
         
         return; 
@@ -740,7 +724,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         contact_phone: phone,
         delivery_address: address,
         order_date: date,
-        delivery_time: time, // 🔥 修改點 2: 增加時間參數傳給 GAS
+        delivery_time: time, 
         items: itemsData,
         totals: {
             subtotal: money(subtotal),
@@ -768,7 +752,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
 
     // --- 4. 下載 Excel ---
-    // 🔥 修改點 3: 將 time 參數傳入 generateExcelFile
     generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total, time);
     
     // 顯示成功視窗
@@ -780,7 +763,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   }
 
   // 核心 Excel 生成邏輯
-  // 🔥 修改點 4: 接收 time 參數
   function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total, time) {
     const filename = `報價單_${client}_${date}.xlsx`;
     const excelRows = [];
@@ -792,7 +774,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     // --- 新增欄位寫入 ---
     excelRows.push(['客戶名稱', client, '統一編號', taxId]);
     excelRows.push(['聯絡電話', phone, '配送地址', address]);
-    // 🔥 修改點 5: Excel 中顯示時間
     excelRows.push(['預計送達時間', `${date} ${time}`]); 
     excelRows.push([null]);
     excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
