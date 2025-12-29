@@ -259,7 +259,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   gap: 12px;
 }
 
-/* ✨✨✨ 新增：早晨加成提示框樣式 ✨✨✨ */
+/* ✨✨✨ 早晨加成提示框樣式 (含動畫) ✨✨✨ */
 .morning-fee-alert {
   display: none; /* 預設隱藏 */
   margin-top: 10px;
@@ -478,6 +478,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       <div>
         <div style="display:grid; gap:6px; justify-content:end">
           <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
+          
+          <div id="ui-morning-fee-row" style="display:none; grid-template-columns: 1fr 140px; gap:8px; color:#E53E3E;">
+             <div>早晨加成</div><div class="right">3,500</div>
+          </div>
+
           <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
         </div>
         <div style="margin-top: 16px;">
@@ -648,6 +653,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
+  // ✨✨✨ 核心計算邏輯更新：recalc 加入早晨加成判斷 ✨✨✨
   function recalc(){
     let subtotal = 0;
     $$('#order-tbody tr').forEach(tr => {
@@ -657,8 +663,27 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       subtotal += line;
       tr.querySelector('.line-subtotal').textContent = money(line);
     });
+    
+    // 取得時間
+    const timeValue = $('#time').value;
+    let morningFee = 0;
+    
+    // 判斷是否顯示加成提醒與計算
+    const alertBox = document.getElementById('morning-fee-alert');
+    const uiRow = document.getElementById('ui-morning-fee-row');
+    
+    if (timeValue && timeValue < '10:00') {
+        morningFee = 3500;
+        alertBox.style.display = 'block';
+        uiRow.style.display = 'grid'; // 顯示金額列
+    } else {
+        alertBox.style.display = 'none';
+        uiRow.style.display = 'none'; // 隱藏金額列
+    }
+
     $('#subtotal').textContent = money(subtotal);
-    $('#grand').textContent = money(subtotal);
+    // 總計 = 餐點小計 + 早晨加成 (皆未稅)
+    $('#grand').textContent = money(subtotal + morningFee);
   }
 
   function addRow({ itemId, price, qty }){
@@ -755,17 +780,27 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     btn.disabled = true;
     btn.textContent = '處理中...';
 
-    // 計算金額
+    // ✨✨✨ 計算金額 (加入早晨加成邏輯) ✨✨✨
     const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
         price: Number(tr.dataset.price),
         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
     }));
+    
     const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
     const shipping = 500;
-    const tax = Math.round((subtotal + shipping) * 0.05);
-    const total = subtotal + shipping + tax;
+    
+    // 檢查時間是否小於 10:00
+    let morningFee = 0;
+    if (time && time < '10:00') {
+        morningFee = 3500;
+    }
+
+    // 稅金計算基礎 = 餐點 + 運費 + 早晨加成
+    const taxBase = subtotal + shipping + morningFee;
+    const tax = Math.round(taxBase * 0.05);
+    const total = taxBase + tax;
 
     const payload = {
         client_name: client,
@@ -778,6 +813,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         totals: {
             subtotal: money(subtotal),
             shipping: money(shipping),
+            morning_fee: money(morningFee), // 傳給後端
             tax: money(tax),
             total: money(total)
         }
@@ -801,7 +837,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
 
     // --- 4. 下載 Excel ---
-    generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total, time);
+    generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, morningFee, tax, total, time);
     
     // 顯示成功視窗
     showModal();
@@ -811,8 +847,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     btn.textContent = originalText;
   }
 
-  // 核心 Excel 生成邏輯
-  function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total, time) {
+  // 核心 Excel 生成邏輯 (新增 morningFee 參數)
+  function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, morningFee, tax, total, time) {
     const filename = `報價單_${client}_${date}.xlsx`;
     const excelRows = [];
     excelRows.push(['正餐餐盒報價單']);
@@ -844,6 +880,12 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     excelRows.push([null]);
     excelRows.push([null,null,'餐點小計 (未稅)', subtotal]);
+    
+    // ✨✨✨ 如果有早晨加成，寫入 Excel ✨✨✨
+    if (morningFee > 0) {
+        excelRows.push([null,null,'早晨加成費用', morningFee]);
+    }
+
     excelRows.push([null,null,'交通運費', shipping]);
     excelRows.push([null,null,'營業稅 (5%)', tax]);
     excelRows.push([null,null,'總計 (含稅)', total]);
@@ -920,14 +962,9 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   });
 
-  // ✨✨✨ 新增監聽器：當時間改變時，檢查是否小於 10:00 ✨✨✨
+  // ✨✨✨ 監聽器更新：當時間改變時，呼叫 recalc 來更新金額 ✨✨✨
   $('#time').addEventListener('input', function() {
-    const alertBox = document.getElementById('morning-fee-alert');
-    if (this.value && this.value < '10:00') {
-      alertBox.style.display = 'block';
-    } else {
-      alertBox.style.display = 'none';
-    }
+    recalc(); // 直接呼叫 recalc 統一處理邏輯
   });
 
   window.addEventListener('load', () => {
