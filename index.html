@@ -259,6 +259,28 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   gap: 12px;
 }
 
+/* ✨✨✨ 新增：早晨加成提示框樣式 ✨✨✨ */
+.morning-fee-alert {
+  display: none; /* 預設隱藏 */
+  margin-top: 10px;
+  padding: 12px 16px;
+  background-color: #FFF4E5; /* 淺橘黃色背景 */
+  border: 1px solid #FCD34D; /* 深黃色邊框 */
+  border-radius: 8px;
+  color: #92400E; /* 深褐色文字 */
+  font-size: 14px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease-in-out;
+}
+.morning-fee-alert strong {
+  font-weight: 700;
+  color: #B45309;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 768px) {
   .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
   .hero-text-area { text-align: center; margin-bottom: 2rem; }
@@ -436,6 +458,12 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           <input id="time" type="time" min="09:00" max="19:00" value="12:00">
         </div>
         <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
+
+        <div id="morning-fee-alert" class="morning-fee-alert">
+            🔔 <strong>早晨加成提醒：</strong><br>
+            若餐盒交餐時間於 <strong>早上 10:00 以前</strong>，將另收取早晨加成費用 <strong>$3,500 元</strong> (未稅)。
+        </div>
+
       </div>
       <div class="form-group full">
         <label>配送地址 <span class="required-mark">*</span></label>
@@ -890,6 +918,16 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   selPrice.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  });
+
+  // ✨✨✨ 新增監聽器：當時間改變時，檢查是否小於 10:00 ✨✨✨
+  $('#time').addEventListener('input', function() {
+    const alertBox = document.getElementById('morning-fee-alert');
+    if (this.value && this.value < '10:00') {
+      alertBox.style.display = 'block';
+    } else {
+      alertBox.style.display = 'none';
+    }
   });
 
   window.addEventListener('load', () => {
