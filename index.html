@@ -175,16 +175,37 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 /* 輔助文字樣式 */
 .input-hint { font-size: 12px; color: var(--danger); margin-top: 4px; display: block; }
 
-/* 免責聲明樣式 */
+/* 免責聲明樣式 (優化版) */
 .disclaimer {
-  margin-top: 12px;
+  margin-top: 16px;
   font-size: 13px;
-  color: #718096;
-  text-align: center;
-  background: #EDF2F7;
-  padding: 8px;
-  border-radius: 6px;
+  color: #4A5568;
+  text-align: left;       /* 改為靠左對齊，閱讀更舒適 */
+  background: #F7FAFC;    /* 淺灰底色 */
+  padding: 12px 16px;
+  border-radius: 8px;
   border: 1px solid #E2E8F0;
+  border-left: 4px solid #718096; /* 左側深灰飾條，增加專業感 */
+  line-height: 1.6;
+}
+
+/* 讓免責聲明裡的重點文字變粗體 */
+.disclaimer strong {
+  color: #2D3748;
+  font-weight: 700;
+}
+
+/* Line 連結的專屬樣式 */
+.line-link {
+  color: #00B900;         /* LINE 官方綠色 */
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px dashed #00B900; /* 下方虛線 */
+  transition: all 0.2s;
+}
+.line-link:hover {
+  border-bottom-style: solid; /* 滑鼠移過去變實線 */
+  opacity: 0.8;
 }
 
 /* 彈跳視窗 Modal 樣式 */
@@ -435,11 +456,14 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
           <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
         </div>
-        <div style="margin-top: 16px;">
-           <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
-           <div class="disclaimer">
-             此為模擬報價，非正式訂單<br>請透過官方Line聯繫，經業務人員確認並提供正式報價單後為準
-           </div>
+        <div class="disclaimer">
+  <div style="margin-bottom: 4px; font-size: 14px;">
+    <strong>ℹ️ 此為模擬試算，非正式訂單</strong>
+  </div>
+  請下載 Excel 並傳送至 
+  <a href="#" class="line-link" target="_blank">官方 Line 帳號</a> 聯繫，<br>
+  經業務人員確認檔期與內容後，將提供正式報價單。
+</div>
         </div>
       </div>
     </div>
