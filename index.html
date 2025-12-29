@@ -369,8 +369,30 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     </div>
   </section>
 
-  <section class="block" style="margin-top: 20px;">
+<section class="block" style="margin-top: 20px;">
     
+    <div class="form-header">
+      <h2 style="display:flex; align-items:center; justify-content:space-between;">
+        訂單內容確認
+        </h2>
+      <div class="muted">請確認您選購的餐點項目與數量</div>
+    </div>
+
+    <table id="order-table">
+      <thead>
+        <tr>
+          <th>項目名稱（主菜）與內容</th>
+          <th class="right" style="width:120px">單價 (未稅)</th>
+          <th class="right" style="width:100px">數量</th>
+          <th class="right" style="width:140px">小計</th>
+          <th style="width:60px"></th>
+        </tr>
+      </thead>
+      <tbody id="order-tbody"></tbody>
+    </table>
+
+    <div style="border-top: 2px dashed var(--line); margin: 32px 0;"></div>
+
     <div class="form-header">
       <h2>填寫訂購資訊 & 確認明細</h2>
       <div class="muted">請完整填寫以下資訊以建立報價單</div>
@@ -403,23 +425,9 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         <input id="address" type="text" placeholder="請輸入完整配送地址">
       </div>
     </div>
-
-    <div style="border-top: 2px dashed var(--line); margin: 24px 0;"></div>
-
-    <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">訂單內容確認</label>
-    <table id="order-table">
-      <thead>
-        <tr>
-          <th>項目名稱（主菜）與內容</th>
-          <th class="right" style="width:120px">單價 (未稅)</th>
-          <th class="right" style="width:100px">數量</th>
-          <th class="right" style="width:140px">小計</th>
-          <th style="width:60px"></th>
-        </tr>
-      </thead>
-      <tbody id="order-tbody"></tbody>
-    </table>
     
+    <div style="border-top: 1px solid var(--line); margin: 24px 0;"></div>
+
     <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
       <div class="note">金額僅供試算，實際以合約或最終報價為準。</div>
       <div>
