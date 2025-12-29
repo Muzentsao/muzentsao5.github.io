@@ -484,14 +484,14 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const PRICE_MAP = { sheets: {}, flat: {} };
   PRICE_MAP.flat = {
     "日式鹽麴豬五花": 200, "日式鹽麴雞腿排": 200, "蔥油雞胸肉": 180, "法式油封杏鮑菇(全素)": 180,
-    "自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)": 300, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)": 320,
-    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)": 320, "鯖魚一夜干 + 日式鹽麴豬五花肉(50G)": 320,
-    "炭烤牛小排 + 日式鹽麴豬五花肉(50G)": 420, "日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)": 320,
-    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)": 320,
-    "韓式炸雞 + 日式鹽麴豬五花肉(40g)": 280, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)": 280,
-    "炭烤牛小排 + 日式鹽麴豬五花肉(40g)": 380, "日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)": 280,
-    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)": 280, "鯖魚一夜干 + 日式鹽麴豬五花肉(40g)": 280,
-    "法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)": 280
+    "自製蔥油雞胸肉 + 日式鹽麴豬五花肉": 300, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉": 320,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉": 320, "鯖魚一夜干 + 日式鹽麴豬五花肉": 320,
+    "炭烤牛小排 + 日式鹽麴豬五花肉": 420, "日式牛肉漢堡排 + 日式鹽麴豬五花肉": 320,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉": 320,
+    "韓式炸雞 + 日式鹽麴豬五花肉": 280, "日式鹽麴雞腿排 + 日式鹽麴豬五花肉": 280,
+    "炭烤牛小排 + 日式鹽麴豬五花肉": 380, "日式牛肉漢堡排 + 日式鹽麴豬五花肉": 280,
+    "蒲燒鯛魚腹排 + 日式鹽麴豬五花肉": 280, "鯖魚一夜干 + 日式鹽麴豬五花肉": 280,
+    "法式油封杏鮑菇 + 日式鹽麴豬五花肉": 280
   };
 
   const catalog = [
@@ -499,20 +499,20 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'b2-3', category:'二格盒', name:'日式鹽麴雞腿排', image:'日式鹽麴雞腿排-2_工作區域 1-2.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-4', category:'二格盒', name:'蔥油雞胸肉', image:'蔥油雞胸肉-2.png', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-5', category:'二格盒', name:'法式油封杏鮑菇(全素)', image:'法式油封杏鮑菇(全素)-2.png', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐油醋醬(全素)','配菜: 日式冷泡溏心蛋(蛋奶素)','主食: 紅藜秈米飯(全素)'] },
-    { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)', image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)', image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-4', category:'植纖四格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(50G)', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'k8-1', category:'韓式七格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉(40g)', image:'韓式炸雞 + 日式鹽麴豬五花肉(40g)-2.png', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-2', category:'韓式七格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)', image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)-2_工作區域 1.png', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-3', category:'韓式七格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-4', category:'韓式七格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-5', category:'韓式七格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-6', category:'韓式七格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-7', category:'韓式七格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉(40g)', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉', image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉', image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-4', category:'植纖四格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
+    { id:'k8-1', category:'韓式七格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉', image:'韓式炸雞 + 日式鹽麴豬五花肉(40g)-2.png', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-2', category:'韓式七格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)-2_工作區域 1.png', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-3', category:'韓式七格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-4', category:'韓式七格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-5', category:'韓式七格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-6', category:'韓式七格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-7', category:'韓式七格盒', name:'法式油封杏鮑菇 + 日式鹽麴豬五花肉', image:'https://images.unsplash.com/photo-1623653387945-2fd25214f8fc?auto=format&fit=crop&w=600&q=80', meta:'韓式七格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
   ];
 
   const $ = (s, el=document) => el.querySelector(s);
