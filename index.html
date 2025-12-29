@@ -251,6 +251,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   background: #e07b39;
 }
 
+/* 🔥🔥🔥 新增：日期與時間的佈局樣式 🔥🔥🔥 */
+.date-time-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* 日期寬一點，時間窄一點 */
+  gap: 12px;
+}
+
 @media (max-width: 768px) {
   .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
   .hero-text-area { text-align: center; margin-bottom: 2rem; }
@@ -266,6 +273,12 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   
   .selection-wrapper { flex-direction: column; }
   .selection-right { min-height: 250px; }
+  
+  /* 手機版：日期時間變成上下排 */
+  .date-time-wrapper {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
 }
 
 @media print { 
@@ -415,11 +428,30 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       </div>
 
       <div class="form-group">
-        <label>預計送達日期 <span class="required-mark">*</span></label>
-        <input id="date" type="date">
+        <label>報價/預計送達日期 & 時間 <span class="required-mark">*</span></label>
+        <div class="date-time-wrapper">
+          <input id="date" type="date">
+          
+          <select id="time">
+            <option value="" disabled selected>選擇時間</option>
+            <optgroup label="午餐時段">
+              <option value="11:00">11:00</option>
+              <option value="11:30">11:30</option>
+              <option value="12:00">12:00</option>
+              <option value="12:30">12:30</option>
+              <option value="13:00">13:00</option>
+            </optgroup>
+            <optgroup label="下午茶/晚餐">
+              <option value="16:30">16:30</option>
+              <option value="17:00">17:00</option>
+              <option value="17:30">17:30</option>
+              <option value="18:00">18:00</option>
+              <option value="18:30">18:30</option>
+            </optgroup>
+          </select>
+        </div>
         <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
       </div>
-
       <div class="form-group full">
         <label>配送地址 <span class="required-mark">*</span></label>
         <input id="address" type="text" placeholder="請輸入完整配送地址">
@@ -662,34 +694,35 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
 
     // --- 2. 準備資料 & 嚴格驗證 ---
-    // 使用 trim() 去除空白
     const client = ($('#client').value || '').trim();
     const taxId = ($('#tax-id').value || '').trim();
     const phone = ($('#phone').value || '').trim();
     const address = ($('#address').value || '').trim();
     const date = ($('#date').value || '').trim();
+    // 🔥 修改點 1: 取得時間值
+    const time = ($('#time').value || '').trim();
 
-    // 檢查是否有空值 (包含 Tax ID)
-    if (!client || !taxId || !phone || !address || !date) {
-        alert('⚠️ 資料不完整！\n\n為了確保報價單正確，請填寫所有欄位：\n\n- 客戶名稱\n- 統一編號 (必填)\n- 聯絡電話\n- 配送地址\n- 預計日期');
+    // 檢查是否有空值
+    if (!client || !taxId || !phone || !address || !date || !time) {
+        alert('⚠️ 資料不完整！\n\n為了確保報價單正確，請填寫所有欄位：\n\n- 客戶名稱\n- 統一編號\n- 聯絡電話\n- 配送地址\n- 預計日期與時間'); // 🔥 提示文字修改
         
-        // UX 優化：游標自動跳到第一個沒填的格子
         if(!client) $('#client').focus();
         else if(!taxId) $('#tax-id').focus();
         else if(!phone) $('#phone').focus();
-        else if(!date) $('#date').focus(); // 日期通常比較重要，往前排一點
+        else if(!date) $('#date').focus();
+        else if(!time) $('#time').focus(); // 🔥 自動跳到時間
         else if(!address) $('#address').focus();
         
-        return; // 阻擋執行
+        return; 
     }
 
-    // 鎖定按鈕，避免重複點擊
+    // 鎖定按鈕
     const btn = $('#btn-download');
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = '處理中...';
 
-    // --- (這段是你剛才漏掉的) 計算金額與準備 Payload ---
+    // 計算金額
     const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
@@ -707,6 +740,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         contact_phone: phone,
         delivery_address: address,
         order_date: date,
+        delivery_time: time, // 🔥 修改點 2: 增加時間參數傳給 GAS
         items: itemsData,
         totals: {
             subtotal: money(subtotal),
@@ -734,7 +768,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
 
     // --- 4. 下載 Excel ---
-    generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total);
+    // 🔥 修改點 3: 將 time 參數傳入 generateExcelFile
+    generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total, time);
     
     // 顯示成功視窗
     showModal();
@@ -745,7 +780,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   }
 
   // 核心 Excel 生成邏輯
-  function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total) {
+  // 🔥 修改點 4: 接收 time 參數
+  function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, tax, total, time) {
     const filename = `報價單_${client}_${date}.xlsx`;
     const excelRows = [];
     excelRows.push(['正餐餐盒報價單']);
@@ -756,7 +792,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     // --- 新增欄位寫入 ---
     excelRows.push(['客戶名稱', client, '統一編號', taxId]);
     excelRows.push(['聯絡電話', phone, '配送地址', address]);
-    excelRows.push(['報價日期', date]);
+    // 🔥 修改點 5: Excel 中顯示時間
+    excelRows.push(['預計送達時間', `${date} ${time}`]); 
     excelRows.push([null]);
     excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
 
@@ -846,7 +883,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const minDateStr = calculateMinDate();
     const dateInput = $('#date');
     dateInput.value = minDateStr; 
-    dateInput.min = minDateStr;   
+    dateInput.min = minDateStr;    
   })();
 
   selPrice.addEventListener('input', (e) => {
