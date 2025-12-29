@@ -538,7 +538,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         const opt = document.createElement('option');
         opt.value = item.id;
         const price = getAutoPriceByName(item.name);
-        opt.textContent = `${item.name} (${price ? `$${price}` : '洽詢'} 未稅)`;
+        opt.textContent = `${item.name} (${price ? `$${price}` : '320'} 未稅)`;
         selItem.appendChild(opt);
       });
       selItem.focus();
