@@ -80,6 +80,14 @@ h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0;
 #btn-download:hover, #btn-add:hover { background: #E07B39; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 #btn-download:active, #btn-add:active { transform: translateY(0); }
 
+/* 當按鈕被 disabled 時的樣式 */
+#btn-download:disabled {
+  background-color: #CBD5E0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 main { padding: 28px 32px; }
 
 .block { 
@@ -276,6 +284,25 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   font-weight: 700;
   color: #B45309;
 }
+
+/* ✨✨✨ 新增：晚間不配送警示框 (紅色系) ✨✨✨ */
+.evening-alert {
+  display: none; /* 預設隱藏 */
+  margin-top: 10px;
+  padding: 12px 16px;
+  background-color: #FEF2F2; /* 淺紅色背景 */
+  border: 1px solid #FECACA; /* 紅色邊框 */
+  border-radius: 8px;
+  color: #991B1B; /* 深紅色文字 */
+  font-size: 14px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease-in-out;
+}
+.evening-alert strong {
+  font-weight: 700;
+  color: #7F1D1D;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
@@ -293,10 +320,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   .block { padding: 16px; }
   th, td { padding: 10px 12px; }
   #btn-download, #btn-add { padding: 10px 16px; font-size: 14px; }
-   
+    
   .selection-wrapper { flex-direction: column; }
   .selection-right { min-height: 250px; }
-   
+    
   /* 手機版：日期時間變成上下排 */
   .date-time-wrapper {
     grid-template-columns: 1fr;
@@ -464,6 +491,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
             若餐盒交餐時間於 <strong>早上 10:00 以前</strong>，將另收取早晨加成費用 <strong>$3,500 元</strong> (未稅)。
         </div>
 
+        <div id="evening-alert" class="evening-alert">
+            ⛔ <strong>配送時間提醒：</strong><br>
+            抱歉，<strong>18:00 以後</strong> 為非製作與配送時段，請調整您的送達時間。
+        </div>
+
       </div>
       <div class="form-group full">
         <label>配送地址 <span class="required-mark">*</span></label>
@@ -578,7 +610,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const selPrice = $('#sel-price');
   const selQty = $('#sel-qty');
   const orderTbody = $('#order-tbody');
-   
+    
   const previewImg = $('#preview-img');
   const previewPlaceholder = $('#preview-placeholder');
   const previewTitle = $('#preview-title');
@@ -653,7 +685,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
-  // ✨✨✨ 核心計算邏輯更新：recalc 加入早晨加成判斷 ✨✨✨
+  // ✨✨✨ 核心計算邏輯更新：recalc 加入早晨加成與晚間拒單判斷 ✨✨✨
   function recalc(){
     let subtotal = 0;
     $$('#order-tbody tr').forEach(tr => {
@@ -668,17 +700,36 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const timeValue = $('#time').value;
     let morningFee = 0;
     
-    // 判斷是否顯示加成提醒與計算
-    const alertBox = document.getElementById('morning-fee-alert');
+    // 取得兩個提示框與 UI 金額列
+    const morningAlert = document.getElementById('morning-fee-alert');
+    const eveningAlert = document.getElementById('evening-alert'); // 新增
     const uiRow = document.getElementById('ui-morning-fee-row');
+    const btnDownload = document.getElementById('btn-download'); // 取得下載按鈕以便控制
     
-    if (timeValue && timeValue < '10:00') {
-        morningFee = 3500;
-        alertBox.style.display = 'block';
-        uiRow.style.display = 'grid'; // 顯示金額列
-    } else {
-        alertBox.style.display = 'none';
-        uiRow.style.display = 'none'; // 隱藏金額列
+    // 重置顯示狀態
+    morningAlert.style.display = 'none';
+    eveningAlert.style.display = 'none';
+    uiRow.style.display = 'none';
+    btnDownload.disabled = false; // 預設開啟按鈕
+    btnDownload.style.opacity = '1';
+    btnDownload.textContent = '下載 Excel (.xlsx)'; // 恢復按鈕文字
+
+    if (timeValue) {
+        if (timeValue < '10:00') {
+            // --- 早晨時段：顯示加成 ---
+            morningFee = 3500;
+            morningAlert.style.display = 'block';
+            uiRow.style.display = 'grid'; // 顯示金額列
+        } 
+        else if (timeValue > '18:00') {
+            // --- 晚間時段：顯示不配送警告並鎖定按鈕 ---
+            eveningAlert.style.display = 'block';
+            
+            // UX 優化：直接讓下載按鈕變灰並失效，避免客戶送出無效訂單
+            btnDownload.disabled = true; 
+            btnDownload.style.opacity = '0.5';
+            btnDownload.textContent = '⛔ 此時段無法配送'; 
+        }
     }
 
     $('#subtotal').textContent = money(subtotal);
@@ -731,6 +782,15 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
 // --- 送單與下載流程 (最終完整版) ---
   async function handleOrderSubmit() {
+    
+    // --- 0. 檢查時間是否合法 (新增) ---
+    const checkTime = ($('#time').value || '').trim();
+    if (checkTime > '18:00') {
+        alert('⛔ 抱歉，18:00 以後為非製作配送時段。\n\n請調整「預計送達時間」後再下載報價單。');
+        $('#time').focus();
+        return;
+    }
+
     const MIN_QTY = 10;
     const counts = {};
     const rows = $$('#order-tbody tr');
@@ -955,14 +1015,14 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const minDateStr = calculateMinDate();
     const dateInput = $('#date');
     dateInput.value = minDateStr; 
-    dateInput.min = minDateStr;    
+    dateInput.min = minDateStr;     
   })();
 
   selPrice.addEventListener('input', (e) => {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   });
 
-  // ✨✨✨ 監聽器更新：當時間改變時，呼叫 recalc 來更新金額 ✨✨✨
+  // ✨✨✨ 監聽器更新：當時間改變時，呼叫 recalc 來更新金額與狀態 ✨✨✨
   $('#time').addEventListener('input', function() {
     recalc(); // 直接呼叫 recalc 統一處理邏輯
   });
