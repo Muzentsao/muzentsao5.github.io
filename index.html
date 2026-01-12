@@ -405,7 +405,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   tr { page-break-inside: avoid !important; }
   #grand { font-size: 22px !important; color: #000 !important; text-decoration: none !important; border-bottom: 2px solid #000; }
   .form-header h2 { font-size: 26px !important; margin-bottom: 15px !important; }
-  /* 列印時顯示特定的金額樣式 */
   .fee-row { display: grid !important; color: #000 !important; }
   @page { size: A4; margin: 1.5cm; }
 }
@@ -615,6 +614,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
                           <div>總計 (含稅)</div><div class="right" id="grand">0</div>
                         </div>
                     </div>
+
                     <div style="margin-top: 16px;">
                         <button id="btn-download" style="width:100%">列印正式報價單 (另存 PDF)</button>
                         <div class="disclaimer">
@@ -660,7 +660,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式照燒植物肉', price: 320, image:'四格盒_法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'植纖四格盒', includes:['主菜2: 日式照燒植物肉','配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] }, 
     { id:'k8-1', category:'韓式八格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉', price: 280, image:'韓式炸雞 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-2', category:'韓式八格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', price: 280, image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-3', category:'韓式八格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 380, image:'炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-3', category:'韓式八格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 380, image:'炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'韓式處理八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-4', category:'韓式八格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉', price: 280, image:'八格盒_日式牛肉漢堡排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-5', category:'韓式八格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉', price: 280, image:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-6', category:'韓式八格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉', price: 280, image:'鯖魚一夜干 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
@@ -681,7 +681,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
-  /* 🟢 校驗邏輯維持不變 🟢 */
+  /* 🟢 校驗邏輯 🟢 */
   function validateVAT(vat) {
       if (!/^\d{8}$/.test(vat)) return false;
       const multipliers = [1, 2, 1, 2, 1, 2, 4, 1];
@@ -713,7 +713,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
               taxInput.disabled = false;
               taxInput.style.backgroundColor = '#fff';
               taxInput.style.color = 'var(--ink)';
-              taxInput.placeholder = "請輸入 8 位數統一編號";
           }
       });
   });
@@ -734,17 +733,51 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           alert("⚠️ 偵測到無效內容，請輸入真實資訊。"); return false;
       }
       if (taxType === 'company') {
-          if (!vat || vat === '個人') { alert("⚠️ 選擇公司報帳時，請務必輸入統編。"); $('#tax-id').focus(); return false; }
-          if (!validateVAT(vat)) { alert("⚠️ 統編校驗失敗。"); $('#tax-id').focus(); return false; }
+          if (!vat || vat === '個人') { alert("⚠️ 請務必輸入公司統編。"); return false; }
+          if (!validateVAT(vat)) { alert("⚠️ 統編校驗失敗。"); return false; }
       }
-      if (!/^09\d{8}$/.test(phone)) { alert("⚠️ 手機格式錯誤。"); $('#phone').focus(); return false; }
-      if (address.length < 10 || !(/[縣市]/.test(address))) { alert("⚠️ 地址需含縣市且長度超過10字。"); $('#address').focus(); return false; }
+      if (!/^09\d{8}$/.test(phone)) { alert("⚠️ 手機格式錯誤。"); return false; }
+      if (address.length < 10 || !(/[縣市]/.test(address))) { alert("⚠️ 地址需含縣市。"); return false; }
       return true;
+  }
+
+  /* 🟢 新增：GAS 發送通用函數 🟢 */
+  async function sendToGas(payload) {
+      try {
+          await fetch(GAS_URL, {
+              method: "POST",
+              body: JSON.stringify(payload),
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              mode: "no-cors"
+          });
+          console.log(`通知已發送: ${payload.stage}`);
+      } catch (err) {
+          console.error("GAS 傳送失敗:", err);
+      }
+  }
+
+  // 🟢🟢🟢 第一階段發送邏輯 🟢🟢🟢
+  function sendStage1Info() {
+      const payload = {
+          stage: "client_info",
+          client_name: $('#client').value.trim(),
+          tax_id: $('#tax-id').value.trim(),
+          contact_phone: $('#phone').value.trim(),
+          delivery_address: $('#address').value.trim(),
+          order_date: $('#date').value,
+          delivery_time: $('#time').value,
+          timestamp: new Date().toLocaleString()
+      };
+      sendToGas(payload);
   }
 
   function goToStep(step) {
       if (step === 2) {
           if (!performStrictValidation()) return;
+          
+          // 觸發第一階段寄信通知
+          sendStage1Info();
+
           $('#step-1-wrapper').style.display = 'none';
           $('#step-2-wrapper').style.display = 'block';
           $('#step-nav-1').classList.remove('active');
@@ -757,6 +790,44 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           $('#step-nav-1').classList.add('active');
           window.scrollTo(0, 0);
       }
+  }
+
+  /* 🟢 計算邏輯 🟢 */
+  function recalc(){
+    let subtotal = 0;
+    $$('#order-tbody tr').forEach(tr => {
+      const p = Number(tr.dataset.price||0); 
+      const q = Number(tr.dataset.qty||0);
+      const line = p * q; 
+      subtotal += line; 
+      tr.querySelector('.line-subtotal').textContent = money(line);
+    });
+
+    const timeValue = $('#time').value;
+    let morningFee = 0;
+    const morningAlert = $('#morning-fee-alert'); 
+    const eveningAlert = $('#evening-alert');
+    const uiRow = $('#ui-morning-fee-row'); 
+    const btnDownload = $('#btn-download');
+    
+    morningAlert.style.display = eveningAlert.style.display = uiRow.style.display = 'none';
+    btnDownload.disabled = false;
+
+    if (timeValue) {
+        if (timeValue < '10:00') { morningFee = 3500; morningAlert.style.display = 'block'; uiRow.style.display = 'grid'; }
+        else if (timeValue > '18:00') { eveningAlert.style.display = 'block'; btnDownload.disabled = true; }
+    }
+
+    const shippingFee = 500;
+    const taxBase = subtotal + morningFee + shippingFee;
+    const taxAmount = Math.round(taxBase * 0.05);
+    const grandTotal = taxBase + taxAmount;
+
+    $('#subtotal').textContent = money(subtotal);
+    $('#morning-fee-val').textContent = money(morningFee);
+    $('#shipping-fee').textContent = money(shippingFee);
+    $('#tax-amount').textContent = money(taxAmount);
+    $('#grand').textContent = money(grandTotal);
   }
 
   function addRow({ itemId, price, qty }){
@@ -779,65 +850,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       <td class="right print-hide"><button type="button" class="btn-del" style="padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff">刪除</button></td>
     `;
     tr.querySelector('.btn-del').addEventListener('click', () => {
-      if (confirm(`確定要刪除「${item.name}」這項嗎？`)) { tr.remove(); recalc(); }
+      if (confirm(`確定要刪除「${item.name}」嗎？`)) { tr.remove(); recalc(); }
     });
     orderTbody.appendChild(tr);
     recalc();
   }
 
-  /* 🟢🟢🟢 金額計算邏輯核心 (recalc) 🟢🟢🟢 */
-  function recalc(){
-    let subtotal = 0;
-    $$('#order-tbody tr').forEach(tr => {
-      const p = Number(tr.dataset.price||0); const q = Number(tr.dataset.qty||0);
-      const line = p * q; subtotal += line; tr.querySelector('.line-subtotal').textContent = money(line);
-    });
-
-    const timeValue = $('#time').value;
-    let morningFee = 0;
-    const morningAlert = $('#morning-fee-alert'); const eveningAlert = $('#evening-alert');
-    const uiRow = $('#ui-morning-fee-row'); const btnDownload = $('#btn-download');
-    
-    morningAlert.style.display = eveningAlert.style.display = uiRow.style.display = 'none';
-    btnDownload.disabled = false; btnDownload.textContent = '列印正式報價單 (另存 PDF)';
-
-    if (timeValue) {
-        if (timeValue < '10:00') { 
-            morningFee = 3500; 
-            morningAlert.style.display = 'block'; 
-            uiRow.style.display = 'grid'; 
-        }
-        else if (timeValue > '18:00') { 
-            eveningAlert.style.display = 'block'; 
-            btnDownload.disabled = true; 
-            btnDownload.textContent = '⛔ 此時段無法配送'; 
-        }
-    }
-
-    // 新增：交通運費邏輯 (固定500)
-    const shippingFee = 500;
-
-    // 新增：稅金計算 (小計 + 早晨加成 + 運費) * 5%
-    const taxBase = subtotal + morningFee + shippingFee;
-    const taxAmount = Math.round(taxBase * 0.05);
-    const grandTotal = taxBase + taxAmount;
-
-    // 更新 UI 顯示
-    $('#subtotal').textContent = money(subtotal);
-    $('#morning-fee-val').textContent = money(morningFee);
-    $('#shipping-fee').textContent = money(shippingFee);
-    $('#tax-amount').textContent = money(taxAmount);
-    $('#grand').textContent = money(grandTotal);
-  }
-
-  /* 🟢 選單邏輯區 🟢 */
+  /* 🟢 選單邏輯 🟢 */
   const preferredOrder = ['二格盒', '植纖四格盒', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
   categories.sort((a,b)=>{
     const ia = preferredOrder.indexOf(a), ib = preferredOrder.indexOf(b);
     if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
     return a.localeCompare(b,'zh-Hant');
   });
   categories.forEach(c => {
@@ -852,11 +876,9 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       catalog.filter(x => x.category === selCategory.value).forEach(item => {
         const opt = document.createElement('option');
         opt.value = item.id;
-        const price = item.price || 0;
-        opt.textContent = `${item.name} (${price ? `$${price}` : '0'} 未稅)`;
+        opt.textContent = `${item.name} ($${item.price} 未稅)`;
         selItem.appendChild(opt);
       });
-      selItem.focus();
     }
     resetPreview();
   });
@@ -868,34 +890,23 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   selItem.addEventListener('change', () => {
     const item = catalog.find(x => x.id === selItem.value);
-    if (!item) { resetPreview(); return; }
+    if (!item) return;
     selPrice.value = item.price || 0;
     previewTitle.textContent = item.name;
     previewDesc.innerHTML = item.includes ? item.includes.join('<br>') : item.meta;
     if (item.image) { previewImg.src = item.image; previewImg.style.display = 'block'; previewPlaceholder.style.display = 'none'; }
-    else { previewImg.style.display = 'none'; previewPlaceholder.style.display = 'block'; previewPlaceholder.innerHTML = '無圖片'; }
   });
 
   $('#btn-add').addEventListener('click', () => {
-    const itemId = selItem.value;
-    if (!itemId) { alert('請選擇餐點'); return; }
-    addRow({ itemId, price: Number(selPrice.value), qty: Number(selQty.value) });
+    if (!selItem.value) { alert('請選擇餐點'); return; }
+    addRow({ itemId: selItem.value, price: Number(selPrice.value), qty: Number(selQty.value) });
     selQty.value = 1;
   });
 
-  /* 🟢🟢🟢 列印與資料傳送邏輯 🟢🟢🟢 */
+  // 🟢🟢🟢 第二階段完整發送邏輯 🟢🟢🟢
   async function handlePrintProcess() {
     const rows = $$('#order-tbody tr');
     if (rows.length === 0) { alert('⚠️ 請先加入餐點。'); return; }
-
-    const MIN_QTY = 10;
-    const counts = {};
-    rows.forEach(tr => {
-      const cat = tr.dataset.group; const q = Number(tr.dataset.qty || 0);
-      counts[cat] = (counts[cat] || 0) + q;
-    });
-    const invalid = Object.entries(counts).filter(([cat, q]) => q < MIN_QTY);
-    if (invalid.length > 0) { alert(`訂購量不足，每種盒型需至少滿 ${MIN_QTY} 盒。`); return; }
 
     const btn = $('#btn-download');
     btn.disabled = true; btn.textContent = '資料加密傳送中...';
@@ -903,38 +914,36 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const client = $('#client').value.trim();
     const date = $('#date').value.trim();
     const time = $('#time').value.trim();
-    const vat = $('#tax-id').value.trim();
     
+    // 收集餐點清單
     const itemsData = rows.map(tr => ({
+        image_url: tr.querySelector('img') ? tr.querySelector('img').src : "無圖片",
         name: tr.children[1].textContent, 
-        qty: Number(tr.dataset.qty), 
         price: Number(tr.dataset.price),
+        qty: Number(tr.dataset.qty), 
         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
     }));
 
-    // 同步計算金額明細以發送 payload
-    const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
-    let morningFee = (time < '10:00') ? 3500 : 0;
-    const shipping = 500;
-    const taxBase = subtotal + morningFee + shipping;
-    const tax = Math.round(taxBase * 0.05);
-    const total = taxBase + tax;
-
     const payload = {
-        client_name: client, tax_id: vat, contact_phone: $('#phone').value, delivery_address: $('#address').value,
-        order_date: date, delivery_time: time, items: itemsData,
-        totals: { 
-          subtotal: money(subtotal), 
-          shipping: money(shipping), 
-          morning_fee: money(morningFee), 
-          tax: money(tax), 
-          total: money(total) 
+        stage: "full_quote",
+        client_name: client,
+        tax_id: $('#tax-id').value.trim(),
+        contact_phone: $('#phone').value,
+        delivery_address: $('#address').value,
+        order_date: date,
+        delivery_time: time,
+        items: itemsData,
+        amounts: {
+          subtotal: $('#subtotal').textContent,
+          morning_fee: $('#morning-fee-val').textContent,
+          shipping: $('#shipping-fee').textContent,
+          tax: $('#tax-amount').textContent,
+          total_with_tax: $('#grand').textContent
         }
     };
 
-    try {
-        await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" }, mode: "no-cors" });
-    } catch (err) { console.error("GAS Error:", err); }
+    // 發送完整資料
+    await sendToGas(payload);
 
     showModal();
 
@@ -965,8 +974,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   (function initMeta(){
     const d = new Date(); d.setDate(d.getDate() + 7);
-    const dateStr = d.toISOString().split('T')[0];
-    $('#date').value = dateStr; $('#date').min = dateStr;
+    $('#date').value = d.toISOString().split('T')[0];
+    $('#date').min = d.toISOString().split('T')[0];
   })();
 
   $('#time').addEventListener('input', recalc);
