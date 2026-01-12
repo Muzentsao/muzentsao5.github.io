@@ -45,7 +45,7 @@ body {
   box-shadow: var(--shadow); 
   overflow: hidden; 
   border: 1px solid var(--line);
-}  
+}   
 
 header { 
   padding: 24px 32px; 
@@ -80,7 +80,6 @@ h1 { font-size: 24px; color: var(--primary); font-weight: 700; margin-bottom: 0;
 #btn-download:hover, #btn-add:hover { background: #E07B39; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 #btn-download:active, #btn-add:active { transform: translateY(0); }
 
-/* 當按鈕被 disabled 時的樣式 */
 #btn-download:disabled {
   background-color: #CBD5E0;
   cursor: not-allowed;
@@ -113,11 +112,10 @@ input[type="text"], input[type="date"], input[type="number"], input[type="tel"],
   height: 48px; 
   transition: var(--transition); 
   color: var(--ink);
-  background: #fff; /* 確保背景色 */
+  background: #fff; 
 }
 input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--tertiary); }
 
-/* --- 預覽卡片佈局 --- */
 .selection-wrapper {
   display: flex;
   gap: 24px;
@@ -181,10 +179,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 #subtotal, #grand { font-size: 18px; font-weight: 700; }
 #grand { color: var(--primary); font-size: 20px; }
 
-/* 輔助文字樣式 */
 .input-hint { font-size: 12px; color: var(--danger); margin-top: 4px; display: block; }
 
-/* 免責聲明樣式 */
 .disclaimer {
   margin-top: 12px;
   font-size: 13px;
@@ -196,7 +192,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   border: 1px solid #E2E8F0;
 }
 
-/* 彈跳視窗 Modal 樣式 */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -260,22 +255,20 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   background: #e07b39;
 }
 
-/* 🔥🔥🔥 日期與時間的佈局樣式 🔥🔥🔥 */
 .date-time-wrapper {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* 日期寬一點，時間窄一點 */
+  grid-template-columns: 2fr 1fr; 
   gap: 12px;
 }
 
-/* ✨✨✨ 早晨加成提示框樣式 (含動畫) ✨✨✨ */
 .morning-fee-alert {
-  display: none; /* 預設隱藏 */
+  display: none; 
   margin-top: 10px;
   padding: 12px 16px;
-  background-color: #FFF4E5; /* 淺橘黃色背景 */
-  border: 1px solid #FCD34D; /* 深黃色邊框 */
+  background-color: #FFF4E5; 
+  border: 1px solid #FCD34D; 
   border-radius: 8px;
-  color: #92400E; /* 深褐色文字 */
+  color: #92400E; 
   font-size: 14px;
   line-height: 1.5;
   animation: fadeIn 0.3s ease-in-out;
@@ -285,15 +278,14 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   color: #B45309;
 }
 
-/* ✨✨✨ 新增：晚間不配送警示框 (紅色系) ✨✨✨ */
 .evening-alert {
-  display: none; /* 預設隱藏 */
+  display: none; 
   margin-top: 10px;
   padding: 12px 16px;
-  background-color: #FEF2F2; /* 淺紅色背景 */
-  border: 1px solid #FECACA; /* 紅色邊框 */
+  background-color: #FEF2F2; 
+  border: 1px solid #FECACA; 
   border-radius: 8px;
-  color: #991B1B; /* 深紅色文字 */
+  color: #991B1B; 
   font-size: 14px;
   line-height: 1.5;
   animation: fadeIn 0.3s ease-in-out;
@@ -308,11 +300,69 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* 🟢 新增：步驟指示器 CSS 🟢 */
+.step-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--muted);
+  transition: var(--transition);
+}
+.step-item.active { color: var(--primary); }
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--line);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+.step-item.active .step-number { background: var(--primary); }
+.step-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--line);
+  margin: 0 16px;
+}
+/* 🟢 新增：階段切換按鈕 CSS 🟢 */
+.step-btn-area {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 24px;
+}
+.btn-next, .btn-prev {
+    padding: 12px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 16px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-next { background: var(--primary); color: #fff; }
+.btn-next:hover { background: #e07b39; }
+.btn-prev { background: #EDF2F7; color: var(--ink); border: 1px solid var(--line); }
+.btn-prev:hover { background: #E2E8F0; }
+
 @media (max-width: 768px) {
   .hero-section { padding: 3rem 1.5rem !important; text-align: center; }
   .hero-text-area { text-align: center; margin-bottom: 2rem; }
   .hero-btn { width: 100%; text-align: center; }
-
   header { padding: 16px 20px; gap: 16px; }
   h1 { font-size: 20px; }
   main { padding: 20px 16px; }
@@ -320,11 +370,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   .block { padding: 16px; }
   th, td { padding: 10px 12px; }
   #btn-download, #btn-add { padding: 10px 16px; font-size: 14px; }
-    
   .selection-wrapper { flex-direction: column; }
   .selection-right { min-height: 250px; }
-    
-  /* 手機版：日期時間變成上下排 */
   .date-time-wrapper {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -346,10 +393,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   <section class="hero-section" style="width:100%; background:#f9f7f4; padding:5rem 2rem; margin-bottom:2rem; position:relative; overflow:hidden;">
     <div style="position:absolute; top:-20%; right:-10%; width:40%; height:40%; background:#e8f4ea; border-radius:50%; opacity:0.6;"></div>
     <div style="position:absolute; bottom:-15%; left:-8%; width:30%; height:30%; background:#f0ebe2; border-radius:50%; opacity:0.6;"></div>
-    
     <div style="max-width:1200px; margin:0 auto; position:relative; z-index:2;">
       <div style="display:flex; flex-wrap:wrap; align-items:center; gap:3rem;">
-        
         <div class="hero-text-area" style="flex:1 1 500px;">
           <h1 style="font-size:2.8rem; color:#2d3748; margin:0 0 1rem 0; line-height:1.3; font-weight:700;">
             木人艸x正餐餐盒<br>
@@ -358,7 +403,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           <p style="font-size:1.1rem; color:#4a5568; margin:0 0 1.5rem 0; line-height:1.6; max-width:600px;">
             精選新鮮食材，多種套餐選擇（二格盒/植纖四格盒/韓式八格盒），適合企業團餐、活動供應、團體訂購。
           </p>
-          
           <div style="background: #fff; border-left: 4px solid #E53E3E; padding: 16px; margin-bottom: 2rem; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
             <div style="display:flex; flex-direction:column; gap:8px;">
                 <p style="margin:0; color:#E53E3E; font-weight:600; font-size: 1rem;">
@@ -373,12 +417,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
                 </p>
             </div>
           </div>
-
           <a href="#order-form" class="hero-btn" style="display:inline-block; background:#FF8C42; color:white; padding:1rem 2.5rem; border-radius:50px; font-size:1.1rem; font-weight:600; text-decoration:none; transition:all 0.3s ease; box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);">
             立即選品報價 ▼
           </a>
         </div>
-        
         <div style="flex:1 1 400px; text-align:center;">
           <img src="Gemini_Generated_Image_t58s2vt58s2vt58s.jpg" alt="木人艸正餐餐盒展示" style="width:100%; max-width:500px; height:auto; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.1); object-fit: cover;">
         </div>
@@ -386,147 +428,160 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     </div>
   </section>
 
-
   <div class="container" id="order-form">
+    <div class="step-navigation">
+        <div class="step-item active" id="step-nav-1">
+            <span class="step-number">1</span>
+            <span>填寫資料</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item" id="step-nav-2">
+            <span class="step-number">2</span>
+            <span>選擇餐點</span>
+        </div>
+    </div>
+
     <main>
-  <section class="block">
-    <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">快速選品（層級下拉）</label>
-    
-    <div class="selection-wrapper">
-      <div class="selection-left">
-        <div class="row" style="margin-top:0">
-          <div style="grid-column: 1 / -1">
-            <label>便當種類（餐盒類別）</label>
-            <select id="sel-category"><option value="" disabled selected>請選擇便當種類</option></select>
-          </div>
-          <div style="grid-column: 1 / -1">
-            <label>餐盒種類</label>
-            <select id="sel-item" disabled><option value="" disabled selected>請先選便當種類</option></select>
-          </div>
-          <div>
-            <label>單價 <span style="font-size:13px; color:#E53E3E;">(未稅)</span></label>
-            <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
-          </div>
-          <div>
-            <label>數量</label>
-            <input id="sel-qty" type="number" min="1" step="1" value="1">
-          </div>
-          <div style="display:flex; align-items:end;">
-            <button id="btn-add" style="width:100%; height:48px;">加入明細</button>
-          </div>
-        </div>
-      </div>
 
-      <div class="selection-right">
-        <div class="preview-box">
-          <div class="preview-placeholder" id="preview-placeholder">
-            請選擇左側餐點<br>以檢視圖片與內容
-          </div>
-          <img id="preview-img" src="" alt="餐點預覽">
-        </div>
-        <div class="preview-info">
-          <div class="preview-title" id="preview-title">--</div>
-          <div class="preview-desc" id="preview-desc">選擇餐點後將顯示詳細配菜內容</div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <div id="step-1-wrapper">
+        <section class="block">
+            <div class="form-header">
+                <h2>填寫訂購資訊</h2>
+                <div class="muted">請完整填寫以下資訊以進入選購階段</div>
+            </div>
+            <br>
+            <div class="form-grid-container">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>客戶名稱 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>統一編號 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <input id="tax-id" type="text" placeholder="請輸入統一編號">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>聯絡電話 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <input id="phone" type="tel" placeholder="手機或市話">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>預計送達日期 & 時間 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <div class="date-time-wrapper">
+                        <input id="date" type="date">
+                        <input id="time" type="time" min="09:00" max="19:00" value="12:00">
+                    </div>
+                    <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
+                    <div id="morning-fee-alert" class="morning-fee-alert">
+                        🔔 <strong>早晨加成提醒：</strong><br>
+                        若餐盒交餐時間於 <strong>早上 10:00 以前</strong>，將另收取早晨加成費用 <strong>$3,500 元</strong> (未稅)。
+                    </div>
+                    <div id="evening-alert" class="evening-alert">
+                        ⛔ <strong>配送時間提醒：</strong><br>
+                        抱歉，<strong>18:00 以後</strong> 為非製作與配送時段，請調整您的送達時間。
+                    </div>
+                </div>
+                <div class="form-group full" style="margin-bottom: 20px;">
+                    <label>配送地址 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <input id="address" type="text" placeholder="請輸入完整配送地址">
+                </div>
+            </div>
 
-<section class="block" style="margin-top: 20px;">
-    
-    <div class="form-header">
-      <h2 style="display:flex; align-items:center; justify-content:space-between;">
-        訂單內容確認
-        </h2>
-      <div class="muted">請確認您選購的餐點項目與數量</div>
+            <div class="step-btn-area">
+                <div></div> <button type="button" class="btn-next" onclick="goToStep(2)">下一步：開始選購餐點 ➜</button>
+            </div>
+        </section>
     </div>
 
-    <table id="order-table">
-      <thead>
-        <tr>
-          <th>項目名稱（主菜）與內容</th>
-          <th class="right" style="width:120px">單價 (未稅)</th>
-          <th class="right" style="width:100px">數量</th>
-          <th class="right" style="width:140px">小計</th>
-          <th style="width:60px"></th>
-        </tr>
-      </thead>
-      <tbody id="order-tbody"></tbody>
-    </table>
+    <div id="step-2-wrapper" style="display: none;">
+        
+        <div style="margin-bottom: 16px;">
+            <button type="button" class="btn-prev" onclick="goToStep(1)">⬅ 上一步：修改訂購資訊</button>
+        </div>
 
-    <div style="border-top: 2px dashed var(--line); margin: 32px 0;"></div>
+        <section class="block">
+            <label style="font-weight:600;color:#374151; margin-bottom:12px; display:block">快速選品（層級下拉）</label>
+            <div class="selection-wrapper">
+                <div class="selection-left">
+                    <div class="row" style="margin-top:0">
+                        <div style="grid-column: 1 / -1">
+                            <label>便當種類（餐盒類別）</label>
+                            <select id="sel-category"><option value="" disabled selected>請選擇便當種類</option></select>
+                        </div>
+                        <div style="grid-column: 1 / -1">
+                            <label>餐盒種類</label>
+                            <select id="sel-item" disabled><option value="" disabled selected>請先選便當種類</option></select>
+                        </div>
+                        <div>
+                            <label>單價 <span style="font-size:13px; color:#E53E3E;">(未稅)</span></label>
+                            <input id="sel-price" type="number" min="0" step="1" value="0" readonly>
+                        </div>
+                        <div>
+                            <label>數量</label>
+                            <input id="sel-qty" type="number" min="1" step="1" value="1">
+                        </div>
+                        <div style="display:flex; align-items:end;">
+                            <button id="btn-add" style="width:100%; height:48px;">加入明細</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="selection-right">
+                    <div class="preview-box">
+                        <div class="preview-placeholder" id="preview-placeholder">
+                            請選擇左側餐點<br>以檢視圖片與內容
+                        </div>
+                        <img id="preview-img" src="" alt="餐點預覽">
+                    </div>
+                    <div class="preview-info">
+                        <div class="preview-title" id="preview-title">--</div>
+                        <div class="preview-desc" id="preview-desc">選擇餐點後將顯示詳細配菜內容</div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <div class="form-header">
-      <h2>填寫訂購資訊 & 確認明細</h2>
-      <div class="muted">請完整填寫以下資訊以建立報價單</div>
+        <section class="block" style="margin-top: 20px;">
+            <div class="form-header">
+                <h2 style="display:flex; align-items:center; justify-content:space-between;">
+                    訂單內容確認
+                </h2>
+                <div class="muted">請確認您選購的餐點項目與數量</div>
+            </div>
+            <table id="order-table">
+                <thead>
+                    <tr>
+                        <th>項目名稱（主菜）與內容</th>
+                        <th class="right" style="width:120px">單價 (未稅)</th>
+                        <th class="right" style="width:100px">數量</th>
+                        <th class="right" style="width:140px">小計</th>
+                        <th style="width:60px"></th>
+                    </tr>
+                </thead>
+                <tbody id="order-tbody"></tbody>
+            </table>
+
+            <div style="border-top: 2px dashed var(--line); margin: 32px 0;"></div>
+
+            <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
+                <div class="note">此為模擬報價，非正式訂單（僅供參考）。如需訂購，<br>請將此單透過 LINE 提供給業務人員，實際金額以業務人員確認後提供之『正式報價單』為準。</div>
+                <div>
+                    <div style="display:grid; gap:6px; justify-content:end">
+                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
+                        <div id="ui-morning-fee-row" style="display:none; grid-template-columns: 1fr 140px; gap:8px; color:#E53E3E;">
+                            <div>早晨加成</div><div class="right">3,500</div>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
+                        <div class="disclaimer">
+                            此為模擬報價，非正式訂單<br>請透過官方Line聯繫，經業務人員確認並提供正式報價單後為準
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <div class="form-grid-container">
-      <div class="form-group">
-        <label>客戶名稱 <span class="required-mark">*</span></label>
-        <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
-      </div>
-      
-      <div class="form-group">
-        <label>統一編號 <span class="required-mark">*</span></label>
-        <input id="tax-id" type="text" placeholder="請輸入統一編號">
-      </div>
-
-      <div class="form-group">
-        <label>聯絡電話 <span class="required-mark">*</span></label>
-        <input id="phone" type="tel" placeholder="手機或市話">
-      </div>
-
-      <div class="form-group">
-        <label>預計送達日期 & 時間 <span class="required-mark">*</span></label>
-        <div class="date-time-wrapper">
-          <input id="date" type="date">
-          
-          <input id="time" type="time" min="09:00" max="19:00" value="12:00">
-        </div>
-        <small class="input-hint">⚠️ 需至少提前 5 個工作天預訂（不含六日）</small>
-
-        <div id="morning-fee-alert" class="morning-fee-alert">
-            🔔 <strong>早晨加成提醒：</strong><br>
-            若餐盒交餐時間於 <strong>早上 10:00 以前</strong>，將另收取早晨加成費用 <strong>$3,500 元</strong> (未稅)。
-        </div>
-
-        <div id="evening-alert" class="evening-alert">
-            ⛔ <strong>配送時間提醒：</strong><br>
-            抱歉，<strong>18:00 以後</strong> 為非製作與配送時段，請調整您的送達時間。
-        </div>
-
-      </div>
-      <div class="form-group full">
-        <label>配送地址 <span class="required-mark">*</span></label>
-        <input id="address" type="text" placeholder="請輸入完整配送地址">
-      </div>
-    </div>
-    
-    <div style="border-top: 1px solid var(--line); margin: 24px 0;"></div>
-
-    <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
-      <div class="note">此為模擬報價，非正式訂單（僅供參考）。如需訂購，<br>請將此單透過 LINE 提供給業務人員，實際金額以業務人員確認後提供之『正式報價單』為準。</div>
-      <div>
-        <div style="display:grid; gap:6px; justify-content:end">
-          <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
-          
-          <div id="ui-morning-fee-row" style="display:none; grid-template-columns: 1fr 140px; gap:8px; color:#E53E3E;">
-             <div>早晨加成</div><div class="right">3,500</div>
-          </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
-        </div>
-        <div style="margin-top: 16px;">
-           <button id="btn-download" style="width:100%">下載 Excel (.xlsx)</button>
-           <div class="disclaimer">
-             此為模擬報價，非正式訂單<br>請透過官方Line聯繫，經業務人員確認並提供正式報價單後為準
-           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
+    </main>
   </div>
 
   <div class="modal-overlay" id="successModal">
@@ -543,21 +598,15 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   </div>
 
 <script>
-  // 👇👇👇 您的 GAS 網址 (請確認這是否為最新部署的網址) 👇👇👇
+  // 👇👇👇 您的 GAS 網址 👇👇👇
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyFSe1U6E363tVmdW6GazEVorQD2pnYUNO5sIPhk_HYyFQhhD_fdfa2-tPapYjndJFQ/exec"; 
 
-  // 🔥 修正：將原本的 PRICE_MAP 移除，價格直接整併入 catalog 陣列中
-  // 這樣「植纖四格」和「韓式八格」的同名餐點，就會有各自獨立的價格，不再衝突。
-
   const catalog = [
-    // --- 二格盒 ---
     { id:'b2-1', category:'二格盒', name:'獨家香料鹹豬肉', price: 200, image:'日式鹽麴豬五花-2_工作區域 1-2.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-2', category:'二格盒', name:'日式鹽麴豬五花', price: 200, image:'日式鹽麴豬五花-2_工作區域 1-2.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-3', category:'二格盒', name:'日式鹽麴雞腿排', price: 200, image:'日式鹽麴雞腿排-2_工作區域 1-2.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-4', category:'二格盒', name:'蔥油雞胸肉', price: 180, image:'蔥油雞胸肉-2.png', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'b2-5', category:'二格盒', name:'法式油封杏鮑菇(全素)', price: 180, image:'法式油封杏鮑菇(全素)-2.png', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐油醋醬(全素)','配菜: 日式冷泡溏心蛋(蛋奶素)','主食: 紅藜秈米飯(全素)'] },
-
-    // --- 植纖四格盒 (中式-飯) 🔥修正重點：四格盒價格設定區 ---
     { id:'p4-1', category:'植纖四格盒', name:'自製蔥油雞胸肉 + 日式鹽麴豬五花肉', price: 300, image:'四格盒_自製蔥油雞胸肉 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-2', category:'植纖四格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', price: 320, image:'四格盒_日式鹽麴雞腿排 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-3', category:'植纖四格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉', price: 320, image:'四格盒_鯖魚一夜干 + 日式鹽麴豬五花肉.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -565,8 +614,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 420, image:'四格盒_炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉', price: 320, image:'四格盒_日式牛肉漢堡排 + 日式鹽麴豬五花肉.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式照燒植物肉', price: 320, image:'四格盒_法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'植纖四格盒', includes:['主菜2: 日式照燒植物肉','配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] }, 
-
-    // --- 韓式八格盒 ---
     { id:'k8-1', category:'韓式八格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉', price: 280, image:'韓式炸雞 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-2', category:'韓式八格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', price: 280, image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-3', category:'韓式八格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 380, image:'炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
@@ -585,13 +632,44 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const selPrice = $('#sel-price');
   const selQty = $('#sel-qty');
   const orderTbody = $('#order-tbody');
-    
   const previewImg = $('#preview-img');
   const previewPlaceholder = $('#preview-placeholder');
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
-  // 初始化類別選單 (排序維持不變)
+  // 🟢 新增：切換步驟邏輯 🟢
+  function goToStep(step) {
+      if (step === 2) {
+          // 驗證第一階段
+          const client = ($('#client').value || '').trim();
+          const taxId = ($('#tax-id').value || '').trim();
+          const phone = ($('#phone').value || '').trim();
+          const address = ($('#address').value || '').trim();
+          const date = ($('#date').value || '').trim();
+          const time = ($('#time').value || '').trim();
+
+          if (!client || !taxId || !phone || !address || !date || !time) {
+              alert('⚠️ 請先完整填寫「第一階段：訂購資訊」的所有必填欄位。');
+              return;
+          }
+
+          // 平滑切換顯示
+          $('#step-1-wrapper').style.display = 'none';
+          $('#step-2-wrapper').style.display = 'block';
+          $('#step-nav-1').classList.remove('active');
+          $('#step-nav-2').classList.add('active');
+          window.scrollTo(0, $('#order-form').offsetTop - 20);
+      } else {
+          // 返回第一階段
+          $('#step-2-wrapper').style.display = 'none';
+          $('#step-1-wrapper').style.display = 'block';
+          $('#step-nav-2').classList.remove('active');
+          $('#step-nav-1').classList.add('active');
+          window.scrollTo(0, $('#order-form').offsetTop - 20);
+      }
+  }
+
+  // 初始化選單
   const preferredOrder = ['二格盒', '植纖四格盒', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
   categories.sort((a,b)=>{
@@ -608,7 +686,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selCategory.appendChild(opt);
   });
 
-  // 🔥 修正邏輯：選單改變時，直接讀取 catalog 中的 price
   selCategory.addEventListener('change', () => {
     selItem.innerHTML = '<option value="" disabled selected>請選擇種類</option>';
     selItem.disabled = !selCategory.value;
@@ -616,7 +693,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       catalog.filter(x => x.category === selCategory.value).forEach(item => {
         const opt = document.createElement('option');
         opt.value = item.id;
-        // 直接使用 catalog 定義的價格
         const price = item.price || 0;
         opt.textContent = `${item.name} (${price ? `$${price}` : '0'} 未稅)`;
         selItem.appendChild(opt);
@@ -634,16 +710,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     previewDesc.textContent = '選擇餐點後將顯示詳細配菜內容';
   }
 
-  // 🔥 修正邏輯：選擇餐點時，直接填入 catalog 中的 price
   selItem.addEventListener('change', () => {
     const item = catalog.find(x => x.id === selItem.value);
     if (!item) {
       resetPreview();
       return;
     }
-    // 直接設值，不需再查表
     selPrice.value = (item.price != null) ? item.price : 0;
-    
     previewTitle.textContent = item.name;
     previewDesc.innerHTML = item.includes ? item.includes.join('<br>') : item.meta;
     if (item.image) {
@@ -657,7 +730,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
   });
 
-  // ✨✨✨ 核心計算邏輯 (維持不變) ✨✨✨
   function recalc(){
     let subtotal = 0;
     $$('#order-tbody tr').forEach(tr => {
@@ -668,17 +740,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       tr.querySelector('.line-subtotal').textContent = money(line);
     });
     
-    // 取得時間
     const timeValue = $('#time').value;
     let morningFee = 0;
-    
-    // 取得兩個提示框與 UI 金額列
     const morningAlert = document.getElementById('morning-fee-alert');
     const eveningAlert = document.getElementById('evening-alert'); 
     const uiRow = document.getElementById('ui-morning-fee-row');
     const btnDownload = document.getElementById('btn-download'); 
     
-    // 重置顯示狀態
     morningAlert.style.display = 'none';
     eveningAlert.style.display = 'none';
     uiRow.style.display = 'none';
@@ -688,23 +756,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     if (timeValue) {
         if (timeValue < '10:00') {
-            // --- 早晨時段：顯示加成 ---
             morningFee = 3500;
             morningAlert.style.display = 'block';
-            uiRow.style.display = 'grid'; // 顯示金額列
+            uiRow.style.display = 'grid'; 
         } 
         else if (timeValue > '18:00') {
-            // --- 晚間時段：顯示不配送警告並鎖定按鈕 ---
             eveningAlert.style.display = 'block';
-            
             btnDownload.disabled = true; 
             btnDownload.style.opacity = '0.5';
             btnDownload.textContent = '⛔ 此時段無法配送'; 
         }
     }
-
     $('#subtotal').textContent = money(subtotal);
-    // 總計 = 餐點小計 + 早晨加成 (皆未稅)
     $('#grand').textContent = money(subtotal + morningFee);
   }
 
@@ -751,22 +814,15 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1; 
   });
 
-// --- 送單與下載流程 (維持不變) ---
   async function handleOrderSubmit() {
-    
-    // --- 0. 檢查時間是否合法 ---
     const checkTime = ($('#time').value || '').trim();
     if (checkTime > '18:00') {
         alert('⛔ 抱歉，18:00 以後為非製作配送時段。\n\n請調整「預計送達時間」後再下載報價單。');
-        $('#time').focus();
         return;
     }
-
     const MIN_QTY = 10;
     const counts = {};
     const rows = $$('#order-tbody tr');
-    
-    // --- 1. 檢查數量 ---
     if (rows.length === 0) { alert('⚠️ 目前沒有任何餐點，請先加入明細。'); return; }
     rows.forEach(tr => {
       const category = tr.dataset.group;
@@ -783,35 +839,18 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return; 
     }
 
-    // --- 2. 準備資料 & 嚴格驗證 ---
-    const client = ($('#client').value || '').trim();
-    const taxId = ($('#tax-id').value || '').trim();
-    const phone = ($('#phone').value || '').trim();
-    const address = ($('#address').value || '').trim();
-    const date = ($('#date').value || '').trim();
-    const time = ($('#time').value || '').trim();
+    const client = $('#client').value.trim();
+    const taxId = $('#tax-id').value.trim();
+    const phone = $('#phone').value.trim();
+    const address = $('#address').value.trim();
+    const date = $('#date').value.trim();
+    const time = $('#time').value.trim();
 
-    // 檢查是否有空值
-    if (!client || !taxId || !phone || !address || !date || !time) {
-        alert('⚠️ 資料不完整！\n\n為了確保報價單正確，請填寫所有欄位：\n\n- 客戶名稱\n- 統一編號\n- 聯絡電話\n- 配送地址\n- 預計日期與時間'); 
-        
-        if(!client) $('#client').focus();
-        else if(!taxId) $('#tax-id').focus();
-        else if(!phone) $('#phone').focus();
-        else if(!date) $('#date').focus();
-        else if(!time) $('#time').focus(); 
-        else if(!address) $('#address').focus();
-        
-        return; 
-    }
-
-    // 鎖定按鈕
     const btn = $('#btn-download');
     const originalText = btn.textContent;
     btn.disabled = true;
     btn.textContent = '處理中...';
 
-    // ✨✨✨ 計算金額 (加入早晨加成邏輯) ✨✨✨
     const itemsData = rows.map(tr => ({
         name: tr.children[0].textContent,
         qty: Number(tr.dataset.qty),
@@ -821,14 +860,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     
     const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
     const shipping = 500;
-    
-    // 檢查時間是否小於 10:00
-    let morningFee = 0;
-    if (time && time < '10:00') {
-        morningFee = 3500;
-    }
-
-    // 稅金計算基礎 = 餐點 + 運費 + 早晨加成
+    let morningFee = (time < '10:00') ? 3500 : 0;
     const taxBase = subtotal + shipping + morningFee;
     const tax = Math.round(taxBase * 0.05);
     const total = taxBase + tax;
@@ -844,55 +876,40 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         totals: {
             subtotal: money(subtotal),
             shipping: money(shipping),
-            morning_fee: money(morningFee), // 傳給後端
+            morning_fee: money(morningFee),
             tax: money(tax),
             total: money(total)
         }
     };
 
-    // --- 3. 發送資料給 GAS ---
     try {
-        console.log("正在傳送資料給 GAS...");
-        
         await fetch(GAS_URL, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             mode: "no-cors"
         });
+    } catch (err) { console.error(err); }
 
-        console.log("GAS 發送完成 (或已送出請求)");
-
-    } catch (err) {
-        console.error("發送失敗，但仍繼續下載 Excel:", err);
-    }
-
-    // --- 4. 下載 Excel ---
     generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, morningFee, tax, total, time);
-    
-    // 顯示成功視窗
     showModal();
-    
-    // 恢復按鈕
     btn.disabled = false;
     btn.textContent = originalText;
   }
 
-  // 核心 Excel 生成邏輯 (維持不變)
   function generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, morningFee, tax, total, time) {
     const filename = `報價單_${client}_${date}.xlsx`;
-    const excelRows = [];
-    excelRows.push(['正餐餐盒報價單']);
-    excelRows.push(['建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。']);
-    excelRows.push(['注意：此為模擬報價，非正式訂單，請透過官方Line聯繫，經業務人員確認並提供正式報價單後為準。']); 
-    excelRows.push([null]);
-    
-    // --- 新增欄位寫入 ---
-    excelRows.push(['客戶名稱', client, '統一編號', taxId]);
-    excelRows.push(['聯絡電話', phone, '配送地址', address]);
-    excelRows.push(['預計送達時間', `${date} ${time}`]); 
-    excelRows.push([null]);
-    excelRows.push(['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']);
+    const excelRows = [
+        ['正餐餐盒報價單'],
+        ['建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。'],
+        ['注意：此為模擬報價，非正式訂單，請透過官方Line聯繫，經業務人員確認並提供正式報價單後為準。'],
+        [null],
+        ['客戶名稱', client, '統一編號', taxId],
+        ['聯絡電話', phone, '配送地址', address],
+        ['預計送達時間', `${date} ${time}`],
+        [null],
+        ['項目名稱（主菜）與內容','單價(未稅)','數量','小計(未稅)']
+    ];
 
     const items = rows.map(tr => ({
       group: tr.dataset.group,
@@ -909,35 +926,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       byGroup[g].forEach(it => excelRows.push([it.desc, it.price, it.qty, it.subtotal]));
     });
 
-    excelRows.push([null]);
-    excelRows.push([null,null,'餐點小計 (未稅)', subtotal]);
-    
-    if (morningFee > 0) {
-        excelRows.push([null,null,'早晨加成費用', morningFee]);
-    }
-
-    excelRows.push([null,null,'交通運費', shipping]);
-    excelRows.push([null,null,'營業稅 (5%)', tax]);
-    excelRows.push([null,null,'總計 (含稅)', total]);
+    excelRows.push([null], [null,null,'餐點小計 (未稅)', subtotal]);
+    if (morningFee > 0) excelRows.push([null,null,'早晨加成費用', morningFee]);
+    excelRows.push([null,null,'交通運費', shipping], [null,null,'營業稅 (5%)', tax], [null,null,'總計 (含稅)', total]);
 
     const ws = XLSX.utils.aoa_to_sheet(excelRows);
     ws['!cols'] = [{wch:64},{wch:12},{wch:10},{wch:16}];
-    // 合併標題列
     ws['!merges'] = [ { s:{r:0,c:0}, e:{r:0,c:3} }, { s:{r:1,c:0}, e:{r:1,c:3} }, { s:{r:2,c:0}, e:{r:2,c:3} } ]; 
-
-    const headerRows = 8; // 因為 header 變多了，這裡稍微調整起始檢查行
-    excelRows.forEach((r, i) => {
-      if (i >= headerRows) {
-        const cellA = `A${i+1}`;
-        if (r[1] !== null && r[0] !== null) { 
-           if (ws[cellA]) ws[cellA].s = { alignment:{ wrapText:true, vertical:'top' } };
-        } else if (r[2] !== null) { 
-           const cellLabel = `C${i+1}`;
-           if (ws[cellLabel]) ws[cellLabel].s = { font:{bold:true}, alignment:{ horizontal:'right' } };
-        }
-      }
-    });
-
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '報價單');
     XLSX.writeFile(wb, filename);
@@ -955,15 +950,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     setTimeout(() => { modal.style.display = 'none'; }, 300);
   }
 
-  document.getElementById('successModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
-    }
-  });
-
-  // 綁定按鈕事件 (核心邏輯：點擊觸發 async 流程)
   $('#btn-download').onclick = handleOrderSubmit;
-  
   window.closeModal = closeModal;
 
   function calculateMinDate() {
@@ -985,21 +972,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const minDateStr = calculateMinDate();
     const dateInput = $('#date');
     dateInput.value = minDateStr; 
-    dateInput.min = minDateStr;     
+    dateInput.min = minDateStr;      
   })();
 
-  selPrice.addEventListener('input', (e) => {
-    e.target.value = e.target.value.replace(/[^0-9]/g, '');
-  });
-
-  // ✨✨✨ 監聽器更新：當時間改變時，呼叫 recalc 來更新金額與狀態 ✨✨✨
-  $('#time').addEventListener('input', function() {
-    recalc(); // 直接呼叫 recalc 統一處理邏輯
-  });
-
-  window.addEventListener('load', () => {
-    console.log('📋 報價單頁面已準備就緒！');
-  });
+  $('#time').addEventListener('input', recalc);
 </script>
 </body>
 </html>
