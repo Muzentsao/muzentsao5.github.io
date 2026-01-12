@@ -474,6 +474,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
             <br>
             <div class="form-grid-container">
                 <div class="form-group" style="margin-bottom: 20px;">
+                    <label>報價單編號 (系統自動生成)</label>
+                    <input id="order-id" type="text" readonly style="background-color: var(--light-gray); color: var(--muted); font-weight: 700; border-style: dashed;">
+                </div>
+                <div class="form-group" style="margin-bottom: 20px;">
                     <label>客戶名稱 <span class="required-mark" style="color:var(--danger)">*</span></label>
                     <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
                 </div>
@@ -681,6 +685,25 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
+  /* 🟢🟢🟢 新增：訂單編號生成邏輯 🟢🟢🟢 */
+  function generateOrderID() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const dateStr = `${year}${month}${day}`;
+      
+      // 生成 4 位大寫英數組合
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let randomStr = '';
+      for (let i = 0; i < 4; i++) {
+          randomStr += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      
+      return `MJ${dateStr}${randomStr}`;
+  }
+  /* 🟢🟢🟢 結束：訂單編號生成邏輯 🟢🟢🟢 */
+
   /* 🟢 校驗邏輯 🟢 */
   function validateVAT(vat) {
       if (!/^\d{8}$/.test(vat)) return false;
@@ -741,7 +764,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return true;
   }
 
-  /* 🟢 新增：GAS 發送通用函數 🟢 */
   async function sendToGas(payload) {
       try {
           await fetch(GAS_URL, {
@@ -750,16 +772,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
               headers: { "Content-Type": "text/plain;charset=utf-8" },
               mode: "no-cors"
           });
-          console.log(`通知已發送: ${payload.stage}`);
-      } catch (err) {
-          console.error("GAS 傳送失敗:", err);
-      }
+      } catch (err) { console.error("GAS Error:", err); }
   }
 
-  // 🟢🟢🟢 第一階段發送邏輯 🟢🟢🟢
   function sendStage1Info() {
       const payload = {
           stage: "client_info",
+          order_id: $('#order-id').value, // 🟢 同步訂單編號
           client_name: $('#client').value.trim(),
           tax_id: $('#tax-id').value.trim(),
           contact_phone: $('#phone').value.trim(),
@@ -774,10 +793,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   function goToStep(step) {
       if (step === 2) {
           if (!performStrictValidation()) return;
-          
-          // 觸發第一階段寄信通知
           sendStage1Info();
-
           $('#step-1-wrapper').style.display = 'none';
           $('#step-2-wrapper').style.display = 'block';
           $('#step-nav-1').classList.remove('active');
@@ -792,7 +808,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       }
   }
 
-  /* 🟢 計算邏輯 🟢 */
   function recalc(){
     let subtotal = 0;
     $$('#order-tbody tr').forEach(tr => {
@@ -808,14 +823,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const morningAlert = $('#morning-fee-alert'); 
     const eveningAlert = $('#evening-alert');
     const uiRow = $('#ui-morning-fee-row'); 
-    const btnDownload = $('#btn-download');
     
     morningAlert.style.display = eveningAlert.style.display = uiRow.style.display = 'none';
-    btnDownload.disabled = false;
+    $('#btn-download').disabled = false;
 
     if (timeValue) {
         if (timeValue < '10:00') { morningFee = 3500; morningAlert.style.display = 'block'; uiRow.style.display = 'grid'; }
-        else if (timeValue > '18:00') { eveningAlert.style.display = 'block'; btnDownload.disabled = true; }
+        else if (timeValue > '18:00') { eveningAlert.style.display = 'block'; $('#btn-download').disabled = true; }
     }
 
     const shippingFee = 500;
@@ -838,9 +852,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     tr.dataset.qty = String(qty);
     tr.dataset.group = item.category;
     tr.dataset.itemId = item.id;
-    
     const imgHtml = item.image ? `<img src="${item.image}" style="width:70px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #eee;">` : '--';
-
     tr.innerHTML = `
       <td style="text-align:center;">${imgHtml}</td>
       <td style="white-space:pre-wrap; font-weight:500;">${item.name}</td>
@@ -856,7 +868,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     recalc();
   }
 
-  /* 🟢 選單邏輯 🟢 */
+  /* 選單邏輯 */
   const preferredOrder = ['二格盒', '植纖四格盒', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
   categories.sort((a,b)=>{
@@ -903,7 +915,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1;
   });
 
-  // 🟢🟢🟢 第二階段完整發送邏輯 🟢🟢🟢
   async function handlePrintProcess() {
     const rows = $$('#order-tbody tr');
     if (rows.length === 0) { alert('⚠️ 請先加入餐點。'); return; }
@@ -911,11 +922,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     const btn = $('#btn-download');
     btn.disabled = true; btn.textContent = '資料加密傳送中...';
 
-    const client = $('#client').value.trim();
-    const date = $('#date').value.trim();
-    const time = $('#time').value.trim();
-    
-    // 收集餐點清單
     const itemsData = rows.map(tr => ({
         image_url: tr.querySelector('img') ? tr.querySelector('img').src : "無圖片",
         name: tr.children[1].textContent, 
@@ -926,12 +932,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const payload = {
         stage: "full_quote",
-        client_name: client,
+        order_id: $('#order-id').value, // 🟢 同步訂單編號
+        client_name: $('#client').value.trim(),
         tax_id: $('#tax-id').value.trim(),
         contact_phone: $('#phone').value,
         delivery_address: $('#address').value,
-        order_date: date,
-        delivery_time: time,
+        order_date: $('#date').value,
+        delivery_time: $('#time').value,
         items: itemsData,
         amounts: {
           subtotal: $('#subtotal').textContent,
@@ -942,13 +949,12 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         }
     };
 
-    // 發送完整資料
     await sendToGas(payload);
-
     showModal();
 
     const originalTitle = document.title;
-    document.title = `正式報價單_${client}_${date.replace(/-/g, '')}`;
+    // 🟢🟢🟢 PDF 顯示位置與檔名優化 🟢🟢🟢
+    document.title = `正式報價單_${$('#order-id').value}_${$('#client').value.trim()}`;
 
     btn.textContent = '列印正式報價單 (另存 PDF)';
     btn.disabled = false;
@@ -973,6 +979,9 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   window.closeModal = closeModal;
 
   (function initMeta(){
+    // 🟢🟢🟢 初始化訂單編號 🟢🟢🟢
+    $('#order-id').value = generateOrderID();
+    
     const d = new Date(); d.setDate(d.getDate() + 7);
     $('#date').value = d.toISOString().split('T')[0];
     $('#date').min = d.toISOString().split('T')[0];
