@@ -455,10 +455,21 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
                     <label>客戶名稱 <span class="required-mark" style="color:var(--danger)">*</span></label>
                     <input id="client" type="text" placeholder="請輸入公司或訂購人名稱">
                 </div>
+                
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <label>統一編號 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <label>發票開立對象 <span class="required-mark" style="color:var(--danger)">*</span></label>
+                    <div style="display: flex; gap: 20px; margin-bottom: 10px; padding: 10px 0;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--ink); font-size: 15px;">
+                            <input type="radio" name="tax-type" value="company" checked style="width: 18px; height: 18px; accent-color: var(--primary);"> 公司報帳（有統編）
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--ink); font-size: 15px;">
+                            <input type="radio" name="tax-type" value="individual" style="width: 18px; height: 18px; accent-color: var(--primary);"> 個人/其他（無統編）
+                        </label>
+                    </div>
+                    <label id="tax-id-label">統一編號 <span class="required-mark" style="color:var(--danger)">*</span></label>
                     <input id="tax-id" type="text" placeholder="請輸入 8 位數統一編號">
                 </div>
+
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label>聯絡電話 <span class="required-mark" style="color:var(--danger)">*</span></label>
                     <input id="phone" type="tel" placeholder="範例：0912345678">
@@ -638,9 +649,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
-  /* 🟢 新增：嚴格驗證邏輯 🟢 */
+  /* 🟢 修改：統編驗證邏輯與Checksum 🟢 */
 
-  // 1. 台灣統編驗證算法 (Checksum)
   function validateVAT(vat) {
       if (!/^\d{8}$/.test(vat)) return false;
       const multipliers = [1, 2, 1, 2, 1, 2, 4, 1];
@@ -654,48 +664,69 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return false;
   }
 
-  // 2. 關鍵字黑名單檢查 (黑名單可於此處擴展)
   function containsPrankKeywords(str) {
       const blacklist = ['測試', 'test', '無', '12345', '路人', '哈哈哈', 'asdf'];
       return blacklist.some(key => str.toLowerCase().includes(key));
   }
 
-  // 3. 第一階段完整驗證
+  // 🟢 新增：監聽統編二選一切換 🟢
+  $$('input[name="tax-type"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+          const taxInput = $('#tax-id');
+          if (e.target.value === 'individual') {
+              taxInput.value = '個人';
+              taxInput.disabled = true;
+              taxInput.style.backgroundColor = '#f1f1f1';
+              taxInput.style.color = '#718096';
+          } else {
+              taxInput.value = '';
+              taxInput.disabled = false;
+              taxInput.style.backgroundColor = '#fff';
+              taxInput.style.color = 'var(--ink)';
+              taxInput.placeholder = "請輸入 8 位數統一編號";
+          }
+      });
+  });
+
   function performStrictValidation() {
       const client = $('#client').value.trim();
+      const taxType = $('input[name="tax-type"]:checked').value;
       const vat = $('#tax-id').value.trim();
       const phone = $('#phone').value.trim();
       const address = $('#address').value.trim();
       const date = $('#date').value;
       const time = $('#time').value;
 
-      // 基本非空檢查
-      if (!client || !vat || !phone || !address || !date || !time) {
+      if (!client || !phone || !address || !date || !time) {
           alert("⚠️ 請填寫所有必填欄位。");
           return false;
       }
 
-      // 黑名單過濾
       if (containsPrankKeywords(client) || containsPrankKeywords(address)) {
           alert("⚠️ 偵測到無效或測試性質的文字內容，請輸入真實資訊。");
           return false;
       }
 
-      // 統編合法性
-      if (!validateVAT(vat)) {
-          alert("⚠️ 無效的統一編號！請檢查輸入是否正確。");
-          $('#tax-id').focus();
-          return false;
+      // 🟢 條件式統編驗證 🟢
+      if (taxType === 'company') {
+          if (!vat || vat === '個人') {
+              alert("⚠️ 選擇公司報帳時，請務必輸入公司統一編號。");
+              $('#tax-id').focus();
+              return false;
+          }
+          if (!validateVAT(vat)) {
+              alert("⚠️ 請輸入正確的公司統一編號（無效的統編 Checksum）。");
+              $('#tax-id').focus();
+              return false;
+          }
       }
 
-      // 手機格式 (台灣 09 開頭 10 位數)
       if (!/^09\d{8}$/.test(phone)) {
           alert("⚠️ 聯絡電話格式錯誤！請輸入正確的手機號碼 (09xxxxxxxx)。");
           $('#phone').focus();
           return false;
       }
 
-      // 地址完整性 (大於 10 字且含縣或市)
       if (address.length < 10 || !(/[縣市]/.test(address))) {
           alert("⚠️ 配送地址過於簡略或缺少縣市資訊，請填寫完整地址。");
           $('#address').focus();
@@ -705,19 +736,15 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return true;
   }
 
-  // 4. 切換步驟邏輯
   function goToStep(step) {
       if (step === 2) {
-          // 前往選購前先驗證
           if (!performStrictValidation()) return;
-
           $('#step-1-wrapper').style.display = 'none';
           $('#step-2-wrapper').style.display = 'block';
           $('#step-nav-1').classList.remove('active');
           $('#step-nav-2').classList.add('active');
-          window.scrollTo(0, 0); // 捲動至頂部
+          window.scrollTo(0, 0); 
       } else {
-          // 回到第一階段
           $('#step-2-wrapper').style.display = 'none';
           $('#step-1-wrapper').style.display = 'block';
           $('#step-nav-2').classList.remove('active');
@@ -726,7 +753,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       }
   }
 
-  /* 🟢 現有選單邏輯維持不變 🟢 */
+  /* 🟢 現有邏輯保持不變 🟢 */
 
   const preferredOrder = ['二格盒', '植纖四格盒', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
@@ -896,7 +923,8 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     }
 
     const client = $('#client').value.trim();
-    const taxId = $('#tax-id').value.trim();
+    // 🟢 修改：抓取當前統編的值 🟢
+    const vat = $('#tax-id').value.trim();
     const phone = $('#phone').value.trim();
     const address = $('#address').value.trim();
     const date = $('#date').value.trim();
@@ -923,7 +951,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     const payload = {
         client_name: client,
-        tax_id: taxId,
+        tax_id: vat, // 🟢 傳送統編號碼或「個人」🟢
         contact_phone: phone,
         delivery_address: address,
         order_date: date,
@@ -947,7 +975,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         });
     } catch (err) { console.error(err); }
 
-    generateExcelFile(client, taxId, phone, address, date, rows, subtotal, shipping, morningFee, tax, total, time);
+    generateExcelFile(client, vat, phone, address, date, rows, subtotal, shipping, morningFee, tax, total, time);
     showModal();
     btn.disabled = false;
     btn.textContent = originalText;
@@ -960,6 +988,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         ['建議180元/人起跳 (未稅)。服務範圍：雙北地區 (山區/偏遠地區除外)。'],
         ['注意：此為模擬報價，非正式訂單，請透過官方Line聯繫，經業務人員確認並提供正式報價單後為準。'],
         [null],
+        // 🟢 修改：Excel 統編欄位連動 🟢
         ['客戶名稱', client, '統一編號', taxId],
         ['聯絡電話', phone, '配送地址', address],
         ['預計送達時間', `${date} ${time}`],
