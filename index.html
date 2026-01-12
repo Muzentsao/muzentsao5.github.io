@@ -376,25 +376,17 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   }
 }
 
-/* 🟢🟢🟢 新增：PDF 美化與列印樣式 🟢🟢🟢 */
+/* 🟢🟢🟢 PDF 美化與列印樣式 🟢🟢🟢 */
 @media print {
   body { background: #fff !important; color: #000 !important; }
   .container { max-width: 100% !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
-  
-  /* 隱藏 UI 互動元素 */
   .hero-section, header, .step-navigation, .step-btn-area, .btn-prev, 
   .selection-wrapper, .btn-del, #btn-download, .input-hint, 
   .disclaimer, .modal-overlay, .morning-fee-alert, .evening-alert { 
     display: none !important; 
   }
-
-  /* 強制呈現所有內容 */
   #step-1-wrapper, #step-2-wrapper { display: block !important; visibility: visible !important; }
-
-  /* 區塊美化 */
   .block { border: none !important; box-shadow: none !important; padding: 0 !important; margin-bottom: 20px !important; }
-  
-  /* 輸入框轉為純文字呈現 */
   input, select, textarea { 
     border: none !important; 
     padding: 0 !important; 
@@ -407,19 +399,14 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     font-weight: 500 !important;
   }
   .tax-type-radio-container { display: none !important; }
-
-  /* 表格美化 */
   table { border-collapse: collapse !important; margin-top: 10px !important; border: 1px solid #ddd !important; }
   th { background-color: #f8f9fa !important; color: #333 !important; font-size: 13px !important; border: 1px solid #ddd !important; padding: 10px !important; }
   td { border: 1px solid #ddd !important; padding: 10px !important; font-size: 14px !important; }
   tr { page-break-inside: avoid !important; }
-
-  /* 總計金額區塊美化 */
-  #grand { font-size: 22px !important; color: var(--primary) !important; text-decoration: underline; }
-  
-  /* 報價單標題增強 */
+  #grand { font-size: 22px !important; color: #000 !important; text-decoration: none !important; border-bottom: 2px solid #000; }
   .form-header h2 { font-size: 26px !important; margin-bottom: 15px !important; }
-
+  /* 列印時顯示特定的金額樣式 */
+  .fee-row { display: grid !important; color: #000 !important; }
   @page { size: A4; margin: 1.5cm; }
 }
 </style>
@@ -612,12 +599,21 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
             <div class="grid" style="margin-top:10px; grid-template-columns: 1fr 280px; align-items:start">
                 <div class="note">此為模擬報價，非正式訂單（僅供參考）。如需訂購，<br>請將此單透過 LINE 提供給業務人員，實際金額以業務人員確認後提供之『正式報價單』為準。</div>
                 <div>
-                    <div style="display:grid; gap:6px; justify-content:end">
-                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>小計</div><div class="right" id="subtotal">0</div></div>
-                        <div id="ui-morning-fee-row" style="display:none; grid-template-columns: 1fr 140px; gap:8px; color:#E53E3E;">
-                            <div>早晨加成</div><div class="right">3,500</div>
+                  
+                    <div style="display:grid; gap:8px; justify-content:end">
+                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>餐點小計</div><div class="right" id="subtotal">0</div></div>
+                        
+                        <div id="ui-morning-fee-row" class="fee-row" style="display:none; grid-template-columns: 1fr 140px; gap:8px; color:#E53E3E;">
+                            <div>早晨加成</div><div class="right" id="morning-fee-val">3,500</div>
                         </div>
-                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700"><div>總計 (未稅)</div><div class="right" id="grand">0</div></div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px"><div>交通運費</div><div class="right" id="shipping-fee">500</div></div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; color:var(--muted)"><div>營業稅 (5%)</div><div class="right" id="tax-amount">0</div></div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 140px; gap:8px; font-weight:700; margin-top:4px; border-top:1px solid var(--line); padding-top:8px;">
+                          <div>總計 (含稅)</div><div class="right" id="grand">0</div>
+                        </div>
                     </div>
                     <div style="margin-top: 16px;">
                         <button id="btn-download" style="width:100%">列印正式報價單 (另存 PDF)</button>
@@ -763,7 +759,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       }
   }
 
-  /* 🟢 修改：圖片插入邏輯 🟢 */
   function addRow({ itemId, price, qty }){
     const item = catalog.find(x => x.id === itemId);
     if (!item) return;
@@ -773,7 +768,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     tr.dataset.group = item.category;
     tr.dataset.itemId = item.id;
     
-    // 生成精緻縮圖 HTML
     const imgHtml = item.image ? `<img src="${item.image}" style="width:70px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #eee;">` : '--';
 
     tr.innerHTML = `
@@ -789,6 +783,51 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     });
     orderTbody.appendChild(tr);
     recalc();
+  }
+
+  /* 🟢🟢🟢 金額計算邏輯核心 (recalc) 🟢🟢🟢 */
+  function recalc(){
+    let subtotal = 0;
+    $$('#order-tbody tr').forEach(tr => {
+      const p = Number(tr.dataset.price||0); const q = Number(tr.dataset.qty||0);
+      const line = p * q; subtotal += line; tr.querySelector('.line-subtotal').textContent = money(line);
+    });
+
+    const timeValue = $('#time').value;
+    let morningFee = 0;
+    const morningAlert = $('#morning-fee-alert'); const eveningAlert = $('#evening-alert');
+    const uiRow = $('#ui-morning-fee-row'); const btnDownload = $('#btn-download');
+    
+    morningAlert.style.display = eveningAlert.style.display = uiRow.style.display = 'none';
+    btnDownload.disabled = false; btnDownload.textContent = '列印正式報價單 (另存 PDF)';
+
+    if (timeValue) {
+        if (timeValue < '10:00') { 
+            morningFee = 3500; 
+            morningAlert.style.display = 'block'; 
+            uiRow.style.display = 'grid'; 
+        }
+        else if (timeValue > '18:00') { 
+            eveningAlert.style.display = 'block'; 
+            btnDownload.disabled = true; 
+            btnDownload.textContent = '⛔ 此時段無法配送'; 
+        }
+    }
+
+    // 新增：交通運費邏輯 (固定500)
+    const shippingFee = 500;
+
+    // 新增：稅金計算 (小計 + 早晨加成 + 運費) * 5%
+    const taxBase = subtotal + morningFee + shippingFee;
+    const taxAmount = Math.round(taxBase * 0.05);
+    const grandTotal = taxBase + taxAmount;
+
+    // 更新 UI 顯示
+    $('#subtotal').textContent = money(subtotal);
+    $('#morning-fee-val').textContent = money(morningFee);
+    $('#shipping-fee').textContent = money(shippingFee);
+    $('#tax-amount').textContent = money(taxAmount);
+    $('#grand').textContent = money(grandTotal);
   }
 
   /* 🟢 選單邏輯區 🟢 */
@@ -837,28 +876,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     else { previewImg.style.display = 'none'; previewPlaceholder.style.display = 'block'; previewPlaceholder.innerHTML = '無圖片'; }
   });
 
-  function recalc(){
-    let subtotal = 0;
-    $$('#order-tbody tr').forEach(tr => {
-      const p = Number(tr.dataset.price||0); const q = Number(tr.dataset.qty||0);
-      const line = p * q; subtotal += line; tr.querySelector('.line-subtotal').textContent = money(line);
-    });
-    const timeValue = $('#time').value;
-    let morningFee = 0;
-    const morningAlert = $('#morning-fee-alert'); const eveningAlert = $('#evening-alert');
-    const uiRow = $('#ui-morning-fee-row'); const btnDownload = $('#btn-download');
-    
-    morningAlert.style.display = eveningAlert.style.display = uiRow.style.display = 'none';
-    btnDownload.disabled = false; btnDownload.textContent = '列印正式報價單 (另存 PDF)';
-
-    if (timeValue) {
-        if (timeValue < '10:00') { morningFee = 3500; morningAlert.style.display = 'block'; uiRow.style.display = 'grid'; }
-        else if (timeValue > '18:00') { eveningAlert.style.display = 'block'; btnDownload.disabled = true; btnDownload.textContent = '⛔ 此時段無法配送'; }
-    }
-    $('#subtotal').textContent = money(subtotal);
-    $('#grand').textContent = money(subtotal + morningFee);
-  }
-
   $('#btn-add').addEventListener('click', () => {
     const itemId = selItem.value;
     if (!itemId) { alert('請選擇餐點'); return; }
@@ -866,12 +883,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1;
   });
 
-  /* 🟢🟢🟢 修改：列印 PDF 處理邏輯 🟢🟢🟢 */
+  /* 🟢🟢🟢 列印與資料傳送邏輯 🟢🟢🟢 */
   async function handlePrintProcess() {
     const rows = $$('#order-tbody tr');
     if (rows.length === 0) { alert('⚠️ 請先加入餐點。'); return; }
 
-    // 數量門檻驗證
     const MIN_QTY = 10;
     const counts = {};
     rows.forEach(tr => {
@@ -895,27 +911,33 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         price: Number(tr.dataset.price),
         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
     }));
+
+    // 同步計算金額明細以發送 payload
     const subtotal = itemsData.reduce((a,b)=>a+b.subtotal, 0);
     let morningFee = (time < '10:00') ? 3500 : 0;
     const shipping = 500;
-    const taxBase = subtotal + shipping + morningFee;
+    const taxBase = subtotal + morningFee + shipping;
     const tax = Math.round(taxBase * 0.05);
     const total = taxBase + tax;
 
     const payload = {
         client_name: client, tax_id: vat, contact_phone: $('#phone').value, delivery_address: $('#address').value,
         order_date: date, delivery_time: time, items: itemsData,
-        totals: { subtotal: money(subtotal), shipping: money(shipping), morning_fee: money(morningFee), tax: money(tax), total: money(total) }
+        totals: { 
+          subtotal: money(subtotal), 
+          shipping: money(shipping), 
+          morning_fee: money(morningFee), 
+          tax: money(tax), 
+          total: money(total) 
+        }
     };
 
-    // 1. GAS 非同步發送
     try {
         await fetch(GAS_URL, { method: "POST", body: JSON.stringify(payload), headers: { "Content-Type": "text/plain;charset=utf-8" }, mode: "no-cors" });
     } catch (err) { console.error("GAS Error:", err); }
 
     showModal();
 
-    // 2. 設定動態 PDF 檔名並列印
     const originalTitle = document.title;
     document.title = `正式報價單_${client}_${date.replace(/-/g, '')}`;
 
@@ -924,7 +946,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
     setTimeout(() => {
         window.print();
-        document.title = originalTitle; // 結束後恢復標題
+        document.title = originalTitle;
     }, 600);
   }
 
@@ -942,7 +964,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   window.closeModal = closeModal;
 
   (function initMeta(){
-    const d = new Date(); d.setDate(d.getDate() + 7); // 預設7天後
+    const d = new Date(); d.setDate(d.getDate() + 7);
     const dateStr = d.toISOString().split('T')[0];
     $('#date').value = dateStr; $('#date').min = dateStr;
   })();
