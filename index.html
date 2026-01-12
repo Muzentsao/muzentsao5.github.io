@@ -648,8 +648,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   </div>
 
 <script>
-  // 您的 GAS 網址
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxoCiBA3xyzLCZU_lD0V8w6l2MqlBF6Igbr3sGeo5lVp1ri_y4Ggvuwv1L4EUHPew/exec"; 
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbydaHaO-uUb1SrWxHTyNElo4xMH6sODOJq4hOFpRKYmO9lCZwcdP4p_GiuapJS_mDcy/exec"; 
 
   const catalog = [
     { id:'b2-1', category:'二格盒', name:'獨家香料鹹豬肉', price: 200, image:'日式鹽麴豬五花-2_工作區域 1-2.jpg', meta:'二格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
@@ -666,11 +665,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式照燒植物肉', price: 320, image:'四格盒_法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'植纖四格盒', includes:['主菜2: 日式照燒植物肉','配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] }, 
     { id:'k8-1', category:'韓式八格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉', price: 280, image:'韓式炸雞 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-2', category:'韓式八格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', price: 280, image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-3', category:'韓式八格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 380, image:'炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'韓式處理八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-3', category:'韓式八格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 380, image:'炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-4', category:'韓式八格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉', price: 280, image:'八格盒_日式牛肉漢堡排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-5', category:'韓式八格盒', name:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉', price: 280, image:'蒲燒鯛魚腹排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-6', category:'韓式八格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉', price: 280, image:'鯖魚一夜干 + 日式鹽麴豬五花肉.png', meta:'韓式處理八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
-    { id:'k8-7', category:'韓式八格盒', name:'法式油封杏鮑菇 + 日式照燒植物肉', price: 280, image:'法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'韓式處理八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-6', category:'韓式八格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉', price: 280, image:'鯖魚一夜干 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
+    { id:'k8-7', category:'韓式八格盒', name:'法式油封杏鮑菇 + 日式照燒植物肉', price: 280, image:'法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
   ];
 
   const $ = (s, el=document) => el.querySelector(s);
@@ -687,7 +686,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
-  /* 訂單編號生成邏輯 */
   function generateOrderID() {
       const now = new Date();
       const year = now.getFullYear();
@@ -702,7 +700,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       return `MJ${dateStr}${randomStr}`;
   }
 
-  /* 校驗邏輯 */
   function validateVAT(vat) {
       if (!/^\d{8}$/.test(vat)) return false;
       const multipliers = [1, 2, 1, 2, 1, 2, 4, 1];
@@ -726,10 +723,10 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           const taxInput = $('#tax-id');
           if (e.target.value === 'individual') {
               taxInput.value = '個人'; taxInput.disabled = true;
-              taxInput.style.backgroundColor = '#f1f1f1'; taxInput.style.color = '#718096';
+              taxInput.style.backgroundColor = '#f1f1f1';
           } else {
               taxInput.value = ''; taxInput.disabled = false;
-              taxInput.style.backgroundColor = '#fff'; taxInput.style.color = 'var(--ink)';
+              taxInput.style.backgroundColor = '#fff';
           }
       });
   });
@@ -750,16 +747,26 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           alert("⚠️ 偵測到無效內容，請輸入真實資訊。"); return false;
       }
       if (taxType === 'company') {
-          if (!vat || vat === '個人') { alert("⚠️ 選擇公司報帳時，請務必輸入公司統編。"); $('#tax-id').focus(); return false; }
-          if (!validateVAT(vat)) { alert("⚠️ 請輸入正確的公司統一編號（無效的統編 Checksum）。"); $('#tax-id').focus(); return false; }
+          if (!vat || vat === '個人') { alert("⚠️ 選擇公司報帳時，請務必輸入公司統編。"); return false; }
+          if (!validateVAT(vat)) { alert("⚠️ 統編校驗失敗。"); return false; }
       }
-      if (!/^09\d{8}$/.test(phone)) { alert("⚠️ 聯絡電話格式錯誤！請輸入正確的手機號碼 (09xxxxxxxx)。"); $('#phone').focus(); return false; }
-      if (address.length < 10 || !(/[縣市]/.test(address))) { alert("⚠️ 配送地址過於簡略或缺少縣市資訊，請填寫完整地址。"); $('#address').focus(); return false; }
+      if (!/^09\d{8}$/.test(phone)) { alert("⚠️ 手機格式錯誤。"); return false; }
+      if (address.length < 10 || !(/[縣市]/.test(address))) { alert("⚠️ 配送地址過於簡略，請包含縣市且長度充足。"); return false; }
       return true;
   }
 
-  // 🟢🟢🟢 第一階段 GAS 觸發函式 (初步資料) 🟢🟢🟢
-  async function sendStage1Notification() {
+  async function sendToGas(payload) {
+      try {
+          await fetch(GAS_URL, {
+              method: "POST",
+              body: JSON.stringify(payload),
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              mode: "no-cors"
+          });
+      } catch (err) { console.error("GAS Error:", err); }
+  }
+
+  function sendStage1Info() {
       const payload = {
           stage: "client_info",
           order_id: $('#order-id').value,
@@ -771,28 +778,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           delivery_time: $('#time').value,
           timestamp: new Date().toLocaleString()
       };
-      
-      try {
-          // 使用非同步 fetch，不阻塞網頁流程
-          fetch(GAS_URL, {
-              method: "POST",
-              body: JSON.stringify(payload),
-              mode: "no-cors"
-          });
-          console.log("第一階段預警資料已發送至後端");
-      } catch (err) {
-          console.error("第一階段傳送失敗:", err);
-      }
+      sendToGas(payload);
   }
-  // 🟢🟢🟢 第一階段結束 🟢🟢🟢
 
   function goToStep(step) {
       if (step === 2) {
           if (!performStrictValidation()) return;
-          
-          /* 觸發第一個觸發點 */
-          sendStage1Notification();
-
+          sendStage1Info();
           $('#step-1-wrapper').style.display = 'none';
           $('#step-2-wrapper').style.display = 'block';
           $('#step-nav-1').classList.remove('active');
@@ -807,7 +799,6 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       }
   }
 
-  /* 金額計算邏輯 */
   function recalc(){
     let subtotal = 0;
     $$('#order-tbody tr').forEach(tr => {
@@ -848,9 +839,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     tr.dataset.qty = String(qty);
     tr.dataset.group = item.category;
     tr.dataset.itemId = item.id;
-    
     const imgHtml = item.image ? `<img src="${item.image}" style="width:70px; height:50px; object-fit:cover; border-radius:4px; border:1px solid #eee;">` : '--';
-
     tr.innerHTML = `
       <td style="text-align:center;">${imgHtml}</td>
       <td style="white-space:pre-wrap; font-weight:500;">${item.name}</td>
@@ -860,13 +849,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
       <td class="right print-hide"><button type="button" class="btn-del" style="padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:#fff">刪除</button></td>
     `;
     tr.querySelector('.btn-del').addEventListener('click', () => {
-      if (confirm(`確定要刪除「${item.name}」這項嗎？`)) { tr.remove(); recalc(); }
+      if (confirm(`確定要刪除「${item.name}」嗎？`)) { tr.remove(); recalc(); }
     });
     orderTbody.appendChild(tr);
     recalc();
   }
 
-  /* 選單與初始化 */
+  /* 選單邏輯 */
   const preferredOrder = ['二格盒', '植纖四格盒', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
   categories.sort((a,b)=>{
@@ -901,7 +890,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
 
   selItem.addEventListener('change', () => {
     const item = catalog.find(x => x.id === selItem.value);
-    if (!item) { resetPreview(); return; }
+    if (!item) return;
     selPrice.value = item.price || 0;
     previewTitle.textContent = item.name;
     previewDesc.innerHTML = item.includes ? item.includes.join('<br>') : item.meta;
@@ -914,27 +903,50 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     selQty.value = 1;
   });
 
-  // 🟢🟢🟢 第二階段 GAS 觸發函式 (完整明細) 🟢🟢🟢
-  async function handlePrintProcess() {
+  // 🟢🟢🟢 核心：訂單提交處理 (含盒型 MOQ 分組驗證邏輯) 🟢🟢🟢
+  async function handleOrderSubmit() {
     const rows = $$('#order-tbody tr');
     if (rows.length === 0) { alert('⚠️ 目前沒有任何餐點，請先加入明細。'); return; }
 
+    /* --- 盒型分組驗證邏輯 (MOQ Check) --- */
+    const MOQ_LIMIT = 10;
+    const categoryTotals = {}; // 用於存儲各盒型總數
+
+    rows.forEach(tr => {
+      const categoryName = tr.dataset.group; // 取得該列的盒型名稱
+      const quantity = Number(tr.dataset.qty || 0);
+      if (!categoryTotals[categoryName]) categoryTotals[categoryName] = 0;
+      categoryTotals[categoryName] += quantity;
+    });
+
+    const insufficientItems = [];
+    for (const [cat, total] of Object.entries(categoryTotals)) {
+        if (total < MOQ_LIMIT) {
+            insufficientItems.push(`${cat} (目前 ${total} 盒)`);
+        }
+    }
+
+    // 如果有任何盒型不達標，則攔截並警示
+    if (insufficientItems.length > 0) {
+        alert(`⚠️ 訂購量不足：\n\n${insufficientItems.join('\n')}\n\n根據起訂規則，每種盒型總量需至少滿 ${MOQ_LIMIT} 盒始可訂購。`);
+        return; // 強制中止流程
+    }
+    /* --- 驗證結束 --- */
+
     const btn = $('#btn-download');
-    btn.disabled = true; btn.textContent = '資料加密傳送中...';
+    btn.disabled = true; btn.textContent = '傳送中...';
 
     const client = $('#client').value.trim();
     const date = $('#date').value.trim();
     const time = $('#time').value.trim();
     
-    // 收集餐點明細陣列
     const itemsData = rows.map(tr => ({
-        image_url: tr.querySelector('img') ? tr.querySelector('img').src : "無圖片",
         name: tr.children[1].textContent, 
-        price: Number(tr.dataset.price),
         qty: Number(tr.dataset.qty), 
+        price: Number(tr.dataset.price),
         subtotal: Number(tr.dataset.qty) * Number(tr.dataset.price)
     }));
-
+    
     const payload = {
         stage: "full_quote",
         order_id: $('#order-id').value,
@@ -950,46 +962,33 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
           morning_fee: $('#morning-fee-val').textContent,
           shipping: $('#shipping-fee').textContent,
           tax: $('#tax-amount').textContent,
-          grand_total: $('#grand').textContent
+          total: $('#grand').textContent
         }
     };
 
-    // 執行傳送
-    try {
-        await fetch(GAS_URL, {
-            method: "POST",
-            body: JSON.stringify(payload),
-            mode: "no-cors"
-        });
-    } catch (err) { console.error("完整資料傳送失敗:", err); }
-
+    await sendToGas(payload);
     showModal();
 
     const originalTitle = document.title;
     document.title = `正式報價單_${$('#order-id').value}_${client}`;
+    btn.textContent = '列印正式報價單 (另存 PDF)'; btn.disabled = false;
 
-    btn.textContent = '列印正式報價單 (另存 PDF)';
-    btn.disabled = false;
-
-    // 觸發列印視窗
     setTimeout(() => {
         window.print();
         document.title = originalTitle;
     }, 600);
   }
-  // 🟢🟢🟢 第二階段結束 🟢🟢🟢
 
   function showModal() {
     const m = $('#successModal'); m.style.display = 'flex';
     setTimeout(() => m.classList.add('active'), 10);
   }
-
   function closeModal() {
     const m = $('#successModal'); m.classList.remove('active');
     setTimeout(() => m.style.display = 'none', 300);
   }
 
-  $('#btn-download').onclick = handlePrintProcess;
+  $('#btn-download').onclick = handleOrderSubmit;
   window.closeModal = closeModal;
 
   (function initMeta(){
