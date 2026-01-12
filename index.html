@@ -447,7 +447,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
         <section class="block">
             <div class="form-header">
                 <h2>填寫訂購資訊</h2>
-                <div class="muted">請完整填寫以下資訊以進入選購階段</div>
+                <div class="muted">我們需要正確的資訊以為您提供正式報價</div>
             </div>
             <br>
             <div class="form-grid-container">
@@ -457,11 +457,11 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label>統一編號 <span class="required-mark" style="color:var(--danger)">*</span></label>
-                    <input id="tax-id" type="text" placeholder="請輸入統一編號">
+                    <input id="tax-id" type="text" placeholder="請輸入 8 位數統一編號">
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label>聯絡電話 <span class="required-mark" style="color:var(--danger)">*</span></label>
-                    <input id="phone" type="tel" placeholder="手機或市話">
+                    <input id="phone" type="tel" placeholder="範例：0912345678">
                 </div>
                 <div class="form-group" style="margin-bottom: 20px;">
                     <label>預計送達日期 & 時間 <span class="required-mark" style="color:var(--danger)">*</span></label>
@@ -481,12 +481,13 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
                 </div>
                 <div class="form-group full" style="margin-bottom: 20px;">
                     <label>配送地址 <span class="required-mark" style="color:var(--danger)">*</span></label>
-                    <input id="address" type="text" placeholder="請輸入完整配送地址">
+                    <input id="address" type="text" placeholder="請輸入完整地址（含縣市）">
                 </div>
             </div>
 
             <div class="step-btn-area">
-                <div></div> <button type="button" class="btn-next" onclick="goToStep(2)">下一步：開始選購餐點 ➜</button>
+                <div></div>
+                <button type="button" class="btn-next" onclick="goToStep(2)">下一步：開始選購餐點 ➜</button>
             </div>
         </section>
     </div>
@@ -598,7 +599,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   </div>
 
 <script>
-  // 👇👇👇 您的 GAS 網址 👇👇👇
+  // 您的 GAS 網址
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyFSe1U6E363tVmdW6GazEVorQD2pnYUNO5sIPhk_HYyFQhhD_fdfa2-tPapYjndJFQ/exec"; 
 
   const catalog = [
@@ -613,7 +614,7 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
     { id:'p4-4', category:'植纖四格盒', name:'鯖魚一夜干 + 日式鹽麴豬五花肉', price: 320, image:'四格盒_蒲燒鯛魚腹排 + 日式鹽麴豬五花肉(50G)-2.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-5', category:'植纖四格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 420, image:'四格盒_炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
     { id:'p4-6', category:'植纖四格盒', name:'日式牛肉漢堡排 + 日式鹽麴豬五花肉', price: 320, image:'四格盒_日式牛肉漢堡排 + 日式鹽麴豬五花肉.png', meta:'植纖四格盒', includes:['配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] },
-    { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式照燒植物肉', price: 320, image:'四格盒_法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'植纖四格盒', includes:['主菜2: 日式照燒植物肉','配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] }, 
+    { id:'p4-7', category:'植纖四格盒', name:'法式油封杏鮑菇 + 日式照照照植物肉', price: 320, image:'四格盒_法式油封杏鮑菇 + 日式照燒植物肉.png', meta:'植纖四格盒', includes:['主菜2: 日式照燒植物肉','配菜: 綜合溫什蔬佐胡麻醬','配菜: 日式冷泡溏心蛋','主食: 紅藜秈米飯'] }, 
     { id:'k8-1', category:'韓式八格盒', name:'韓式炸雞 + 日式鹽麴豬五花肉', price: 280, image:'韓式炸雞 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-2', category:'韓式八格盒', name:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉', price: 280, image:'日式鹽麴雞腿排 + 日式鹽麴豬五花肉(40g)-3.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
     { id:'k8-3', category:'韓式八格盒', name:'炭烤牛小排 + 日式鹽麴豬五花肉', price: 380, image:'炭烤牛小排 + 日式鹽麴豬五花肉.png', meta:'韓式八格盒', includes:['配菜: 日式冷泡溏心蛋','配菜: 韓式泡菜','主食: 紅藜秈米飯'] },
@@ -637,39 +638,96 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   const previewTitle = $('#preview-title');
   const previewDesc = $('#preview-desc');
 
-  // 🟢 新增：切換步驟邏輯 🟢
+  /* 🟢 新增：嚴格驗證邏輯 🟢 */
+
+  // 1. 台灣統編驗證算法 (Checksum)
+  function validateVAT(vat) {
+      if (!/^\d{8}$/.test(vat)) return false;
+      const multipliers = [1, 2, 1, 2, 1, 2, 4, 1];
+      let sum = 0;
+      for (let i = 0; i < 8; i++) {
+          let prod = parseInt(vat[i]) * multipliers[i];
+          sum += Math.floor(prod / 10) + (prod % 10);
+      }
+      if (sum % 10 === 0) return true;
+      if (vat[6] === '7' && (sum + 1) % 10 === 0) return true;
+      return false;
+  }
+
+  // 2. 關鍵字黑名單檢查 (黑名單可於此處擴展)
+  function containsPrankKeywords(str) {
+      const blacklist = ['測試', 'test', '無', '12345', '路人', '哈哈哈', 'asdf'];
+      return blacklist.some(key => str.toLowerCase().includes(key));
+  }
+
+  // 3. 第一階段完整驗證
+  function performStrictValidation() {
+      const client = $('#client').value.trim();
+      const vat = $('#tax-id').value.trim();
+      const phone = $('#phone').value.trim();
+      const address = $('#address').value.trim();
+      const date = $('#date').value;
+      const time = $('#time').value;
+
+      // 基本非空檢查
+      if (!client || !vat || !phone || !address || !date || !time) {
+          alert("⚠️ 請填寫所有必填欄位。");
+          return false;
+      }
+
+      // 黑名單過濾
+      if (containsPrankKeywords(client) || containsPrankKeywords(address)) {
+          alert("⚠️ 偵測到無效或測試性質的文字內容，請輸入真實資訊。");
+          return false;
+      }
+
+      // 統編合法性
+      if (!validateVAT(vat)) {
+          alert("⚠️ 無效的統一編號！請檢查輸入是否正確。");
+          $('#tax-id').focus();
+          return false;
+      }
+
+      // 手機格式 (台灣 09 開頭 10 位數)
+      if (!/^09\d{8}$/.test(phone)) {
+          alert("⚠️ 聯絡電話格式錯誤！請輸入正確的手機號碼 (09xxxxxxxx)。");
+          $('#phone').focus();
+          return false;
+      }
+
+      // 地址完整性 (大於 10 字且含縣或市)
+      if (address.length < 10 || !(/[縣市]/.test(address))) {
+          alert("⚠️ 配送地址過於簡略或缺少縣市資訊，請填寫完整地址。");
+          $('#address').focus();
+          return false;
+      }
+
+      return true;
+  }
+
+  // 4. 切換步驟邏輯
   function goToStep(step) {
       if (step === 2) {
-          // 驗證第一階段
-          const client = ($('#client').value || '').trim();
-          const taxId = ($('#tax-id').value || '').trim();
-          const phone = ($('#phone').value || '').trim();
-          const address = ($('#address').value || '').trim();
-          const date = ($('#date').value || '').trim();
-          const time = ($('#time').value || '').trim();
+          // 前往選購前先驗證
+          if (!performStrictValidation()) return;
 
-          if (!client || !taxId || !phone || !address || !date || !time) {
-              alert('⚠️ 請先完整填寫「第一階段：訂購資訊」的所有必填欄位。');
-              return;
-          }
-
-          // 平滑切換顯示
           $('#step-1-wrapper').style.display = 'none';
           $('#step-2-wrapper').style.display = 'block';
           $('#step-nav-1').classList.remove('active');
           $('#step-nav-2').classList.add('active');
-          window.scrollTo(0, $('#order-form').offsetTop - 20);
+          window.scrollTo(0, 0); // 捲動至頂部
       } else {
-          // 返回第一階段
+          // 回到第一階段
           $('#step-2-wrapper').style.display = 'none';
           $('#step-1-wrapper').style.display = 'block';
           $('#step-nav-2').classList.remove('active');
           $('#step-nav-1').classList.add('active');
-          window.scrollTo(0, $('#order-form').offsetTop - 20);
+          window.scrollTo(0, 0);
       }
   }
 
-  // 初始化選單
+  /* 🟢 現有選單邏輯維持不變 🟢 */
+
   const preferredOrder = ['二格盒', '植纖四格盒', '韓式八格盒'];
   const categories = [...new Set(catalog.map(x => x.category))];
   categories.sort((a,b)=>{
@@ -815,27 +873,25 @@ tbody tr:hover { background-color: var(--primary-light); transition: var(--trans
   });
 
   async function handleOrderSubmit() {
-    const checkTime = ($('#time').value || '').trim();
-    if (checkTime > '18:00') {
-        alert('⛔ 抱歉，18:00 以後為非製作配送時段。\n\n請調整「預計送達時間」後再下載報價單。');
-        return;
-    }
-    const MIN_QTY = 10;
-    const counts = {};
     const rows = $$('#order-tbody tr');
     if (rows.length === 0) { alert('⚠️ 目前沒有任何餐點，請先加入明細。'); return; }
+
+    const MIN_QTY = 10;
+    const counts = {};
     rows.forEach(tr => {
       const category = tr.dataset.group;
       const qty = Number(tr.dataset.qty || 0);
       if (!counts[category]) counts[category] = 0;
       counts[category] += qty;
     });
+
     const invalidCategories = [];
     for (const [cat, count] of Object.entries(counts)) {
       if (count < MIN_QTY) invalidCategories.push(`${cat} (目前 ${count} 盒)`);
     }
+
     if (invalidCategories.length > 0) {
-      alert(`⚠️ 訂購量不足！\n\n根據規則，每種盒型需至少滿 ${MIN_QTY} 盒。\n\n以下盒型未達標：\n- ${invalidCategories.join('\n- ')}\n\n請調整數量後再試。`);
+      alert(`⚠️ 訂購量不足！\n\n根據規則，每種盒型需至少滿 ${MIN_QTY} 盒。\n以下盒型未達標：\n- ${invalidCategories.join('\n- ')}`);
       return; 
     }
 
